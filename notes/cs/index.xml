@@ -1,0 +1,1426 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – Computer Science</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/</link><description>Recent content in Computer Science on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 01 Nov 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/notes/cs/index.xml" rel="self" type="application/rss+xml"/><item><title>Docker networks</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/docker-networks/</link><pubDate>Sun, 01 Nov 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/docker-networks/</guid><description>
+&lt;p&gt;Docker provides several built-in network drivers to handle container communication, isolation, and routing. Each driver serves a specific architectural use case depending on whether containers run on a single host, across multiple hosts, or require direct physical network integration.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="1-bridge-network-default"&gt;1. Bridge Network (Default)&lt;span class="hx:absolute hx:-mt-20" id="1-bridge-network-default"&gt;&lt;/span&gt;
+&lt;a href="#1-bridge-network-default" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The bridge network creates a software switch on the host (usually named &lt;code&gt;docker0&lt;/code&gt;). Containers attached to the same bridge can communicate with each other via internal IP addresses.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Default Bridge:&lt;/strong&gt; Automatically assigned to containers if no network is specified. Does not support automatic DNS resolution by container name; containers must communicate via IP or manual &lt;code&gt;--link&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;User-Defined Bridge:&lt;/strong&gt; Custom bridge created with &lt;code&gt;docker network create -d bridge &amp;lt;name&amp;gt;&lt;/code&gt;. Provides automatic service discovery (DNS resolution via container names) and better isolation.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Best used for:&lt;/strong&gt; Standalone containers running on a single host needing private, isolated inter-container communication.
+Bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# Create and run on a user-defined bridge
+docker network create my-bridge
+docker run -d --name web --network my-bridge nginx
+docker run -it --network my-bridge alpine ping web&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="2-host-network"&gt;2. Host Network&lt;span class="hx:absolute hx:-mt-20" id="2-host-network"&gt;&lt;/span&gt;
+&lt;a href="#2-host-network" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The host driver removes network isolation between the container and the Docker host. The container shares the host’s networking namespace directly.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Port Behavior:&lt;/strong&gt; Port mapping (&lt;code&gt;-p&lt;/code&gt; or &lt;code&gt;-P&lt;/code&gt;) is ignored. If a service in the container binds to port &lt;code&gt;80&lt;/code&gt;, it immediately binds to port &lt;code&gt;80&lt;/code&gt; on the host machine.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Performance:&lt;/strong&gt; Eliminates Network Address Translation (NAT) overhead, achieving near-native network throughput.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Limitations:&lt;/strong&gt; Only works natively on Linux hosts (on macOS and Windows, Docker runs inside a lightweight VM, so the host network attaches to the VM rather than your actual OS).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Best used for:&lt;/strong&gt; High-throughput, low-latency applications (e.g., media streaming, high-frequency trading) or services monitoring the host’s network stack.
+Bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;docker run -d --name cache --network host redis&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="3-none-network"&gt;3. None Network&lt;span class="hx:absolute hx:-mt-20" id="3-none-network"&gt;&lt;/span&gt;
+&lt;a href="#3-none-network" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The &lt;code&gt;none&lt;/code&gt; driver disables all networking for the container.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Configuration:&lt;/strong&gt; The container only receives a loopback interface (&lt;code&gt;127.0.0.1&lt;/code&gt; / &lt;code&gt;::1&lt;/code&gt;). No external interfaces, gateway, or routing table are created.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Best used for:&lt;/strong&gt; Completely air-gapped tasks, batch jobs running untrusted code, or containers generating local cryptographic keys where external connectivity poses a security risk.
+Bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;docker run -it --network none alpine ifconfig&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="4-overlay-network"&gt;4. Overlay Network&lt;span class="hx:absolute hx:-mt-20" id="4-overlay-network"&gt;&lt;/span&gt;
+&lt;a href="#4-overlay-network" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The overlay driver manages multi-host networking by encapsulating Layer 2 Ethernet frames inside Layer 4 UDP packets (VXLAN tunnels) across different Docker daemon hosts.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Scope:&lt;/strong&gt; Requires Docker Swarm mode or an external key-value store (like Consul/etcd) to sync routing tables across nodes.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DNS &amp;amp; Routing:&lt;/strong&gt; Provides automatic multi-host service discovery and ingress routing (routing mesh), distributing traffic across Swarm replicas automatically.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Best used for:&lt;/strong&gt; Multi-host orchestration, Swarm clusters, and distributed container systems without third-party network plugins.
+Bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;# Swarm must be initialized first: docker swarm init
+docker network create -d overlay --attachable my-overlay&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="5-macvlan-network"&gt;5. Macvlan Network&lt;span class="hx:absolute hx:-mt-20" id="5-macvlan-network"&gt;&lt;/span&gt;
+&lt;a href="#5-macvlan-network" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The macvlan driver assigns a distinct physical MAC address to each container, making them appear as physical devices directly attached to the host&amp;rsquo;s local network router.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Subnet Integration:&lt;/strong&gt; Containers obtain routable IP addresses directly from the local LAN’s DHCP server or a dedicated subnet.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Host Caveat:&lt;/strong&gt; By default, Linux kernel routing prevents communication directly between the Docker host and its own macvlan containers.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Best used for:&lt;/strong&gt; Legacy enterprise applications requiring direct Layer 2 connectivity, network monitoring tools, or setups where external network firewalls inspect container traffic by IP/MAC address.
+Bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;docker network create -d macvlan \
+--subnet=192.168.1.0/24 \
+--gateway=192.168.1.1 \
+-o parent=eth0 my-macvlan&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="6-ipvlan-network"&gt;6. Ipvlan Network&lt;span class="hx:absolute hx:-mt-20" id="6-ipvlan-network"&gt;&lt;/span&gt;
+&lt;a href="#6-ipvlan-network" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Similar to macvlan, the ipvlan driver provides direct Layer 2/Layer 3 network integration, but all containers share the parent interface’s physical MAC address while maintaining distinct IP addresses.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Modes:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;L2 Mode:&lt;/strong&gt; Operates like a switch; containers share the host MAC but have individual IPs. Requires standard ARP resolution.
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;L3 Mode:&lt;/strong&gt; Operates as a router; eliminates broadcast traffic, ARP, and Layer 2 switching. The Docker host routes traffic between subnets.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Best used for:&lt;/strong&gt; Networks with strict MAC address limits (e.g., public cloud hypervisors, switches with port security enabled) or high-density container deployments where ARP storms must be avoided.
+Bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;docker network create -d ipvlan \
+--subnet=192.168.20.0/24 \
+--gateway=192.168.20.1 \
+-o ipvlan_mode=l2 \
+-o parent=eth0 my-ipvlan&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="7-network-plugins-third-party--cni"&gt;7. Network Plugins (Third-Party / CNI)&lt;span class="hx:absolute hx:-mt-20" id="7-network-plugins-third-party--cni"&gt;&lt;/span&gt;
+&lt;a href="#7-network-plugins-third-party--cni" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Docker supports third-party networking extensions via the Container Network Interface (CNI) or custom Docker network plugins.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Examples:&lt;/strong&gt; Calico, Weave Net, Cilium, Flannel.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Features:&lt;/strong&gt; Advanced capabilities such as BGP routing, eBPF data planes, cross-cluster wireguard encryption, and fine-grained network policies/firewalls.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Best used for:&lt;/strong&gt; Production Kubernetes migrations, regulated environments needing micro-segmentation, and cloud-native service meshes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="driver-comparison"&gt;Driver Comparison&lt;span class="hx:absolute hx:-mt-20" id="driver-comparison"&gt;&lt;/span&gt;
+&lt;a href="#driver-comparison" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Driver&lt;/th&gt;
+&lt;th&gt;Host Scope&lt;/th&gt;
+&lt;th&gt;Multi-Host?&lt;/th&gt;
+&lt;th&gt;Performance&lt;/th&gt;
+&lt;th&gt;Automatic DNS?&lt;/th&gt;
+&lt;th&gt;Common Use Case&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Bridge&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Single&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;td&gt;Good (NAT overhead)&lt;/td&gt;
+&lt;td&gt;Yes (User-defined only)&lt;/td&gt;
+&lt;td&gt;Standard web stacks, local microservices&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Host&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Single&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;td&gt;Maximum (Native)&lt;/td&gt;
+&lt;td&gt;Host-dependent&lt;/td&gt;
+&lt;td&gt;High performance, raw port binding&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;None&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Single&lt;/td&gt;
+&lt;td&gt;No&lt;/td&gt;
+&lt;td&gt;N/A&lt;/td&gt;
+&lt;td&gt;None&lt;/td&gt;
+&lt;td&gt;Air-gapped batch jobs, security sandboxing&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Overlay&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Multi&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;td&gt;Moderate (VXLAN encapsulation)&lt;/td&gt;
+&lt;td&gt;Yes&lt;/td&gt;
+&lt;td&gt;Docker Swarm, multi-node setups&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Macvlan&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Single/LAN&lt;/td&gt;
+&lt;td&gt;Direct to LAN&lt;/td&gt;
+&lt;td&gt;High&lt;/td&gt;
+&lt;td&gt;Router-dependent&lt;/td&gt;
+&lt;td&gt;Legacy migrations, VLAN compliance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Ipvlan&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Single/LAN&lt;/td&gt;
+&lt;td&gt;Direct to LAN&lt;/td&gt;
+&lt;td&gt;High&lt;/td&gt;
+&lt;td&gt;Router-dependent&lt;/td&gt;
+&lt;td&gt;High-density networks, MAC-restricted switches&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</description></item><item><title>Kubernetes</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/k8s/</link><pubDate>Sun, 01 Nov 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/k8s/</guid><description>
+&lt;p&gt;Kubernetes (K8s) is a distributed control system designed around a single architectural axiom: &lt;strong&gt;declarative state management executed via continuous reconciliation loops.&lt;/strong&gt; Instead of executing imperative run commands, you declare a target topology, and an array of autonomous, decoupled controllers constantly work to converge the cluster&amp;rsquo;s actual state to that declared state.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="1-control-plane-architecture-the-state--decision-engine"&gt;1. Control Plane Architecture: The State &amp;amp; Decision Engine&lt;span class="hx:absolute hx:-mt-20" id="1-control-plane-architecture-the-state--decision-engine"&gt;&lt;/span&gt;
+&lt;a href="#1-control-plane-architecture-the-state--decision-engine" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The control plane coordinates cluster logic, enforces policies, and holds persistent state.&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;&amp;#43;-------------------------------------------------------&amp;#43;
+| Control Plane |
+| |
+kubectl ----&amp;gt; | [kube-apiserver] &amp;lt;-------&amp;gt; [etcd (Raft Quorum)] |
+| ^ |
+| |-- [kube-controller-manager] (Reconciliation)|
+| |-- [kube-scheduler] (Filter -&amp;gt; Score) |
+&amp;#43;---------|---------------------------------------------&amp;#43;
+| Watch API (HTTP/2 gRPC Streams)
+&amp;#43;------------------&amp;#43;------------------&amp;#43;
+| |
+v v
+&amp;#43;--------------------------&amp;#43; &amp;#43;--------------------------&amp;#43;
+| Worker Node 1 | | Worker Node 2 |
+| [kubelet] -&amp;gt; CRI runtime | | [kubelet] -&amp;gt; CRI runtime |
+| [kube-proxy] (iptables/ | | [kube-proxy] (iptables/ |
+| IPVS/eBPF) | | IPVS/eBPF) |
+| Pod (veth / netns) | | Pod (veth / netns) |
+&amp;#43;--------------------------&amp;#43; &amp;#43;--------------------------&amp;#43;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 data-hextra-search-id="etcd-the-canonical-source-of-truth"&gt;&lt;code&gt;etcd&lt;/code&gt;: The Canonical Source of Truth&lt;span class="hx:absolute hx:-mt-20" id="etcd-the-canonical-source-of-truth"&gt;&lt;/span&gt;
+&lt;a href="#etcd-the-canonical-source-of-truth" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Mechanism:&lt;/strong&gt; A consistent, distributed key-value store using the &lt;strong&gt;Raft consensus algorithm&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Storage Schema:&lt;/strong&gt; Keys are stored hierarchically (e.g., &lt;code&gt;/registry/pods/&amp;lt;namespace&amp;gt;/&amp;lt;pod-name&amp;gt;&lt;/code&gt;). It maintains a monotonically increasing 64-bit counter called a &lt;code&gt;ResourceVersion&lt;/code&gt; (backed by Raft commit indices and bbolt b-trees).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Isolation:&lt;/strong&gt; Only &lt;code&gt;kube-apiserver&lt;/code&gt; communicates directly with &lt;code&gt;etcd&lt;/code&gt;. No other component (kubelet, scheduler, etc.) ever reads or writes to &lt;code&gt;etcd&lt;/code&gt; directly.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="kube-apiserver-the-gateway--state-serializer"&gt;&lt;code&gt;kube-apiserver&lt;/code&gt;: The Gateway &amp;amp; State Serializer&lt;span class="hx:absolute hx:-mt-20" id="kube-apiserver-the-gateway--state-serializer"&gt;&lt;/span&gt;
+&lt;a href="#kube-apiserver-the-gateway--state-serializer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;The API server is stateless, scales horizontally behind a layer-4 load balancer, and exposes a RESTful JSON/Protobuf HTTP/2 API. When an incoming payload arrives, it runs through a strict linear pipeline:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Authentication:&lt;/strong&gt; Decodes bearer tokens, X.509 client certs, or OIDC claims to establish &lt;code&gt;User&lt;/code&gt;, &lt;code&gt;Groups&lt;/code&gt;, and &lt;code&gt;Extra&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Authorization:&lt;/strong&gt; Checks privileges via &lt;strong&gt;RBAC&lt;/strong&gt; (Role-Based Access Control), ABAC, or Webhook authorizers.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Mutating Admission Webhooks:&lt;/strong&gt; Invokes webhooks to modify payloads (e.g., injecting sidecars or default resource requests).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Schema Validation:&lt;/strong&gt; Verifies syntax, required fields, and structural specifications against the OpenAPI schema.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Validating Admission Webhooks:&lt;/strong&gt; Runs policy validation (e.g., OPA Gatekeeper, Kyverno) to reject non-compliant specs.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Persistence:&lt;/strong&gt; Commits to &lt;code&gt;etcd&lt;/code&gt; and assigns a new &lt;code&gt;ResourceVersion&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Watch Distribution:&lt;/strong&gt; Streams changes via long-lived HTTP/2 streams (&lt;code&gt;watch&lt;/code&gt;) to listeners using the &lt;code&gt;Reflector&lt;/code&gt; mechanism inside client-go.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 data-hextra-search-id="kube-controller-manager-the-reconciliation-engine"&gt;&lt;code&gt;kube-controller-manager&lt;/code&gt;: The Reconciliation Engine&lt;span class="hx:absolute hx:-mt-20" id="kube-controller-manager-the-reconciliation-engine"&gt;&lt;/span&gt;
+&lt;a href="#kube-controller-manager-the-reconciliation-engine" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Runs dozens of discrete control loops inside a single process. A controller implements the &lt;strong&gt;level-triggered reconciliation loop&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;INI8 Labs&lt;/p&gt;
+&lt;span class="katex-display"&gt;&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML" display="block"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mtext&gt;Reconcile&lt;/mtext&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;mo&gt;:&lt;/mo&gt;&lt;mspace width="1em"/&gt;&lt;mtext&gt;Actual State&lt;/mtext&gt;&lt;mover&gt;&lt;mo stretchy="true" minsize="3.0em"&gt;→&lt;/mo&gt;&lt;mpadded width="+0.6em" lspace="0.3em"&gt;&lt;mrow&gt;&lt;mspace width="1em"/&gt;&lt;mi mathvariant="normal"&gt;Δ&lt;/mi&gt;&lt;mspace width="1em"/&gt;&lt;/mrow&gt;&lt;/mpadded&gt;&lt;/mover&gt;&lt;mtext&gt;Desired State&lt;/mtext&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;
+\text{Reconcile}() : \quad \text{Actual State} \xrightarrow{\quad\Delta\quad} \text{Desired State}
+&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1em;vertical-align:-0.25em;"&gt;&lt;/span&gt;&lt;span class="mord text"&gt;&lt;span class="mord"&gt;Reconcile&lt;/span&gt;&lt;/span&gt;&lt;span class="mopen"&gt;(&lt;/span&gt;&lt;span class="mclose"&gt;)&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;:&lt;/span&gt;&lt;span class="mspace" style="margin-right:1em;"&gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1.1113em;vertical-align:-0.011em;"&gt;&lt;/span&gt;&lt;span class="mord text"&gt;&lt;span class="mord"&gt;Actual State&lt;/span&gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;span class="mrel x-arrow"&gt;&lt;span class="vlist-t vlist-t2"&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:1.1003em;"&gt;&lt;span style="top:-3.322em;"&gt;&lt;span class="pstrut" style="height:2.7em;"&gt;&lt;/span&gt;&lt;span class="katex-sizing reset-size6 size3 mtight x-arrow-pad"&gt;&lt;span class="mord mtight"&gt;&lt;span class="mspace mtight" style="margin-right:1.4286em;"&gt;&lt;/span&gt;&lt;span class="mord mtight"&gt;Δ&lt;/span&gt;&lt;span class="mspace mtight" style="margin-right:1.4286em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="svg-align" style="top:-2.689em;"&gt;&lt;span class="pstrut" style="height:2.7em;"&gt;&lt;/span&gt;&lt;span class="hide-tail" style="height:0.522em;min-width:1.469em;"&gt;&lt;svg xmlns="http://www.w3.org/2000/svg" width="400em" height="0.522em" viewBox="0 0 400000 522" preserveAspectRatio="xMaxYMin slice"&gt;&lt;path d="M0 241v40h399891c-47.3 35.3-84 78-110 128
+-16.7 32-27.7 63.7-33 95 0 1.3-.2 2.7-.5 4-.3 1.3-.5 2.3-.5 3 0 7.3 6.7 11 20
+11 8 0 13.2-.8 15.5-2.5 2.3-1.7 4.2-5.5 5.5-11.5 2-13.3 5.7-27 11-41 14.7-44.7
+39-84.5 73-119.5s73.7-60.2 119-75.5c6-2 9-5.7 9-11s-3-9-9-11c-45.3-15.3-85
+-40.5-119-75.5s-58.3-74.8-73-119.5c-4.7-14-8.3-27.3-11-40-1.3-6.7-3.2-10.8-5.5
+-12.5-2.3-1.7-7.5-2.5-15.5-2.5-14 0-21 3.7-21 11 0 2 2 10.3 6 25 20.7 83.3 67
+151.7 139 205zm0 0v40h399900v-40z"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-s"&gt;​&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.011em;"&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6944em;"&gt;&lt;/span&gt;&lt;span class="mord text"&gt;&lt;span class="mord"&gt;Desired State&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;p&gt;Using client-go &lt;strong&gt;Informer&lt;/strong&gt; and &lt;strong&gt;Lister&lt;/strong&gt; patterns, controllers cache state locally to avoid overloading &lt;code&gt;kube-apiserver&lt;/code&gt;. When an event occurs, an informer pushes the key into a &lt;code&gt;WorkQueue&lt;/code&gt;, and worker threads pop the key, calculate delta, and post patch requests back to the API server.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;DeploymentController&lt;/em&gt; reconciles &lt;code&gt;Deployment&lt;/code&gt; \rightarrow creates/updates &lt;code&gt;ReplicaSet&lt;/code&gt;.
+INI8 Labs&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;ReplicaSetController&lt;/em&gt; reconciles &lt;code&gt;ReplicaSet&lt;/code&gt; &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\rightarrow&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.3669em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; creates/updates raw &lt;code&gt;Pod&lt;/code&gt; manifests.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;NodeController&lt;/em&gt; tracks node heartbeats (&lt;code&gt;Leases&lt;/code&gt;) and evicts pods when nodes become &lt;code&gt;NotReady&lt;/code&gt;.
+INI8 Labs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="kube-scheduler-algorithmic-placement"&gt;&lt;code&gt;kube-scheduler&lt;/code&gt;: Algorithmic Placement&lt;span class="hx:absolute hx:-mt-20" id="kube-scheduler-algorithmic-placement"&gt;&lt;/span&gt;
+&lt;a href="#kube-scheduler-algorithmic-placement" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Monitors pods where &lt;code&gt;spec.nodeName == &amp;quot;&amp;quot;&lt;/code&gt;. Placement runs in a two-phase cycle:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Filtering (Predicates):&lt;/strong&gt; Prunes ineligible nodes (e.g., checks resource requests vs. node allocatable capacity, node selectors, taints/tolerations, port collisions, volume zone topology).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Scoring (Priorities):&lt;/strong&gt; Assigns a 0–100 score across remaining nodes based on weighted rules (e.g., image locality, inter-pod anti-affinity spreading, balanced resource allocation).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Binding:&lt;/strong&gt; Atomically updates the pod&amp;rsquo;s &lt;code&gt;spec.nodeName&lt;/code&gt; via a &lt;code&gt;/binding&lt;/code&gt; subresource call to &lt;code&gt;kube-apiserver&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 data-hextra-search-id="2-worker-node-architecture-the-execution-engine"&gt;2. Worker Node Architecture: The Execution Engine&lt;span class="hx:absolute hx:-mt-20" id="2-worker-node-architecture-the-execution-engine"&gt;&lt;/span&gt;
+&lt;a href="#2-worker-node-architecture-the-execution-engine" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Worker nodes run the scheduled containers and manage the low-level operating system primitives.&lt;/p&gt;
+&lt;p&gt;DEV Community&lt;/p&gt;
+&lt;h4 data-hextra-search-id="kubelet-node-daemon"&gt;&lt;code&gt;kubelet&lt;/code&gt;: Node Daemon&lt;span class="hx:absolute hx:-mt-20" id="kubelet-node-daemon"&gt;&lt;/span&gt;
+&lt;a href="#kubelet-node-daemon" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;A systemd service acting as the cluster&amp;rsquo;s node agent. It watches the API server for pods assigned to its node.&lt;/p&gt;
+&lt;p&gt;Medium&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;SyncLoop:&lt;/strong&gt; kubelet&amp;rsquo;s core event loop multiplexes changes from three channels: file updates, HTTP endpoints, and the API server watch stream.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PLEG (Pod Lifecycle Event Generator):&lt;/strong&gt; Periodically polls the container runtime and translates raw OS process states into unified Pod lifecycle events.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CAdvisor:&lt;/strong&gt; Gathers node- and container-level resource statistics (CPU, memory, network, disk) and exposes them to metrics endpoints.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="container-runtime-interface-cri"&gt;Container Runtime Interface (CRI)&lt;span class="hx:absolute hx:-mt-20" id="container-runtime-interface-cri"&gt;&lt;/span&gt;
+&lt;a href="#container-runtime-interface-cri" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;kubelet does not manage Linux namespaces or cgroups directly; it communicates over a local Unix domain socket using gRPC with a CRI-compliant runtime (like &lt;code&gt;containerd&lt;/code&gt; or &lt;code&gt;CRI-O&lt;/code&gt;). CRI breaks into two distinct services:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ImageService:&lt;/strong&gt; Pulls images, unpacks root filesystems, and manages storage layers.
+Medium&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RuntimeService:&lt;/strong&gt; Handles container and pod sandbox lifecycles.
+Medium&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Under the hood:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;containerd&lt;/code&gt; calls an OCI runtime (e.g., &lt;code&gt;runc&lt;/code&gt;, &lt;code&gt;crun&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;The runtime configures Linux kernel primitives:
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Namespaces:&lt;/strong&gt; &lt;code&gt;pid&lt;/code&gt;, &lt;code&gt;net&lt;/code&gt;, &lt;code&gt;ipc&lt;/code&gt;, &lt;code&gt;mnt&lt;/code&gt;, &lt;code&gt;uts&lt;/code&gt;, &lt;code&gt;user&lt;/code&gt; to isolate system resources.
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Cgroups (v2):&lt;/strong&gt; Restricts memory limits, CFS (Completely Fair Scheduler) CPU quotas, and I/O pressure.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Pivot_root / OverlayFS:&lt;/strong&gt; Mounts the container&amp;rsquo;s isolated root filesystem layers.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 data-hextra-search-id="pod-sandbox--the-pause-container"&gt;Pod Sandbox &amp;amp; The &lt;code&gt;pause&lt;/code&gt; Container&lt;span class="hx:absolute hx:-mt-20" id="pod-sandbox--the-pause-container"&gt;&lt;/span&gt;
+&lt;a href="#pod-sandbox--the-pause-container" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Every pod begins by launching an infrastructure container (the &lt;strong&gt;&lt;code&gt;pause&lt;/code&gt; container&lt;/strong&gt;). The &lt;code&gt;pause&lt;/code&gt; container makes a &lt;code&gt;clone()&lt;/code&gt; syscall with new network and IPC namespace flags, and then sleeps indefinitely via &lt;code&gt;pause()&lt;/code&gt;. All application containers in that pod join the &lt;code&gt;pause&lt;/code&gt; container&amp;rsquo;s network namespace via &lt;code&gt;setns()&lt;/code&gt;. This allows all containers within the pod to communicate over &lt;code&gt;localhost&lt;/code&gt; and share the same IP address.&lt;/p&gt;
+&lt;p&gt;VMware&lt;/p&gt;
+&lt;h3 data-hextra-search-id="3-networking-internals"&gt;3. Networking Internals&lt;span class="hx:absolute hx:-mt-20" id="3-networking-internals"&gt;&lt;/span&gt;
+&lt;a href="#3-networking-internals" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Kubernetes enforces three invariants:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Every pod gets its own unique, routable IP address.
+VMware&lt;/li&gt;
+&lt;li&gt;Pods can communicate with all other pods across nodes without NAT.&lt;/li&gt;
+&lt;li&gt;Agents on a host can communicate with all pods on that host.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 data-hextra-search-id="container-network-interface-cni"&gt;Container Network Interface (CNI)&lt;span class="hx:absolute hx:-mt-20" id="container-network-interface-cni"&gt;&lt;/span&gt;
+&lt;a href="#container-network-interface-cni" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;When a pod sandbox is created, kubelet delegates network creation to the CNI plugin (e.g., Cilium, Calico, Flannel).&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The CNI plugin creates a &lt;strong&gt;Virtual Ethernet pair (&lt;code&gt;veth&lt;/code&gt;)&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;It pushes one end into the pod&amp;rsquo;s network namespace (renamed to &lt;code&gt;eth0&lt;/code&gt;) and anchors the other end in the host root network namespace (e.g., &lt;code&gt;veth1234&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;It assigns an IP address to the pod&amp;rsquo;s &lt;code&gt;eth0&lt;/code&gt; via an IPAM (IP Address Management) plugin.
+VMware&lt;/li&gt;
+&lt;li&gt;It sets up cross-node routing using either &lt;strong&gt;Overlay networks&lt;/strong&gt; (VXLAN/Geneve tunneling encapsulation) or &lt;strong&gt;Direct Routing / BGP&lt;/strong&gt; (programming the host route tables or upstream top-of-rack switches).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 data-hextra-search-id="kube-proxy--service-abstraction"&gt;&lt;code&gt;kube-proxy&lt;/code&gt; &amp;amp; Service Abstraction&lt;span class="hx:absolute hx:-mt-20" id="kube-proxy--service-abstraction"&gt;&lt;/span&gt;
+&lt;a href="#kube-proxy--service-abstraction" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;A &lt;code&gt;Service&lt;/code&gt; is not a process; it is a static Virtual IP (ClusterIP) fronting dynamic Pod IPs. &lt;code&gt;kube-proxy&lt;/code&gt; watches Service and Endpoints/EndpointSlice objects, implementing traffic forwarding using one of three backends:&lt;/p&gt;
+&lt;p&gt;Medium - Medium&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Proxy Mode&lt;/th&gt;
+&lt;th&gt;Implementation Mechanism&lt;/th&gt;
+&lt;th&gt;Characteristics&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;iptables&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Generates chains inside Netfilter &lt;code&gt;nat&lt;/code&gt; tables using PREROUTING and OUTPUT hooks.&lt;/td&gt;
+&lt;td&gt;Random probability-based matching (&lt;code&gt;-m statistic --mode random&lt;/code&gt;). &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mi&gt;O&lt;/mi&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;O(n)&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1em;vertical-align:-0.25em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0278em;"&gt;O&lt;/span&gt;&lt;span class="mopen"&gt;(&lt;/span&gt;&lt;span class="mord mathnormal"&gt;n&lt;/span&gt;&lt;span class="mclose"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; sequential chain evaluation causes latency spikes at thousands of services.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;IPVS&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Kernel-space transport-layer load balancer utilizing hash tables inside Netfilter hooks.&lt;/td&gt;
+&lt;td&gt;&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mi&gt;O&lt;/mi&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;O(1)&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1em;vertical-align:-0.25em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0278em;"&gt;O&lt;/span&gt;&lt;span class="mopen"&gt;(&lt;/span&gt;&lt;span class="mord"&gt;1&lt;/span&gt;&lt;span class="mclose"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; lookup performance, supports round-robin, least-connection, and session-affinity balancing algorithms.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;eBPF (Cilium)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Replaces kube-proxy entirely by attaching BPF programs to &lt;code&gt;tc&lt;/code&gt; (Traffic Control) or socket layers (&lt;code&gt;sock_ops&lt;/code&gt;).&lt;/td&gt;
+&lt;td&gt;Bypasses core Netfilter connection tracking (&lt;code&gt;conntrack&lt;/code&gt;), translating service VIPs to pod endpoints directly at the socket level.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 data-hextra-search-id="4-end-to-end-walkthrough-kubectl-apply--f-deploymentyaml"&gt;4. End-to-End Walkthrough: &lt;code&gt;kubectl apply -f deployment.yaml&lt;/code&gt;&lt;span class="hx:absolute hx:-mt-20" id="4-end-to-end-walkthrough-kubectl-apply--f-deploymentyaml"&gt;&lt;/span&gt;
+&lt;a href="#4-end-to-end-walkthrough-kubectl-apply--f-deploymentyaml" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;To see how all components coordinate in real time, trace the lifecycle of a Deployment:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Submission:&lt;/strong&gt; &lt;code&gt;kubectl&lt;/code&gt; sends an HTTP POST with the Deployment manifest to &lt;code&gt;kube-apiserver&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Admission &amp;amp; Persistence:&lt;/strong&gt; &lt;code&gt;kube-apiserver&lt;/code&gt; authenticates the token, checks RBAC permissions, runs mutating webhooks, validates the spec, writes the object to &lt;code&gt;etcd&lt;/code&gt;, and acknowledges the client.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Deployment Controller:&lt;/strong&gt; The &lt;code&gt;DeploymentController&lt;/code&gt; detects the new resource via its watch cache and creates a corresponding &lt;code&gt;ReplicaSet&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ReplicaSet Controller:&lt;/strong&gt; The &lt;code&gt;ReplicaSetController&lt;/code&gt; notices the missing replicas and writes new &lt;code&gt;Pod&lt;/code&gt; specs with empty &lt;code&gt;spec.nodeName&lt;/code&gt; fields.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Scheduling:&lt;/strong&gt; &lt;code&gt;kube-scheduler&lt;/code&gt; filters out invalid nodes, scores remaining candidates, and executes a binding call setting &lt;code&gt;spec.nodeName = &amp;quot;node-1&amp;quot;&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Execution (Kubelet):&lt;/strong&gt; The &lt;code&gt;kubelet&lt;/code&gt; on &lt;code&gt;node-1&lt;/code&gt; picks up the binding event via its watch stream:
+&lt;ul&gt;
+&lt;li&gt;Calls the container runtime via CRI to spawn the &lt;code&gt;pause&lt;/code&gt; container.
+&lt;ul&gt;
+&lt;li&gt;Invokes the CNI plugin to configure interfaces, routing, and IP assignments.&lt;/li&gt;
+&lt;li&gt;Pulls application container images, sets cgroups and namespace restrictions, and starts the workload.&lt;/li&gt;
+&lt;li&gt;Reports container status back to the API server.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Service Ingress:&lt;/strong&gt; If a Service exposes the Deployment, &lt;code&gt;kube-proxy&lt;/code&gt; on every node detects the pod&amp;rsquo;s new IP and updates the local routing tables (iptables/IPVS/eBPF maps).&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>Kubernetes objects</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/k8s-objects/</link><pubDate>Sun, 01 Nov 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/k8s-objects/</guid><description>
+&lt;p&gt;Kubernetes (K8s) is a distributed control system designed around a single architectural axiom: &lt;strong&gt;declarative state management executed via continuous reconciliation loops.&lt;/strong&gt; Instead of executing imperative run commands, you declare a target topology, and an array of autonomous, decoupled controllers constantly work to converge the cluster&amp;rsquo;s actual state to that declared state.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="1-control-plane-architecture-the-state--decision-engine"&gt;1. Control Plane Architecture: The State &amp;amp; Decision Engine&lt;span class="hx:absolute hx:-mt-20" id="1-control-plane-architecture-the-state--decision-engine"&gt;&lt;/span&gt;
+&lt;a href="#1-control-plane-architecture-the-state--decision-engine" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;The control plane coordinates cluster logic, enforces policies, and holds persistent state.&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;&amp;#43;-------------------------------------------------------&amp;#43;
+| Control Plane |
+| |
+kubectl ----&amp;gt; | [kube-apiserver] &amp;lt;-------&amp;gt; [etcd (Raft Quorum)] |
+| ^ |
+| |-- [kube-controller-manager] (Reconciliation)|
+| |-- [kube-scheduler] (Filter -&amp;gt; Score) |
+&amp;#43;---------|---------------------------------------------&amp;#43;
+| Watch API (HTTP/2 gRPC Streams)
+&amp;#43;------------------&amp;#43;------------------&amp;#43;
+| |
+v v
+&amp;#43;--------------------------&amp;#43; &amp;#43;--------------------------&amp;#43;
+| Worker Node 1 | | Worker Node 2 |
+| [kubelet] -&amp;gt; CRI runtime | | [kubelet] -&amp;gt; CRI runtime |
+| [kube-proxy] (iptables/ | | [kube-proxy] (iptables/ |
+| IPVS/eBPF) | | IPVS/eBPF) |
+| Pod (veth / netns) | | Pod (veth / netns) |
+&amp;#43;--------------------------&amp;#43; &amp;#43;--------------------------&amp;#43;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 data-hextra-search-id="etcd-the-canonical-source-of-truth"&gt;&lt;code&gt;etcd&lt;/code&gt;: The Canonical Source of Truth&lt;span class="hx:absolute hx:-mt-20" id="etcd-the-canonical-source-of-truth"&gt;&lt;/span&gt;
+&lt;a href="#etcd-the-canonical-source-of-truth" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Mechanism:&lt;/strong&gt; A consistent, distributed key-value store using the &lt;strong&gt;Raft consensus algorithm&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Storage Schema:&lt;/strong&gt; Keys are stored hierarchically (e.g., &lt;code&gt;/registry/pods/&amp;lt;namespace&amp;gt;/&amp;lt;pod-name&amp;gt;&lt;/code&gt;). It maintains a monotonically increasing 64-bit counter called a &lt;code&gt;ResourceVersion&lt;/code&gt; (backed by Raft commit indices and bbolt b-trees).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Isolation:&lt;/strong&gt; Only &lt;code&gt;kube-apiserver&lt;/code&gt; communicates directly with &lt;code&gt;etcd&lt;/code&gt;. No other component (kubelet, scheduler, etc.) ever reads or writes to &lt;code&gt;etcd&lt;/code&gt; directly.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="kube-apiserver-the-gateway--state-serializer"&gt;&lt;code&gt;kube-apiserver&lt;/code&gt;: The Gateway &amp;amp; State Serializer&lt;span class="hx:absolute hx:-mt-20" id="kube-apiserver-the-gateway--state-serializer"&gt;&lt;/span&gt;
+&lt;a href="#kube-apiserver-the-gateway--state-serializer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;The API server is stateless, scales horizontally behind a layer-4 load balancer, and exposes a RESTful JSON/Protobuf HTTP/2 API. When an incoming payload arrives, it runs through a strict linear pipeline:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Authentication:&lt;/strong&gt; Decodes bearer tokens, X.509 client certs, or OIDC claims to establish &lt;code&gt;User&lt;/code&gt;, &lt;code&gt;Groups&lt;/code&gt;, and &lt;code&gt;Extra&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Authorization:&lt;/strong&gt; Checks privileges via &lt;strong&gt;RBAC&lt;/strong&gt; (Role-Based Access Control), ABAC, or Webhook authorizers.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Mutating Admission Webhooks:&lt;/strong&gt; Invokes webhooks to modify payloads (e.g., injecting sidecars or default resource requests).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Schema Validation:&lt;/strong&gt; Verifies syntax, required fields, and structural specifications against the OpenAPI schema.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Validating Admission Webhooks:&lt;/strong&gt; Runs policy validation (e.g., OPA Gatekeeper, Kyverno) to reject non-compliant specs.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Persistence:&lt;/strong&gt; Commits to &lt;code&gt;etcd&lt;/code&gt; and assigns a new &lt;code&gt;ResourceVersion&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Watch Distribution:&lt;/strong&gt; Streams changes via long-lived HTTP/2 streams (&lt;code&gt;watch&lt;/code&gt;) to listeners using the &lt;code&gt;Reflector&lt;/code&gt; mechanism inside client-go.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 data-hextra-search-id="kube-controller-manager-the-reconciliation-engine"&gt;&lt;code&gt;kube-controller-manager&lt;/code&gt;: The Reconciliation Engine&lt;span class="hx:absolute hx:-mt-20" id="kube-controller-manager-the-reconciliation-engine"&gt;&lt;/span&gt;
+&lt;a href="#kube-controller-manager-the-reconciliation-engine" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Runs dozens of discrete control loops inside a single process. A controller implements the &lt;strong&gt;level-triggered reconciliation loop&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;INI8 Labs&lt;/p&gt;
+&lt;span class="katex-display"&gt;&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML" display="block"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mtext&gt;Reconcile&lt;/mtext&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;mo&gt;:&lt;/mo&gt;&lt;mspace width="1em"/&gt;&lt;mtext&gt;Actual State&lt;/mtext&gt;&lt;mover&gt;&lt;mo stretchy="true" minsize="3.0em"&gt;→&lt;/mo&gt;&lt;mpadded width="+0.6em" lspace="0.3em"&gt;&lt;mrow&gt;&lt;mspace width="1em"/&gt;&lt;mi mathvariant="normal"&gt;Δ&lt;/mi&gt;&lt;mspace width="1em"/&gt;&lt;/mrow&gt;&lt;/mpadded&gt;&lt;/mover&gt;&lt;mtext&gt;Desired State&lt;/mtext&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;
+\text{Reconcile}() : \quad \text{Actual State} \xrightarrow{\quad\Delta\quad} \text{Desired State}
+&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1em;vertical-align:-0.25em;"&gt;&lt;/span&gt;&lt;span class="mord text"&gt;&lt;span class="mord"&gt;Reconcile&lt;/span&gt;&lt;/span&gt;&lt;span class="mopen"&gt;(&lt;/span&gt;&lt;span class="mclose"&gt;)&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;:&lt;/span&gt;&lt;span class="mspace" style="margin-right:1em;"&gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1.1113em;vertical-align:-0.011em;"&gt;&lt;/span&gt;&lt;span class="mord text"&gt;&lt;span class="mord"&gt;Actual State&lt;/span&gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;span class="mrel x-arrow"&gt;&lt;span class="vlist-t vlist-t2"&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:1.1003em;"&gt;&lt;span style="top:-3.322em;"&gt;&lt;span class="pstrut" style="height:2.7em;"&gt;&lt;/span&gt;&lt;span class="katex-sizing reset-size6 size3 mtight x-arrow-pad"&gt;&lt;span class="mord mtight"&gt;&lt;span class="mspace mtight" style="margin-right:1.4286em;"&gt;&lt;/span&gt;&lt;span class="mord mtight"&gt;Δ&lt;/span&gt;&lt;span class="mspace mtight" style="margin-right:1.4286em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="svg-align" style="top:-2.689em;"&gt;&lt;span class="pstrut" style="height:2.7em;"&gt;&lt;/span&gt;&lt;span class="hide-tail" style="height:0.522em;min-width:1.469em;"&gt;&lt;svg xmlns="http://www.w3.org/2000/svg" width="400em" height="0.522em" viewBox="0 0 400000 522" preserveAspectRatio="xMaxYMin slice"&gt;&lt;path d="M0 241v40h399891c-47.3 35.3-84 78-110 128
+-16.7 32-27.7 63.7-33 95 0 1.3-.2 2.7-.5 4-.3 1.3-.5 2.3-.5 3 0 7.3 6.7 11 20
+11 8 0 13.2-.8 15.5-2.5 2.3-1.7 4.2-5.5 5.5-11.5 2-13.3 5.7-27 11-41 14.7-44.7
+39-84.5 73-119.5s73.7-60.2 119-75.5c6-2 9-5.7 9-11s-3-9-9-11c-45.3-15.3-85
+-40.5-119-75.5s-58.3-74.8-73-119.5c-4.7-14-8.3-27.3-11-40-1.3-6.7-3.2-10.8-5.5
+-12.5-2.3-1.7-7.5-2.5-15.5-2.5-14 0-21 3.7-21 11 0 2 2 10.3 6 25 20.7 83.3 67
+151.7 139 205zm0 0v40h399900v-40z"/&gt;&lt;/svg&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-s"&gt;​&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.011em;"&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6944em;"&gt;&lt;/span&gt;&lt;span class="mord text"&gt;&lt;span class="mord"&gt;Desired State&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;p&gt;Using client-go &lt;strong&gt;Informer&lt;/strong&gt; and &lt;strong&gt;Lister&lt;/strong&gt; patterns, controllers cache state locally to avoid overloading &lt;code&gt;kube-apiserver&lt;/code&gt;. When an event occurs, an informer pushes the key into a &lt;code&gt;WorkQueue&lt;/code&gt;, and worker threads pop the key, calculate delta, and post patch requests back to the API server.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;DeploymentController&lt;/em&gt; reconciles &lt;code&gt;Deployment&lt;/code&gt; \rightarrow creates/updates &lt;code&gt;ReplicaSet&lt;/code&gt;.
+INI8 Labs&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;ReplicaSetController&lt;/em&gt; reconciles &lt;code&gt;ReplicaSet&lt;/code&gt; &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\rightarrow&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.3669em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; creates/updates raw &lt;code&gt;Pod&lt;/code&gt; manifests.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;NodeController&lt;/em&gt; tracks node heartbeats (&lt;code&gt;Leases&lt;/code&gt;) and evicts pods when nodes become &lt;code&gt;NotReady&lt;/code&gt;.
+INI8 Labs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="kube-scheduler-algorithmic-placement"&gt;&lt;code&gt;kube-scheduler&lt;/code&gt;: Algorithmic Placement&lt;span class="hx:absolute hx:-mt-20" id="kube-scheduler-algorithmic-placement"&gt;&lt;/span&gt;
+&lt;a href="#kube-scheduler-algorithmic-placement" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Monitors pods where &lt;code&gt;spec.nodeName == &amp;quot;&amp;quot;&lt;/code&gt;. Placement runs in a two-phase cycle:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Filtering (Predicates):&lt;/strong&gt; Prunes ineligible nodes (e.g., checks resource requests vs. node allocatable capacity, node selectors, taints/tolerations, port collisions, volume zone topology).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Scoring (Priorities):&lt;/strong&gt; Assigns a 0–100 score across remaining nodes based on weighted rules (e.g., image locality, inter-pod anti-affinity spreading, balanced resource allocation).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Binding:&lt;/strong&gt; Atomically updates the pod&amp;rsquo;s &lt;code&gt;spec.nodeName&lt;/code&gt; via a &lt;code&gt;/binding&lt;/code&gt; subresource call to &lt;code&gt;kube-apiserver&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 data-hextra-search-id="2-worker-node-architecture-the-execution-engine"&gt;2. Worker Node Architecture: The Execution Engine&lt;span class="hx:absolute hx:-mt-20" id="2-worker-node-architecture-the-execution-engine"&gt;&lt;/span&gt;
+&lt;a href="#2-worker-node-architecture-the-execution-engine" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Worker nodes run the scheduled containers and manage the low-level operating system primitives.&lt;/p&gt;
+&lt;p&gt;DEV Community&lt;/p&gt;
+&lt;h4 data-hextra-search-id="kubelet-node-daemon"&gt;&lt;code&gt;kubelet&lt;/code&gt;: Node Daemon&lt;span class="hx:absolute hx:-mt-20" id="kubelet-node-daemon"&gt;&lt;/span&gt;
+&lt;a href="#kubelet-node-daemon" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;A systemd service acting as the cluster&amp;rsquo;s node agent. It watches the API server for pods assigned to its node.&lt;/p&gt;
+&lt;p&gt;Medium&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;SyncLoop:&lt;/strong&gt; kubelet&amp;rsquo;s core event loop multiplexes changes from three channels: file updates, HTTP endpoints, and the API server watch stream.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PLEG (Pod Lifecycle Event Generator):&lt;/strong&gt; Periodically polls the container runtime and translates raw OS process states into unified Pod lifecycle events.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CAdvisor:&lt;/strong&gt; Gathers node- and container-level resource statistics (CPU, memory, network, disk) and exposes them to metrics endpoints.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="container-runtime-interface-cri"&gt;Container Runtime Interface (CRI)&lt;span class="hx:absolute hx:-mt-20" id="container-runtime-interface-cri"&gt;&lt;/span&gt;
+&lt;a href="#container-runtime-interface-cri" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;kubelet does not manage Linux namespaces or cgroups directly; it communicates over a local Unix domain socket using gRPC with a CRI-compliant runtime (like &lt;code&gt;containerd&lt;/code&gt; or &lt;code&gt;CRI-O&lt;/code&gt;). CRI breaks into two distinct services:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ImageService:&lt;/strong&gt; Pulls images, unpacks root filesystems, and manages storage layers.
+Medium&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RuntimeService:&lt;/strong&gt; Handles container and pod sandbox lifecycles.
+Medium&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Under the hood:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;containerd&lt;/code&gt; calls an OCI runtime (e.g., &lt;code&gt;runc&lt;/code&gt;, &lt;code&gt;crun&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;The runtime configures Linux kernel primitives:
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Namespaces:&lt;/strong&gt; &lt;code&gt;pid&lt;/code&gt;, &lt;code&gt;net&lt;/code&gt;, &lt;code&gt;ipc&lt;/code&gt;, &lt;code&gt;mnt&lt;/code&gt;, &lt;code&gt;uts&lt;/code&gt;, &lt;code&gt;user&lt;/code&gt; to isolate system resources.
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Cgroups (v2):&lt;/strong&gt; Restricts memory limits, CFS (Completely Fair Scheduler) CPU quotas, and I/O pressure.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Pivot_root / OverlayFS:&lt;/strong&gt; Mounts the container&amp;rsquo;s isolated root filesystem layers.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 data-hextra-search-id="pod-sandbox--the-pause-container"&gt;Pod Sandbox &amp;amp; The &lt;code&gt;pause&lt;/code&gt; Container&lt;span class="hx:absolute hx:-mt-20" id="pod-sandbox--the-pause-container"&gt;&lt;/span&gt;
+&lt;a href="#pod-sandbox--the-pause-container" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Every pod begins by launching an infrastructure container (the &lt;strong&gt;&lt;code&gt;pause&lt;/code&gt; container&lt;/strong&gt;). The &lt;code&gt;pause&lt;/code&gt; container makes a &lt;code&gt;clone()&lt;/code&gt; syscall with new network and IPC namespace flags, and then sleeps indefinitely via &lt;code&gt;pause()&lt;/code&gt;. All application containers in that pod join the &lt;code&gt;pause&lt;/code&gt; container&amp;rsquo;s network namespace via &lt;code&gt;setns()&lt;/code&gt;. This allows all containers within the pod to communicate over &lt;code&gt;localhost&lt;/code&gt; and share the same IP address.&lt;/p&gt;
+&lt;p&gt;VMware&lt;/p&gt;
+&lt;h3 data-hextra-search-id="3-networking-internals"&gt;3. Networking Internals&lt;span class="hx:absolute hx:-mt-20" id="3-networking-internals"&gt;&lt;/span&gt;
+&lt;a href="#3-networking-internals" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Kubernetes enforces three invariants:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Every pod gets its own unique, routable IP address.
+VMware&lt;/li&gt;
+&lt;li&gt;Pods can communicate with all other pods across nodes without NAT.&lt;/li&gt;
+&lt;li&gt;Agents on a host can communicate with all pods on that host.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 data-hextra-search-id="container-network-interface-cni"&gt;Container Network Interface (CNI)&lt;span class="hx:absolute hx:-mt-20" id="container-network-interface-cni"&gt;&lt;/span&gt;
+&lt;a href="#container-network-interface-cni" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;When a pod sandbox is created, kubelet delegates network creation to the CNI plugin (e.g., Cilium, Calico, Flannel).&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The CNI plugin creates a &lt;strong&gt;Virtual Ethernet pair (&lt;code&gt;veth&lt;/code&gt;)&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;It pushes one end into the pod&amp;rsquo;s network namespace (renamed to &lt;code&gt;eth0&lt;/code&gt;) and anchors the other end in the host root network namespace (e.g., &lt;code&gt;veth1234&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;It assigns an IP address to the pod&amp;rsquo;s &lt;code&gt;eth0&lt;/code&gt; via an IPAM (IP Address Management) plugin.
+VMware&lt;/li&gt;
+&lt;li&gt;It sets up cross-node routing using either &lt;strong&gt;Overlay networks&lt;/strong&gt; (VXLAN/Geneve tunneling encapsulation) or &lt;strong&gt;Direct Routing / BGP&lt;/strong&gt; (programming the host route tables or upstream top-of-rack switches).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 data-hextra-search-id="kube-proxy--service-abstraction"&gt;&lt;code&gt;kube-proxy&lt;/code&gt; &amp;amp; Service Abstraction&lt;span class="hx:absolute hx:-mt-20" id="kube-proxy--service-abstraction"&gt;&lt;/span&gt;
+&lt;a href="#kube-proxy--service-abstraction" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;A &lt;code&gt;Service&lt;/code&gt; is not a process; it is a static Virtual IP (ClusterIP) fronting dynamic Pod IPs. &lt;code&gt;kube-proxy&lt;/code&gt; watches Service and Endpoints/EndpointSlice objects, implementing traffic forwarding using one of three backends:&lt;/p&gt;
+&lt;p&gt;Medium - Medium&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Proxy Mode&lt;/th&gt;
+&lt;th&gt;Implementation Mechanism&lt;/th&gt;
+&lt;th&gt;Characteristics&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;iptables&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Generates chains inside Netfilter &lt;code&gt;nat&lt;/code&gt; tables using PREROUTING and OUTPUT hooks.&lt;/td&gt;
+&lt;td&gt;Random probability-based matching (&lt;code&gt;-m statistic --mode random&lt;/code&gt;). &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mi&gt;O&lt;/mi&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;mi&gt;n&lt;/mi&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;O(n)&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1em;vertical-align:-0.25em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0278em;"&gt;O&lt;/span&gt;&lt;span class="mopen"&gt;(&lt;/span&gt;&lt;span class="mord mathnormal"&gt;n&lt;/span&gt;&lt;span class="mclose"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; sequential chain evaluation causes latency spikes at thousands of services.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;IPVS&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Kernel-space transport-layer load balancer utilizing hash tables inside Netfilter hooks.&lt;/td&gt;
+&lt;td&gt;&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mi&gt;O&lt;/mi&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;O(1)&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1em;vertical-align:-0.25em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0278em;"&gt;O&lt;/span&gt;&lt;span class="mopen"&gt;(&lt;/span&gt;&lt;span class="mord"&gt;1&lt;/span&gt;&lt;span class="mclose"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; lookup performance, supports round-robin, least-connection, and session-affinity balancing algorithms.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;eBPF (Cilium)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Replaces kube-proxy entirely by attaching BPF programs to &lt;code&gt;tc&lt;/code&gt; (Traffic Control) or socket layers (&lt;code&gt;sock_ops&lt;/code&gt;).&lt;/td&gt;
+&lt;td&gt;Bypasses core Netfilter connection tracking (&lt;code&gt;conntrack&lt;/code&gt;), translating service VIPs to pod endpoints directly at the socket level.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 data-hextra-search-id="4-end-to-end-walkthrough-kubectl-apply--f-deploymentyaml"&gt;4. End-to-End Walkthrough: &lt;code&gt;kubectl apply -f deployment.yaml&lt;/code&gt;&lt;span class="hx:absolute hx:-mt-20" id="4-end-to-end-walkthrough-kubectl-apply--f-deploymentyaml"&gt;&lt;/span&gt;
+&lt;a href="#4-end-to-end-walkthrough-kubectl-apply--f-deploymentyaml" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;To see how all components coordinate in real time, trace the lifecycle of a Deployment:&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;&amp;#43;---------&amp;#43; &amp;#43;----------------&amp;#43; &amp;#43;------&amp;#43; &amp;#43;--------------------------&amp;#43; &amp;#43;----------------&amp;#43; &amp;#43;---------&amp;#43;
+| kubectl | | kube-apiserver | | etcd | | kube-controller-manager | | kube-scheduler | | kubelet |
+&amp;#43;---------&amp;#43; &amp;#43;----------------&amp;#43; &amp;#43;------&amp;#43; &amp;#43;--------------------------&amp;#43; &amp;#43;----------------&amp;#43; &amp;#43;---------&amp;#43;
+| | | | | |
+|--- POST /deploy ----&amp;gt;| | | | |
+| (AuthN/AuthZ/Webhooks) | | | |
+| |--- Write /depl ----&amp;gt;| | | |
+| |&amp;lt;-- Commit ACK ------| | | |
+| | | | |
+| |=== Watch (Deployment Created) =================&amp;gt;| | |
+| | |-- Reconcile: creates RS | |
+| |&amp;lt;-- POST /replicasets ---------------------------| | |
+| |=== Watch (ReplicaSet Created) ================&amp;gt;| | |
+| | |-- Reconcile: creates Pods | |
+| |&amp;lt;-- POST /pods (spec.nodeName=&amp;#34;&amp;#34;) ---------------| | |
+| | | |
+| |=== Watch (Unscheduled Pods) =================================================&amp;gt;| |
+| | |-- Filter -&amp;gt; Score |
+| |&amp;lt;-- POST /pods/binding (node=&amp;#34;node-1&amp;#34;) ----------------------------------------| |
+| | |
+| |=== Watch (Pod scheduled on node-1) ===================================================================&amp;gt;|
+| | |-- Calls CRI (sandbox, pause)
+| | |-- Calls CNI (veth, IP)
+| | |-- Pulls image &amp;amp; starts container
+| |&amp;lt;-- PATCH /pods/status (Phase=&amp;#34;Running&amp;#34;) ----------------------------------------------------------------|
+v v v&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Submission:&lt;/strong&gt; &lt;code&gt;kubectl&lt;/code&gt; sends an HTTP POST with the Deployment manifest to &lt;code&gt;kube-apiserver&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Admission &amp;amp; Persistence:&lt;/strong&gt; &lt;code&gt;kube-apiserver&lt;/code&gt; authenticates the token, checks RBAC permissions, runs mutating webhooks, validates the spec, writes the object to &lt;code&gt;etcd&lt;/code&gt;, and acknowledges the client.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Deployment Controller:&lt;/strong&gt; The &lt;code&gt;DeploymentController&lt;/code&gt; detects the new resource via its watch cache and creates a corresponding &lt;code&gt;ReplicaSet&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ReplicaSet Controller:&lt;/strong&gt; The &lt;code&gt;ReplicaSetController&lt;/code&gt; notices the missing replicas and writes new &lt;code&gt;Pod&lt;/code&gt; specs with empty &lt;code&gt;spec.nodeName&lt;/code&gt; fields.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Scheduling:&lt;/strong&gt; &lt;code&gt;kube-scheduler&lt;/code&gt; filters out invalid nodes, scores remaining candidates, and executes a binding call setting &lt;code&gt;spec.nodeName = &amp;quot;node-1&amp;quot;&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Execution (Kubelet):&lt;/strong&gt; The &lt;code&gt;kubelet&lt;/code&gt; on &lt;code&gt;node-1&lt;/code&gt; picks up the binding event via its watch stream:
+&lt;ul&gt;
+&lt;li&gt;Calls the container runtime via CRI to spawn the &lt;code&gt;pause&lt;/code&gt; container.
+&lt;ul&gt;
+&lt;li&gt;Invokes the CNI plugin to configure interfaces, routing, and IP assignments.&lt;/li&gt;
+&lt;li&gt;Pulls application container images, sets cgroups and namespace restrictions, and starts the workload.&lt;/li&gt;
+&lt;li&gt;Reports container status back to the API server.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Service Ingress:&lt;/strong&gt; If a Service exposes the Deployment, &lt;code&gt;kube-proxy&lt;/code&gt; on every node detects the pod&amp;rsquo;s new IP and updates the local routing tables (iptables/IPVS/eBPF maps).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Want to dive deep into how eBPF bypasses iptables in modern Kubernetes networking?&lt;/p&gt;
+&lt;p&gt;Yes&lt;/p&gt;
+&lt;h5 data-hextra-search-id="you-said-now-list-and-explain-all-kubernetes-objects"&gt;You said now list and explain all kubernetes objects&lt;span class="hx:absolute hx:-mt-20" id="you-said-now-list-and-explain-all-kubernetes-objects"&gt;&lt;/span&gt;
+&lt;a href="#you-said-now-list-and-explain-all-kubernetes-objects" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h5&gt;&lt;p&gt;now list and explain all kubernetes objects&lt;/p&gt;
+&lt;h6 data-hextra-search-id="gemini-said"&gt;Gemini said&lt;span class="hx:absolute hx:-mt-20" id="gemini-said"&gt;&lt;/span&gt;
+&lt;a href="#gemini-said" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h6&gt;&lt;p&gt;In Kubernetes, an &lt;strong&gt;Object&lt;/strong&gt; is a persistent entity in &lt;code&gt;etcd&lt;/code&gt; that represents the intent of the cluster (its desired state) alongside its current status. Objects belong to specific API Groups and are split by scope: &lt;strong&gt;Namespaced&lt;/strong&gt; (isolated to an environment) or &lt;strong&gt;Cluster-scoped&lt;/strong&gt; (global infrastructure).&lt;/p&gt;
+&lt;h3 data-hextra-search-id="1-workload-objects-compute--lifecycles"&gt;1. Workload Objects (Compute &amp;amp; Lifecycles)&lt;span class="hx:absolute hx:-mt-20" id="1-workload-objects-compute--lifecycles"&gt;&lt;/span&gt;
+&lt;a href="#1-workload-objects-compute--lifecycles" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;These objects dictate how, where, and for how long your containerized workloads execute.&lt;/p&gt;
+&lt;p&gt;Kubernetes&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Pod:&lt;/strong&gt; The atomic deployable unit in Kubernetes. A wrapper around one or more tightly coupled containers that share IPC, Linux namespaces, and an IP address via a shared network namespace.
+Kubernetes&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ReplicaSet:&lt;/strong&gt; Ensures a specified number of identical Pod replicas remain running at all times. Uses set-based label selectors to acquire or evict running Pods.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Deployment:&lt;/strong&gt; A declarative supervisor over ReplicaSets. Manages rolling updates, rollbacks, and zero-downtime version transitions for stateless workloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;StatefulSet:&lt;/strong&gt; Manages stateful applications (e.g., databases, distributed stores). Provides stable, persistent network identifiers (e.g., &lt;code&gt;db-0&lt;/code&gt;, &lt;code&gt;db-1&lt;/code&gt;), ordered deployment/termination, and automated provisioning of dedicated storage volumes per replica.
+Kubernetes+ 1&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DaemonSet:&lt;/strong&gt; Guarantees that a copy of a specific Pod runs on all (or targeted) nodes. Commonly used for host log collectors, metrics scrapers, and storage or CNI network daemons.
+Kubernetes&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Job:&lt;/strong&gt; Supervises batch processes designed to run to completion rather than stay up continuously. Retries failing pods until a specified number of successful completions is reached.
+Kubernetes&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CronJob:&lt;/strong&gt; A time-based scheduler (cron syntax) that instantiates &lt;code&gt;Job&lt;/code&gt; objects at designated intervals or deadlines.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="2-discovery-routing--networking-objects"&gt;2. Discovery, Routing &amp;amp; Networking Objects&lt;span class="hx:absolute hx:-mt-20" id="2-discovery-routing--networking-objects"&gt;&lt;/span&gt;
+&lt;a href="#2-discovery-routing--networking-objects" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;These resources stitch dynamic, ephemeral pod IPs together into static network endpoints and handle inbound ingress.&lt;/p&gt;
+&lt;p&gt;Kubernetes&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Service:&lt;/strong&gt; An abstraction defining a logical set of Pods and a consistent policy to access them.
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;ClusterIP:&lt;/em&gt; Virtual IP accessible only internally inside the cluster.
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;NodePort:&lt;/em&gt; Exposes the Service on a static port across every node&amp;rsquo;s external IP.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;LoadBalancer:&lt;/em&gt; Provisions an external cloud-provider load balancer routing to the NodePort/Pods.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Headless (&lt;code&gt;clusterIP: None&lt;/code&gt;):&lt;/em&gt; Returns direct Pod IPs via DNS A/AAAA records for direct peer discovery.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Endpoints / EndpointSlice:&lt;/strong&gt; The dynamic address book behind a Service. Contains the actual IP and port tuples of healthy Pods matching the Service’s selector. &lt;code&gt;EndpointSlice&lt;/code&gt; splits large lists into chunks (default 100 endpoints) to avoid control plane serialization bottlenecks.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Ingress:&lt;/strong&gt; Layer 7 (HTTP/HTTPS) routing rules (host, path, TLS termination) mapping inbound external requests to internal Services. Implemented by an Ingress Controller (e.g., NGINX, Envoy).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Gateway API (&lt;code&gt;GatewayClass&lt;/code&gt;, &lt;code&gt;Gateway&lt;/code&gt;, &lt;code&gt;HTTPRoute&lt;/code&gt;, &lt;code&gt;GRPCRoute&lt;/code&gt;):&lt;/strong&gt; The modern, expressive, role-oriented successor to Ingress. Decouples infrastructure provisioning (cluster ops) from route matching and traffic splitting (app developers).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;NetworkPolicy:&lt;/strong&gt; Firewall rules enforced at the CNI layer. Dictates ingress and egress packet filtering for Pods based on IP CIDRs, namespaces, and pod labels.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="3-configuration--secrets-objects"&gt;3. Configuration &amp;amp; Secrets Objects&lt;span class="hx:absolute hx:-mt-20" id="3-configuration--secrets-objects"&gt;&lt;/span&gt;
+&lt;a href="#3-configuration--secrets-objects" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Used to inject operational variables, configs, and credentials without rebuilding container images.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ConfigMap:&lt;/strong&gt; Key-value store for non-confidential configuration data (environment variables, config files, command-line arguments) mounted as files or injected as environment variables.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Secret:&lt;/strong&gt; Stores sensitive data (keys, certificates, passwords) encoded in Base64. Can be mounted as memory-backed &lt;code&gt;tmpfs&lt;/code&gt; volumes to prevent secrets from touching node disks.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="4-storage-objects"&gt;4. Storage Objects&lt;span class="hx:absolute hx:-mt-20" id="4-storage-objects"&gt;&lt;/span&gt;
+&lt;a href="#4-storage-objects" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Abstracts physical disk volumes (cloud block stores, NFS, local NVMe) into portable cluster assets.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;PersistentVolume (PV):&lt;/strong&gt; A piece of networked storage in the cluster provisioned by an administrator or dynamically through a StorageClass. Cluster-scoped.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PersistentVolumeClaim (PVC):&lt;/strong&gt; A request for storage by a user (specifying access modes, size, and StorageClass). Namespaced. Bound 1:1 with an appropriate PV.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;StorageClass:&lt;/strong&gt; Defines storage dynamic provisioning parameters (provisioner plugin, volume type, IOPS tier, reclaim policies such as &lt;code&gt;Delete&lt;/code&gt; or &lt;code&gt;Retain&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;VolumeAttachment:&lt;/strong&gt; Tracks the attaching of a CSI (Container Storage Interface) volume to a specific worker node.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CSIDriver &amp;amp; CSINode:&lt;/strong&gt; Cluster-level metadata specifying installed third-party storage drivers and node-specific discovery details.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="5-cluster-topology--administrative-objects"&gt;5. Cluster Topology &amp;amp; Administrative Objects&lt;span class="hx:absolute hx:-mt-20" id="5-cluster-topology--administrative-objects"&gt;&lt;/span&gt;
+&lt;a href="#5-cluster-topology--administrative-objects" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Resources that partition the cluster, describe machines, and coordinate leases.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Namespace:&lt;/strong&gt; Virtual clusters backed by a single physical cluster, providing scoping for object names, RBAC boundaries, and resource quotas.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Node:&lt;/strong&gt; Represents a physical machine or VM in the cluster, registering allocatable CPU/memory, kernel version, condition heartbeats, and taints.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Lease:&lt;/strong&gt; Lightweight coordination primitives inside the &lt;code&gt;coordination.k8s.io&lt;/code&gt; group. Used by control plane components for leader election and by Kubelets to publish node health heartbeats.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ResourceQuota:&lt;/strong&gt; Sets hard upper bounds on total resource consumption (CPU, memory, object counts) within a single Namespace.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LimitRange:&lt;/strong&gt; Enforces min/max resource constraints and default resource requests/limits for individual containers inside a Namespace.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="6-security-identity--access-control-rbac"&gt;6. Security, Identity &amp;amp; Access Control (RBAC)&lt;span class="hx:absolute hx:-mt-20" id="6-security-identity--access-control-rbac"&gt;&lt;/span&gt;
+&lt;a href="#6-security-identity--access-control-rbac" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Objects governing authentication, authorization, and process-level privilege escalation.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ServiceAccount:&lt;/strong&gt; Identity assigned to processes running inside Pods to authenticate against the &lt;code&gt;kube-apiserver&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Role / ClusterRole:&lt;/strong&gt; Sets of additive permissions (&lt;code&gt;get&lt;/code&gt;, &lt;code&gt;list&lt;/code&gt;, &lt;code&gt;watch&lt;/code&gt;, &lt;code&gt;create&lt;/code&gt;, etc.) on API resources. &lt;code&gt;Role&lt;/code&gt; is namespaced; &lt;code&gt;ClusterRole&lt;/code&gt; applies globally across all namespaces.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RoleBinding / ClusterRoleBinding:&lt;/strong&gt; Grants the permissions defined in a Role/ClusterRole to a subject (User, Group, or ServiceAccount).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PodDisruptionBudget (PDB):&lt;/strong&gt; Defines the minimum available or maximum unavailable replicas during voluntary disruptions (e.g., node drain, maintenance updates).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CertificateSigningRequest (CSR):&lt;/strong&gt; Used to request X.509 client/server certificates signed by the cluster&amp;rsquo;s internal Certificate Authority (CA).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="7-extensibility--dynamic-admission"&gt;7. Extensibility &amp;amp; Dynamic Admission&lt;span class="hx:absolute hx:-mt-20" id="7-extensibility--dynamic-admission"&gt;&lt;/span&gt;
+&lt;a href="#7-extensibility--dynamic-admission" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Objects that allow extending the Kubernetes API schema and intercepting requests at runtime.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;CustomResourceDefinition (CRD):&lt;/strong&gt; Extends the Kubernetes API by defining new custom object kinds, schemas (OpenAPI v3), and endpoints without modifying core code.
+Kubernetes&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;MutatingWebhookConfiguration:&lt;/strong&gt; Directs &lt;code&gt;kube-apiserver&lt;/code&gt; to call external HTTP services to modify objects prior to persistence (e.g., auto-injecting monitoring agents).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ValidatingWebhookConfiguration:&lt;/strong&gt; Directs &lt;code&gt;kube-apiserver&lt;/code&gt; to evaluate objects against external admission webhooks, accepting or rejecting payloads based on organization policy.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="summary-reference-table"&gt;Summary Reference Table&lt;span class="hx:absolute hx:-mt-20" id="summary-reference-table"&gt;&lt;/span&gt;
+&lt;a href="#summary-reference-table" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Functional Domain&lt;/th&gt;
+&lt;th&gt;Primary Kubernetes Objects&lt;/th&gt;
+&lt;th&gt;Scope&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Workloads&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Pod&lt;/code&gt;, &lt;code&gt;Deployment&lt;/code&gt;, &lt;code&gt;ReplicaSet&lt;/code&gt;, &lt;code&gt;StatefulSet&lt;/code&gt;, &lt;code&gt;DaemonSet&lt;/code&gt;, &lt;code&gt;Job&lt;/code&gt;, &lt;code&gt;CronJob&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Namespaced&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Networking&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Service&lt;/code&gt;, &lt;code&gt;Endpoints&lt;/code&gt;, &lt;code&gt;EndpointSlice&lt;/code&gt;, &lt;code&gt;Ingress&lt;/code&gt;, &lt;code&gt;NetworkPolicy&lt;/code&gt;, &lt;code&gt;HTTPRoute&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Namespaced&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Configuration&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;ConfigMap&lt;/code&gt;, &lt;code&gt;Secret&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Namespaced&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Storage (User)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;PersistentVolumeClaim&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Namespaced&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Storage (Infra)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;PersistentVolume&lt;/code&gt;, &lt;code&gt;StorageClass&lt;/code&gt;, &lt;code&gt;CSIDriver&lt;/code&gt;, &lt;code&gt;VolumeAttachment&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Cluster&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Cluster &amp;amp; Identity&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;Namespace&lt;/code&gt;, &lt;code&gt;Node&lt;/code&gt;, &lt;code&gt;ServiceAccount&lt;/code&gt;, &lt;code&gt;Role&lt;/code&gt;, &lt;code&gt;RoleBinding&lt;/code&gt;, &lt;code&gt;ClusterRole&lt;/code&gt;, &lt;code&gt;ClusterRoleBinding&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Mixed&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Governance &amp;amp; Limits&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;ResourceQuota&lt;/code&gt;, &lt;code&gt;LimitRange&lt;/code&gt;, &lt;code&gt;PodDisruptionBudget&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Namespaced&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Extensions&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;CustomResourceDefinition&lt;/code&gt;, &lt;code&gt;MutatingWebhookConfiguration&lt;/code&gt;, &lt;code&gt;ValidatingWebhookConfiguration&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Cluster&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</description></item><item><title>Latency numbers</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/latency-numbers/</link><pubDate>Sun, 01 Nov 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/latency-numbers/</guid><description>
+&lt;p&gt;The classic list originally popularized by &lt;strong&gt;Jeff Dean&lt;/strong&gt; (and later expanded by Peter Norvig and Colin Scott) provides essential orders of magnitude for systems engineering and performance estimation.&lt;/p&gt;
+&lt;p&gt;GitHub Gist&lt;/p&gt;
+&lt;h3 data-hextra-search-id="1-canonical-latency-numbers"&gt;1. Canonical Latency Numbers&lt;span class="hx:absolute hx:-mt-20" id="1-canonical-latency-numbers"&gt;&lt;/span&gt;
+&lt;a href="#1-canonical-latency-numbers" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Operation&lt;/th&gt;
+&lt;th&gt;Latency&lt;/th&gt;
+&lt;th&gt;Standard Representation&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;L1 cache reference&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;0.5 – 1 ns&lt;/td&gt;
+&lt;td&gt;~1 ns&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Branch mispredict&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;3 – 5 ns&lt;/td&gt;
+&lt;td&gt;~3–5 ns&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;L2 cache reference&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;3 – 7 ns&lt;/td&gt;
+&lt;td&gt;~4–7 ns&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Mutex lock / unlock&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;15 – 25 ns&lt;/td&gt;
+&lt;td&gt;~20 ns&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Main memory reference (RAM)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;50 – 100 ns&lt;/td&gt;
+&lt;td&gt;~100 ns&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Compress 1 KB with Snappy/Zippy&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;2,000 – 3,000 ns&lt;/td&gt;
+&lt;td&gt;~2–3 µs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Send 2 KB over 10 Gbps network&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;~1,600 ns&lt;/td&gt;
+&lt;td&gt;~1.6 µs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Send 1 KB over 1 Gbps network&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;10,000 ns&lt;/td&gt;
+&lt;td&gt;10 µs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;SSD random read (4 KB, NVMe/PCIe)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;10,000 – 100,000 ns&lt;/td&gt;
+&lt;td&gt;10 – 100 µs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Read 1 MB sequentially from memory&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;3,000 – 10,000 ns &lt;em&gt;(modern)&lt;/em&gt; 250,000 ns &lt;em&gt;(classic)&lt;/em&gt;&lt;/td&gt;
+&lt;td&gt;10 – 250 µs&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Round trip in same datacenter&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;500,000 ns&lt;/td&gt;
+&lt;td&gt;0.5 ms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Read 1 MB sequentially from SSD&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;200,000 – 1,000,000 ns&lt;/td&gt;
+&lt;td&gt;0.2 – 1 ms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;HDD seek time (rotational latency + arm)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;2,000,000 – 10,000,000 ns&lt;/td&gt;
+&lt;td&gt;2 – 10 ms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Read 1 MB sequentially from HDD&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;5,000,000 – 20,000,000 ns&lt;/td&gt;
+&lt;td&gt;5 – 20 ms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Cross-continental packet round trip (e.g., US to Europe)&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;150,000,000 ns&lt;/td&gt;
+&lt;td&gt;150 ms&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 data-hextra-search-id="2-scaled-to-human-time-1-cpu-cycle--1-second"&gt;2. Scaled to Human Time (1 CPU Cycle ≈ 1 Second)&lt;span class="hx:absolute hx:-mt-20" id="2-scaled-to-human-time-1-cpu-cycle--1-second"&gt;&lt;/span&gt;
+&lt;a href="#2-scaled-to-human-time-1-cpu-cycle--1-second" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Scaling &lt;strong&gt;0.5–1 ns to ~1 second&lt;/strong&gt; highlights the stark gaps across the hardware hierarchy:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Operation&lt;/th&gt;
+&lt;th&gt;Actual Time&lt;/th&gt;
+&lt;th&gt;Scaled Time&lt;/th&gt;
+&lt;th&gt;Real-World Analogy&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;L1 cache hit&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;0.5 – 1 ns&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;1 second&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Grabbing a piece of paper on your desk&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;L2 cache hit&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;~4 ns&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;4 seconds&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Grabbing a book from a shelf within reach&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;RAM access&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;~100 ns&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;1.5 minutes&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Walking down the hall to fetch a file&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;NVMe SSD random read&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;~20 µs&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;~5.5 hours&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;A half-day road trip&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Same-datacenter network RTT&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;~500 µs&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;~5.8 days&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Taking a week off&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;HDD seek&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;~10 ms&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;~4 months&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;A semester abroad&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Transatlantic packet RTT&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;~150 ms&lt;/td&gt;
+&lt;td&gt;&lt;strong&gt;~5 years&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Completing an entire degree&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 data-hextra-search-id="3-rules-of-thumb-for-system-design"&gt;3. Rules of Thumb for System Design&lt;span class="hx:absolute hx:-mt-20" id="3-rules-of-thumb-for-system-design"&gt;&lt;/span&gt;
+&lt;a href="#3-rules-of-thumb-for-system-design" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Avoid Random Disk I/O&lt;/strong&gt;: Sequential throughput on disk and flash is orders of magnitude faster than random seeks.
+Google SRE&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Datacenter vs. WAN Boundaries&lt;/strong&gt;: In-rack or same-datacenter communication (~0.5 ms) allows ~2,000 round trips/sec, whereas cross-continent WAN round trips (~150 ms) max out at 6–7 trips/sec.
+Google SRE&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RAM Is Fast, but Cache Locality Still Dominates&lt;/strong&gt;: A single cache miss that hits main memory takes ~100× longer than an L1 cache hit. Data-oriented layout (contiguous arrays, avoiding pointer chasing) maximizes hardware prefetching and cache line utilization.&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>Docker internals and runc</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/docker-internals-and-runc/</link><pubDate>Sat, 31 Oct 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/docker-internals-and-runc/</guid><description>
+&lt;p&gt;At the Linux kernel level, there is no discrete entity called a &amp;ldquo;container.&amp;rdquo; A container is simply a standard Linux process isolated by &lt;strong&gt;namespaces&lt;/strong&gt;, resource-constrained by &lt;strong&gt;cgroups&lt;/strong&gt;, bound to a dedicated root filesystem using &lt;strong&gt;chroot/pivot_root&lt;/strong&gt;, and restricted by security mechanisms like &lt;strong&gt;seccomp&lt;/strong&gt; and &lt;strong&gt;capabilities&lt;/strong&gt;.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="the-runtime-architecture-docker-to-runc"&gt;The Runtime Architecture: Docker to runc&lt;span class="hx:absolute hx:-mt-20" id="the-runtime-architecture-docker-to-runc"&gt;&lt;/span&gt;
+&lt;a href="#the-runtime-architecture-docker-to-runc" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Running &lt;code&gt;docker run&lt;/code&gt; triggers a chain of components adhering to Open Container Initiative (OCI) standards:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Docker CLI / Engine (&lt;code&gt;dockerd&lt;/code&gt;)&lt;/strong&gt;: Accepts the client request, manages local storage, interacts with image registries, unpacks image layers, and calls &lt;code&gt;containerd&lt;/code&gt; over a gRPC API.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;containerd&lt;/code&gt;&lt;/strong&gt;: Manages the container lifecycle, image distribution, and snapshot storage. When told to create a container, it delegates the low-level execution to a runtime shim (&lt;code&gt;containerd-shim&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;containerd-shim&lt;/code&gt;&lt;/strong&gt;: Sits between &lt;code&gt;containerd&lt;/code&gt; and the low-level runtime. It holds the standard I/O (stdin/stdout/stderr) pipes and file descriptors open, reports exit statuses, and prevents the container from dying if &lt;code&gt;dockerd&lt;/code&gt; or &lt;code&gt;containerd&lt;/code&gt; crashes or restarts.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;runc&lt;/code&gt;&lt;/strong&gt;: The OCI reference implementation. It reads an OCI bundle (a directory containing a &lt;code&gt;rootfs&lt;/code&gt; filesystem and a JSON configuration file called &lt;code&gt;config.json&lt;/code&gt;), makes the low-level Linux syscalls to configure the isolation environment, launches the containerized process, and immediately exits, leaving the process running under the shim.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 data-hextra-search-id="the-core-linux-primitives"&gt;The Core Linux Primitives&lt;span class="hx:absolute hx:-mt-20" id="the-core-linux-primitives"&gt;&lt;/span&gt;
+&lt;a href="#the-core-linux-primitives" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;h4 data-hextra-search-id="1-linux-namespaces-what-the-process-can-see"&gt;1. Linux Namespaces (What the Process Can See)&lt;span class="hx:absolute hx:-mt-20" id="1-linux-namespaces-what-the-process-can-see"&gt;&lt;/span&gt;
+&lt;a href="#1-linux-namespaces-what-the-process-can-see" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Namespaces partition kernel resources so that a process inside a namespace sees its own isolated instance of global resources. When &lt;code&gt;runc&lt;/code&gt; initializes a container, it uses the &lt;code&gt;clone()&lt;/code&gt; system call with specific flags, or joins existing namespaces using &lt;code&gt;unshare()&lt;/code&gt; and &lt;code&gt;setns()&lt;/code&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;PID (Process IDs)&lt;/strong&gt;: The container process becomes PID 1 inside its own namespace, handling signals and child reaping, while retaining a regular PID on the host.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;NET (Network Devices &amp;amp; Routing)&lt;/strong&gt;: Isolates network interfaces, IP routing tables, firewall rules, and ports. Usually paired with a virtual Ethernet pair (&lt;code&gt;veth&lt;/code&gt;), linking the container&amp;rsquo;s network stack to a host bridge (&lt;code&gt;docker0&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;MNT (Mount Points)&lt;/strong&gt;: Provides an isolated filesystem mount table. Mounts and unmounts inside the container do not affect the host.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;IPC (Inter-Process Communication)&lt;/strong&gt;: Isolates System V IPC and POSIX message queues.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;UTS (Hostnames)&lt;/strong&gt;: Allows the container to define its own hostname and domain name without modifying the host system.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;USER (UID and GID Mappings)&lt;/strong&gt;: Maps host user and group IDs to different IDs inside the namespace (e.g., UID 1000 on the host can act as UID 0/root inside the container for rootless execution).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CGROUP (Cgroup Root)&lt;/strong&gt;: Masks the host&amp;rsquo;s actual cgroup directory tree structure from the process.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="2-control-groups--cgroups-what-the-process-can-use"&gt;2. Control Groups / cgroups (What the Process Can Use)&lt;span class="hx:absolute hx:-mt-20" id="2-control-groups--cgroups-what-the-process-can-use"&gt;&lt;/span&gt;
+&lt;a href="#2-control-groups--cgroups-what-the-process-can-use" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;While namespaces restrict &lt;strong&gt;visibility&lt;/strong&gt;, cgroups restrict and account for &lt;strong&gt;hardware resource usage&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Resource Limiting&lt;/strong&gt;: Caps how much memory, CPU quota, block I/O bandwidth, and network priority a group of processes can consume.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Accounting &amp;amp; Metrics&lt;/strong&gt;: Tracks usage (e.g., reporting memory pressure and page cache consumption).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Process Number Limits (&lt;code&gt;pids&lt;/code&gt; controller)&lt;/strong&gt;: Prevents fork bombs by capping the total number of processes inside the container.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;OOM Handling&lt;/strong&gt;: When a container exceeds its memory hard limit, the kernel&amp;rsquo;s Out-Of-Memory (OOM) killer selectively terminates processes within that cgroup rather than bringing down host processes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Linux environments predominantly use &lt;strong&gt;cgroups v2&lt;/strong&gt;, which features a unified hierarchy where a single process tree controls all resource controllers simultaneously (unlike cgroups v1, which had separate trees for memory, cpu, and blkio).&lt;/p&gt;
+&lt;h4 data-hextra-search-id="3-root-filesystems-and-layering-overlayfs--pivot_root"&gt;3. Root Filesystems and Layering: OverlayFS &amp;amp; pivot_root&lt;span class="hx:absolute hx:-mt-20" id="3-root-filesystems-and-layering-overlayfs--pivot_root"&gt;&lt;/span&gt;
+&lt;a href="#3-root-filesystems-and-layering-overlayfs--pivot_root" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Containers do not boot a kernel; they reuse the host kernel with an independent directory tree:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Layering via OverlayFS&lt;/strong&gt;: Docker images consist of immutable read-only layers. OverlayFS stacks these layers (&lt;code&gt;lowerdir&lt;/code&gt;) with an ephemeral read-write upper layer (&lt;code&gt;upperdir&lt;/code&gt;) and presents them as a single unified view (&lt;code&gt;merged&lt;/code&gt;). Changes made inside the container write only to the &lt;code&gt;upperdir&lt;/code&gt; via copy-on-write (CoW).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;pivot_root&lt;/code&gt; vs &lt;code&gt;chroot&lt;/code&gt;&lt;/strong&gt;: While &lt;code&gt;chroot&lt;/code&gt; changes the apparent root directory for the current process, it has well-known escape paths (especially for processes with root privileges). &lt;code&gt;runc&lt;/code&gt; mounts the container&amp;rsquo;s root filesystem and uses &lt;code&gt;pivot_root(new_root, put_old)&lt;/code&gt;. This system call moves the current root mount to a temporary directory inside the new root, swaps in the new root, and then unmounts the old host root—making escape from the mount namespace impossible via directory traversal.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="4-security-isolation-capabilities--seccomp"&gt;4. Security Isolation: Capabilities &amp;amp; Seccomp&lt;span class="hx:absolute hx:-mt-20" id="4-security-isolation-capabilities--seccomp"&gt;&lt;/span&gt;
+&lt;a href="#4-security-isolation-capabilities--seccomp" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;A root user (&lt;code&gt;UID 0&lt;/code&gt;) inside a traditional container could theoretically control hardware or manipulate kernel modules if unrestricted. Two mechanisms strip dangerous abilities:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Linux Capabilities&lt;/strong&gt;: Breaks traditional &lt;code&gt;root&lt;/code&gt; authority into granular privileges (e.g., &lt;code&gt;CAP_NET_BIND_SERVICE&lt;/code&gt;, &lt;code&gt;CAP_SYS_ADMIN&lt;/code&gt;, &lt;code&gt;CAP_CHOWN&lt;/code&gt;). &lt;code&gt;runc&lt;/code&gt; drops most dangerous capabilities by default, such as &lt;code&gt;CAP_SYS_ADMIN&lt;/code&gt; (mounting filesystems, loading BPF programs) and &lt;code&gt;CAP_SYS_MODULE&lt;/code&gt; (loading kernel modules).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Seccomp (Secure Computing Mode)&lt;/strong&gt;: Acts as a syscall firewall. The default Docker seccomp profile filters roughly 44 out of over 400 system calls (blocking syscalls like &lt;code&gt;reboot&lt;/code&gt;, &lt;code&gt;kexec_load&lt;/code&gt;, &lt;code&gt;mount&lt;/code&gt;, and &lt;code&gt;sys_chroot&lt;/code&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="step-by-step-execution-inside-runc"&gt;Step-by-Step Execution Inside &lt;code&gt;runc&lt;/code&gt;&lt;span class="hx:absolute hx:-mt-20" id="step-by-step-execution-inside-runc"&gt;&lt;/span&gt;
+&lt;a href="#step-by-step-execution-inside-runc" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;&amp;#43;-------------------------------------------------------------&amp;#43;
+| 1. Read OCI bundle config.json &amp;amp; prepare rootfs |
+&amp;#43;------------------------------&amp;#43;------------------------------&amp;#43;
+|
+v
+&amp;#43;-------------------------------------------------------------&amp;#43;
+| 2. clone() child process with CLONE_NEW* namespace flags |
+&amp;#43;------------------------------&amp;#43;------------------------------&amp;#43;
+|
+v
+&amp;#43;-------------------------------------------------------------&amp;#43;
+| 3. Attach child to cgroup paths in /sys/fs/cgroup |
+&amp;#43;------------------------------&amp;#43;------------------------------&amp;#43;
+|
+v
+&amp;#43;-------------------------------------------------------------&amp;#43;
+| 4. pivot_root() into the new rootfs &amp;amp; unmount old host root |
+&amp;#43;------------------------------&amp;#43;------------------------------&amp;#43;
+|
+v
+&amp;#43;-------------------------------------------------------------&amp;#43;
+| 5. Drop Linux capabilities &amp;amp; load Seccomp BPF filter |
+&amp;#43;------------------------------&amp;#43;------------------------------&amp;#43;
+|
+v
+&amp;#43;-------------------------------------------------------------&amp;#43;
+| 6. execve() replaces runc child with the target app binary |
+&amp;#43;-------------------------------------------------------------&amp;#43;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Once &lt;code&gt;execve()&lt;/code&gt; executes, the child process is running your container application in-place under the configured boundaries, while the parent &lt;code&gt;runc&lt;/code&gt; process exits.&lt;/p&gt;</description></item><item><title>HTTP</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/http/</link><pubDate>Sat, 31 Oct 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/http/</guid><description>
+&lt;p&gt;The evolution across &lt;strong&gt;HTTP/1.1&lt;/strong&gt;, &lt;strong&gt;HTTP/2&lt;/strong&gt;, and &lt;strong&gt;HTTP/3&lt;/strong&gt; reflects a continuous push to eliminate latency, reduce network round-trips, and overcome transmission bottlenecks across the web.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="http11-1997--1999--the-text-based-baseline"&gt;HTTP/1.1 (1997 / 1999) — The Text-Based Baseline&lt;span class="hx:absolute hx:-mt-20" id="http11-1997--1999--the-text-based-baseline"&gt;&lt;/span&gt;
+&lt;a href="#http11-1997--1999--the-text-based-baseline" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;HTTP/1.1 standardized modern web semantics (verbs like &lt;code&gt;GET&lt;/code&gt;, &lt;code&gt;POST&lt;/code&gt;, status codes, headers, and caching directives) and introduced key persistence improvements over HTTP/1.0.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Underlying Transport:&lt;/strong&gt; Plain TCP (Layer 4).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Format:&lt;/strong&gt; Human-readable ASCII text headers and messages separated by CRLF (&lt;code&gt;\r\n&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Key Innovations:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Persistent Connections (&lt;code&gt;Keep-Alive&lt;/code&gt; by default):&lt;/strong&gt; Allows multiple request/response cycles over a single TCP connection, avoiding repeated 3-way TCP handshakes.
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Chunked Transfer Encoding:&lt;/strong&gt; Allows streaming responses of unknown initial payload size using chunk headers.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Pipelining:&lt;/strong&gt; Clients could send multiple requests back-to-back without waiting for responses, though rarely deployed due to intermediary proxy bugs.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Core Bottleneck — Application Head-of-Line (HoL) Blocking:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;HTTP/1.1 enforces strict FIFO ordering per TCP connection. If Request #1 stalls on the server (e.g., waiting on a slow database query), Request #2 and #3 queued behind it must wait, even if ready to deliver.
+&lt;ul&gt;
+&lt;li&gt;Browsers worked around this by opening 6 parallel TCP connections per host domain, introducing significant socket, handshake, and TLS negotiation overhead.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="http2-2015--multiplexing-over-a-single-connection"&gt;HTTP/2 (2015) — Multiplexing Over a Single Connection&lt;span class="hx:absolute hx:-mt-20" id="http2-2015--multiplexing-over-a-single-connection"&gt;&lt;/span&gt;
+&lt;a href="#http2-2015--multiplexing-over-a-single-connection" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;HTTP/2 retained HTTP/1.1 request/response semantics (&lt;code&gt;GET&lt;/code&gt;, &lt;code&gt;POST&lt;/code&gt;, headers, status codes) while completely overhauling the wire format and framing mechanism to eliminate application-layer HoL blocking.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Underlying Transport:&lt;/strong&gt; TCP + TLS (Layer 4). In practice, HTTP/2 is almost universally deployed over encrypted TLS (h2).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Format:&lt;/strong&gt; Strict Binary Framing Layer. Every message is split into typed binary frames (&lt;code&gt;HEADERS&lt;/code&gt;, &lt;code&gt;DATA&lt;/code&gt;, &lt;code&gt;SETTINGS&lt;/code&gt;, &lt;code&gt;RST_STREAM&lt;/code&gt;, etc.).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Key Innovations:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;True Stream Multiplexing:&lt;/strong&gt; Multiple bidirectional streams interleave independently over a &lt;strong&gt;single TCP connection&lt;/strong&gt;. Packets from Stream 1, Stream 3, and Stream 5 can be sent concurrently without waiting for Stream 1 to complete.
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;HPACK Header Compression:&lt;/strong&gt; HTTP headers are statefully compressed via pre-indexed static tables and dynamically synchronized differential tables between client and server, dramatically reducing redundant header overhead across requests.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stream Prioritization &amp;amp; Flow Control:&lt;/strong&gt; Allows the client to signal resource weight/dependency (e.g., render-blocking CSS prioritized over footer images).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Server Push:&lt;/strong&gt; Allowed servers to pre-emptively push assets to the client cache (though deprecated in modern browsers due to cache invalidation complexity).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Remaining Bottleneck — TCP-Level Head-of-Line Blocking:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;Because all logical streams share one OS-level TCP socket, TCP&amp;rsquo;s byte-stream guarantees enforce strict packet order. If a single IP packet drops, the OS TCP receiver buffer freezes &lt;strong&gt;all&lt;/strong&gt; HTTP/2 streams on that connection until the lost segment is retransmitted. Under high packet loss (&amp;gt;2%), HTTP/2 can perform worse than multi-connection HTTP/1.1.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="http3-2022--transport-reinvention-over-quic"&gt;HTTP/3 (2022) — Transport Reinvention Over QUIC&lt;span class="hx:absolute hx:-mt-20" id="http3-2022--transport-reinvention-over-quic"&gt;&lt;/span&gt;
+&lt;a href="#http3-2022--transport-reinvention-over-quic" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;HTTP/3 completely decouples HTTP from traditional TCP, replacing TCP and TLS with &lt;strong&gt;QUIC&lt;/strong&gt; (a user-space, transport-layer protocol running on top of UDP).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Underlying Transport:&lt;/strong&gt; &lt;strong&gt;QUIC over UDP&lt;/strong&gt; (Layer 4).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Format:&lt;/strong&gt; Binary frames mapped directly to QUIC stream primitives.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Key Innovations:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Zero Transport HoL Blocking:&lt;/strong&gt; QUIC implements streams natively in transport logic. If a packet belonging to Stream A drops on the wire, only Stream A pauses. Stream B, Stream C, and Stream D continue streaming to the application without interruption.
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Integrated TLS 1.3 Encryption:&lt;/strong&gt; Encryption is baked directly into QUIC&amp;rsquo;s transport layer rather than sitting on top. Handshake round-trips drop to &lt;strong&gt;1-RTT&lt;/strong&gt; on first connection and &lt;strong&gt;0-RTT&lt;/strong&gt; on resumption (data sent alongside the initial connection frame).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Connection Migration via Connection IDs:&lt;/strong&gt; TCP connections are bound to a 4-tuple (&lt;code&gt;Src IP&lt;/code&gt;, &lt;code&gt;Src Port&lt;/code&gt;, &lt;code&gt;Dst IP&lt;/code&gt;, &lt;code&gt;Dst Port&lt;/code&gt;). Switching from Wi-Fi to cellular breaks TCP connections. QUIC uses a random 64-bit Connection ID independent of IP/port, allowing persistent connections to survive network network handoffs seamlessly without re-handshaking.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;QPACK Header Compression:&lt;/strong&gt; A redesign of HPACK that handles unordered packet arrivals across streams without causing transport stalls.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="structural-comparison"&gt;Structural Comparison&lt;span class="hx:absolute hx:-mt-20" id="structural-comparison"&gt;&lt;/span&gt;
+&lt;a href="#structural-comparison" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Feature&lt;/th&gt;
+&lt;th&gt;HTTP/1.1&lt;/th&gt;
+&lt;th&gt;HTTP/2&lt;/th&gt;
+&lt;th&gt;HTTP/3&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Underlying Layer 4&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;TCP&lt;/td&gt;
+&lt;td&gt;TCP&lt;/td&gt;
+&lt;td&gt;QUIC (over UDP)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Framing Format&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Plain ASCII Text&lt;/td&gt;
+&lt;td&gt;Binary Frames&lt;/td&gt;
+&lt;td&gt;Binary Frames (via QUIC)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Multiplexing&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;No (FIFO per connection)&lt;/td&gt;
+&lt;td&gt;Yes (Application-layer)&lt;/td&gt;
+&lt;td&gt;Yes (Transport-native)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Head-of-Line Blocking&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;At Application layer&lt;/td&gt;
+&lt;td&gt;At TCP transport layer&lt;/td&gt;
+&lt;td&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Header Compression&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;None&lt;/td&gt;
+&lt;td&gt;HPACK&lt;/td&gt;
+&lt;td&gt;QPACK&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Handshake Latency&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;2–3 RTTs (TCP + TLS)&lt;/td&gt;
+&lt;td&gt;2–3 RTTs (TCP + TLS)&lt;/td&gt;
+&lt;td&gt;0–1 RTT (QUIC + TLS 1.3)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Connection Migration&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Fails on IP/network change&lt;/td&gt;
+&lt;td&gt;Fails on IP/network change&lt;/td&gt;
+&lt;td&gt;Native via Connection ID&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</description></item><item><title>Linux boot process</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/linux-boot-process/</link><pubDate>Sat, 31 Oct 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/linux-boot-process/</guid><description>
+&lt;p&gt;The Linux boot process follows a deterministic sequence transitioning hardware execution from firmware, through low-level CPU modes and memory staging, up to the first user-space process.&lt;/p&gt;
+&lt;p&gt;1&lt;/p&gt;
+&lt;p&gt;Firmware Initialization (BIOS / UEFI)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.Firmware Initialization (BIOS / UEFI):&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Power-On Self-Test (POST):&lt;/strong&gt; The processor begins executing code at the reset vector (&lt;code&gt;0xFFFFFFF0&lt;/code&gt; on x86/x64). Firmware tests hardware peripherals, discovers system RAM, and initializes basic bus topology.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Handover:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Legacy BIOS:&lt;/strong&gt; Searches configured boot disks for an active partition containing a 512-byte Master Boot Record (MBR) at sector 0 and loads it into memory at &lt;code&gt;0x7C00&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Modern UEFI:&lt;/strong&gt; Reads the GUID Partition Table (GPT), accesses the FAT-formatted EFI System Partition (ESP), and executes a pre-configured architecture-specific EFI binary (e.g., &lt;code&gt;/EFI/BOOT/BOOTX64.EFI&lt;/code&gt; or &lt;code&gt;grubx64.efi&lt;/code&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;2&lt;/p&gt;
+&lt;p&gt;Bootloader Execution (GRUB 2)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2.Bootloader Execution (GRUB 2):&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Stage 1 &amp;amp; Stage 1.5:&lt;/strong&gt; Under BIOS, Stage 1 (MBR) loads Stage 1.5 / &lt;code&gt;core.img&lt;/code&gt; embedded in the unpartitioned space between MBR and the first sector. Under UEFI, the firmware directly executes &lt;code&gt;grubx64.efi&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stage 2:&lt;/strong&gt; Loads filesystem drivers (ext4, btrfs, xfs), parses &lt;code&gt;/boot/grub/grub.cfg&lt;/code&gt;, displays the boot menu, and handles kernel command-line parameters.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Kernel &amp;amp; Initramfs Placement:&lt;/strong&gt; Loads the compressed kernel image (&lt;code&gt;vmlinuz&lt;/code&gt;) and initial RAM filesystem (&lt;code&gt;initramfs&lt;/code&gt; or &lt;code&gt;initrd&lt;/code&gt;) into physical RAM, transitions the CPU from real mode / protected mode to 64-bit long mode, and jumps to the kernel entry point.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;3&lt;/p&gt;
+&lt;p&gt;Kernel Startup &amp;amp; Hardware Probing&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;3.Kernel Startup &amp;amp; Hardware Probing:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Decompression &amp;amp; Memory Setup:&lt;/strong&gt; The kernel self-extracts, maps memory pages, sets up page tables, enables paging, and initializes core data structures (IDT, GDT, scheduler).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Device Discovery:&lt;/strong&gt; Identifies CPU topology, NUMA nodes, interrupts (APIC), and probes PCI/PCIe buses.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Driver &amp;amp; Subsystem Bringup:&lt;/strong&gt; Initializes core subsystems including memory management, timer ticks, virtual filesystem (VFS), and IPC.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;4&lt;/p&gt;
+&lt;p&gt;Initramfs Staging (Early Userspace)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4.Initramfs Staging (Early Userspace):&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Temporary Root:&lt;/strong&gt; The kernel mounts &lt;code&gt;initramfs&lt;/code&gt; as a temporary root filesystem (&lt;code&gt;tmpfs&lt;/code&gt;) in memory and executes &lt;code&gt;/init&lt;/code&gt; (typically a minimal shell or systemd instance).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Storage Modules:&lt;/strong&gt; Loads specialized storage drivers not compiled statically into the kernel—such as device mappers for LUKS disk encryption, software RAID (&lt;code&gt;mdadm&lt;/code&gt;), LVM volumes, or network root mounts (iSCSI, NFS).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Switch Root:&lt;/strong&gt; Mounts the real root filesystem (&lt;code&gt;/&lt;/code&gt;) from persistent storage (read-only initially), moves mount points, and runs &lt;code&gt;switch_root&lt;/code&gt; / &lt;code&gt;pivot_root&lt;/code&gt; to wipe the temporary RAM filesystem and hand control to the permanent filesystem.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;5&lt;/p&gt;
+&lt;p&gt;Initialization System (systemd / PID 1)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5.Initialization System (systemd / PID 1):&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;First Userspace Process:&lt;/strong&gt; The kernel executes &lt;code&gt;/sbin/init&lt;/code&gt; (symlinked to &lt;code&gt;/usr/lib/systemd/systemd&lt;/code&gt; on modern distributions), assigning it &lt;strong&gt;PID 1&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Target Traversal:&lt;/strong&gt; Reads dependency graphs defined in unit files, resolving boot targets (e.g., &lt;code&gt;sysinit.target&lt;/code&gt; &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\to&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.3669em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; &lt;code&gt;basic.target&lt;/code&gt; &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\to&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.3669em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; &lt;code&gt;multi-user.target&lt;/code&gt; / &lt;code&gt;graphical.target&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Mounts &amp;amp; Daemons:&lt;/strong&gt; Re-mounts the root filesystem read-write, mounts &lt;code&gt;/etc/fstab&lt;/code&gt; entries, initializes device nodes via &lt;code&gt;systemd-udevd&lt;/code&gt;, sets hostname and networking, and spawns background system daemons in parallel.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Display &amp;amp; Login:&lt;/strong&gt; Launches the display manager (&lt;code&gt;gdm&lt;/code&gt;, &lt;code&gt;sddm&lt;/code&gt;) or virtual terminal login prompts (&lt;code&gt;agetty&lt;/code&gt;), completing the boot pipeline.&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>Linux file system</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/linux-file-system/</link><pubDate>Sat, 31 Oct 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/linux-file-system/</guid><description>
+&lt;p&gt;In Linux, everything is treated as a file—including directories, hardware devices, and network sockets—organized under a single, unified hierarchical tree starting at the root directory (&lt;code&gt;/&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;Unlike Windows, which uses separate drive letters (&lt;code&gt;C:\&lt;/code&gt;, &lt;code&gt;D:\&lt;/code&gt;), Linux mounts all physical drives, partitions, and external media into specific branches of this single directory tree according to the &lt;strong&gt;Filesystem Hierarchy Standard (FHS)&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcS1yRkQvLEtxrW3aPY_N8CfOJS5rGToBt4siX5kHsmsy872CTiSYdjfaSsoVCi4DbE3rVwYH5VUJ259xpE" alt="Linux Directory Hierarchy Structure, AI generated" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;Linux Directory Hierarchy Structure. Source: Made with Google AI&lt;/p&gt;
+&lt;h3 data-hextra-search-id="core-directory-breakdown"&gt;Core Directory Breakdown&lt;span class="hx:absolute hx:-mt-20" id="core-directory-breakdown"&gt;&lt;/span&gt;
+&lt;a href="#core-directory-breakdown" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Directory&lt;/th&gt;
+&lt;th&gt;Purpose&lt;/th&gt;
+&lt;th&gt;Typical Contents&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Root directory&lt;/td&gt;
+&lt;td&gt;Top level of the filesystem; everything starts here.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/bin&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Essential user binaries&lt;/td&gt;
+&lt;td&gt;Core commands needed for single-user mode and booting (&lt;code&gt;ls&lt;/code&gt;, &lt;code&gt;cp&lt;/code&gt;, &lt;code&gt;bash&lt;/code&gt;, &lt;code&gt;cat&lt;/code&gt;).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/sbin&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;System binaries&lt;/td&gt;
+&lt;td&gt;Administrative commands reserved for root/system recovery (&lt;code&gt;iptables&lt;/code&gt;, &lt;code&gt;fdisk&lt;/code&gt;, &lt;code&gt;reboot&lt;/code&gt;).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/etc&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;System configuration&lt;/td&gt;
+&lt;td&gt;Machine-local host configuration files and startup scripts (&lt;code&gt;fstab&lt;/code&gt;, &lt;code&gt;passwd&lt;/code&gt;, &lt;code&gt;nginx/&lt;/code&gt;).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/home&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;User personal files&lt;/td&gt;
+&lt;td&gt;Stores personal directories (&lt;code&gt;/home/username&lt;/code&gt;) for documents, downloads, and user settings.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/root&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Root user home&lt;/td&gt;
+&lt;td&gt;The dedicated home directory for the superuser (root).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/var&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Variable data&lt;/td&gt;
+&lt;td&gt;Files that grow dynamically during runtime (logs in &lt;code&gt;/var/log&lt;/code&gt;, mail spools, databases).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/tmp&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Temporary files&lt;/td&gt;
+&lt;td&gt;Volatile scratch space; usually cleared automatically on reboot.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/usr&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;User system resources&lt;/td&gt;
+&lt;td&gt;Read-only user data, second-tier binaries (&lt;code&gt;/usr/bin&lt;/code&gt;), libraries (&lt;code&gt;/usr/lib&lt;/code&gt;), and docs.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/opt&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Optional software&lt;/td&gt;
+&lt;td&gt;Third-party or self-contained application packages (e.g., Google Chrome, proprietary tools).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/dev&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Device nodes&lt;/td&gt;
+&lt;td&gt;Special files representing hardware devices (disks like &lt;code&gt;sda&lt;/code&gt;, terminals like &lt;code&gt;tty&lt;/code&gt;, &lt;code&gt;/dev/null&lt;/code&gt;).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/proc&lt;/code&gt;&lt;/strong&gt; &amp;amp; &lt;strong&gt;&lt;code&gt;/sys&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Virtual filesystems&lt;/td&gt;
+&lt;td&gt;Dynamic runtime metadata exposed by the kernel; exists in RAM rather than disk.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;&lt;code&gt;/mnt&lt;/code&gt;&lt;/strong&gt; &amp;amp; &lt;strong&gt;&lt;code&gt;/media&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Mount points&lt;/td&gt;
+&lt;td&gt;Temporary mount points (&lt;code&gt;/mnt&lt;/code&gt; for manual mounts, &lt;code&gt;/media&lt;/code&gt; for auto-mounted USB/removable drives).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 data-hextra-search-id="key-concepts"&gt;Key Concepts&lt;span class="hx:absolute hx:-mt-20" id="key-concepts"&gt;&lt;/span&gt;
+&lt;a href="#key-concepts" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Everything is a File:&lt;/strong&gt; Linux interfaces with hardware and processes using file descriptors. Reading from &lt;code&gt;/dev/urandom&lt;/code&gt; produces random bytes; writing to &lt;code&gt;/dev/null&lt;/code&gt; discards data.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Inodes (Index Nodes):&lt;/strong&gt; Disk storage separates file metadata from file content. An inode stores file type, permissions, size, timestamps, and data block locations. The directory entry simply maps a human-readable filename to an inode number.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Permissions &amp;amp; Ownership:&lt;/strong&gt; Every file belongs to an owner and a group, carrying read (&lt;code&gt;r&lt;/code&gt;), write (&lt;code&gt;w&lt;/code&gt;), and execute (&lt;code&gt;x&lt;/code&gt;) permissions evaluated across three tiers: User, Group, and Others.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Underlying Filesystems:&lt;/strong&gt; While the directory tree provides a standard logical view, Linux formats storage using specialized filesystems such as &lt;strong&gt;ext4&lt;/strong&gt; (default standard), &lt;strong&gt;XFS&lt;/strong&gt; (high-throughput, large data), and &lt;strong&gt;Btrfs&lt;/strong&gt; or &lt;strong&gt;ZFS&lt;/strong&gt; (snapshots, volume management).&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>Networks</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/networks/</link><pubDate>Sat, 31 Oct 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/networks/</guid><description>
+&lt;p&gt;The &lt;strong&gt;Open Systems Interconnection (OSI)&lt;/strong&gt; model is a conceptual framework standardized by the ISO that partitions network communication into seven distinct abstraction layers, standardizing how data moves from physical hardware up to end-user software applications.&lt;/p&gt;
+&lt;p&gt;The 7-layer OSI reference architecture. Source: Maccow Creatives / Getty Images&lt;/p&gt;
+&lt;h3 data-hextra-search-id="layer-1-physical-layer"&gt;Layer 1: Physical Layer&lt;span class="hx:absolute hx:-mt-20" id="layer-1-physical-layer"&gt;&lt;/span&gt;
+&lt;a href="#layer-1-physical-layer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Transmits unstructured raw bit streams over a physical transmission medium (electrical voltages, radio frequencies, optical pulses). It defines pinouts, cable specifications, signaling rates, and physical connectors.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Protocol Data Unit (PDU):&lt;/strong&gt; Bit&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hardware:&lt;/strong&gt; Hubs, repeaters, network cables (Cat6, fiber optics), transceivers&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Protocols &amp;amp; Standards:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Ethernet physical layer (IEEE 802.3 PHY):&lt;/strong&gt; 10BASE-T, 100BASE-TX, 1000BASE-T
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Wireless PHY standards:&lt;/strong&gt; IEEE 802.11a/b/g/n/ac/ax (physical modulation layers)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Serial &amp;amp; Telephony:&lt;/strong&gt; RS-232, RS-485, V.35, T1/E1, ISDN (Layer 1 specs)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Optical Transport:&lt;/strong&gt; SONET/SDH, OTN (G.709)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Broadband access:&lt;/strong&gt; DSL, DOCSIS (PHY specs)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="layer-2-data-link-layer"&gt;Layer 2: Data Link Layer&lt;span class="hx:absolute hx:-mt-20" id="layer-2-data-link-layer"&gt;&lt;/span&gt;
+&lt;a href="#layer-2-data-link-layer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Provides node-to-node data transfer across the same physical segment, handles physical addressing (MAC addresses), framing, error detection (CRC/FCS), and flow control. Often subdivided into &lt;strong&gt;Media Access Control (MAC)&lt;/strong&gt; and &lt;strong&gt;Logical Link Control (LLC)&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Protocol Data Unit (PDU):&lt;/strong&gt; Frame&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hardware:&lt;/strong&gt; Layer 2 switches, network interface cards (NICs), bridges&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Protocols &amp;amp; Standards:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;LAN:&lt;/strong&gt; Ethernet (IEEE 802.3 MAC), Wi-Fi (IEEE 802.11 MAC), Token Ring (IEEE 802.5)
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;WAN &amp;amp; Point-to-Point:&lt;/strong&gt; PPP (Point-to-Point Protocol), HDLC, Frame Relay, ATM&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Switching &amp;amp; Redundancy:&lt;/strong&gt; STP (IEEE 802.1D Spanning Tree Protocol), RSTP, VLAN tagging (IEEE 802.1Q)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Tunneling &amp;amp; Link Layer Control:&lt;/strong&gt; L2TP, PPPoE, ARP* (Address Resolution Protocol operates across Layer 2 and Layer 3 boundaries to map IPs to MACs)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="layer-3-network-layer"&gt;Layer 3: Network Layer&lt;span class="hx:absolute hx:-mt-20" id="layer-3-network-layer"&gt;&lt;/span&gt;
+&lt;a href="#layer-3-network-layer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Handles host-to-host addressing across different networks, path determination, and packet routing. It abstracts network topologies so data can traverse multiple intermediate hops.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Protocol Data Unit (PDU):&lt;/strong&gt; Packet&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Hardware:&lt;/strong&gt; Routers, Layer 3 switches&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Protocols &amp;amp; Standards:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Addressing &amp;amp; Delivery:&lt;/strong&gt; IPv4, IPv6
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Control &amp;amp; Diagnostics:&lt;/strong&gt; ICMP (Internet Control Message Protocol), ICMPv6, IGMP (multicast group management)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Routing Protocols (Interior):&lt;/strong&gt; OSPF, IS-IS, RIP, EIGRP&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Routing Protocols (Exterior):&lt;/strong&gt; BGP (Border Gateway Protocol)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Network Security &amp;amp; Tunneling:&lt;/strong&gt; IPsec (AH, ESP), GRE (Generic Routing Encapsulation)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="layer-4-transport-layer"&gt;Layer 4: Transport Layer&lt;span class="hx:absolute hx:-mt-20" id="layer-4-transport-layer"&gt;&lt;/span&gt;
+&lt;a href="#layer-4-transport-layer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Responsible for end-to-end communication between application processes on host devices. It manages multiplexing/demultiplexing via port numbers, segmentation, reassembly, error correction, and flow/congestion control.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Protocol Data Unit (PDU):&lt;/strong&gt; Segment (TCP) / Datagram (UDP)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Protocols &amp;amp; Standards:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;TCP (Transmission Control Protocol):&lt;/strong&gt; Connection-oriented, ordered byte-stream delivery with congestion and flow control
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;UDP (User Datagram Protocol):&lt;/strong&gt; Connectionless, lightweight, low-latency datagram delivery without retransmission&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SCTP (Stream Control Transmission Protocol):&lt;/strong&gt; Multi-stream, message-oriented transport protocol with multi-homing support&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;QUIC:&lt;/strong&gt; UDP-based transport protocol incorporating integrated TLS 1.3 encryption and multiplexing&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DCCP (Datagram Congestion Control Protocol):&lt;/strong&gt; Unreliable datagram transport with congestion notification&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="layer-5-session-layer"&gt;Layer 5: Session Layer&lt;span class="hx:absolute hx:-mt-20" id="layer-5-session-layer"&gt;&lt;/span&gt;
+&lt;a href="#layer-5-session-layer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Establishes, manages, synchronizes, and terminates communication sessions (dialogues) between applications. It controls full-duplex or half-duplex operations and inserts checkpoints for session recovery.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Protocol Data Unit (PDU):&lt;/strong&gt; Data&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Protocols &amp;amp; Standards:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;RPC (Remote Procedure Call):&lt;/strong&gt; Manages client-server procedural interactions
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;NetBIOS:&lt;/strong&gt; Session establishment between computers on a LAN&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;PPTP (Point-to-Point Tunneling Protocol):&lt;/strong&gt; Encapsulates and manages tunneling sessions&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SMPP (Short Message Peer-to-Peer):&lt;/strong&gt; Exchanges SMS messages between SMSCs and messaging systems&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;SIP (Session Initiation Protocol):&lt;/strong&gt; Signaling protocol for setting up and tearing down multimedia/VoIP sessions&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Sockets API / Named Pipes:&lt;/strong&gt; OS abstractions managing local and remote communication sessions&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="layer-6-presentation-layer"&gt;Layer 6: Presentation Layer&lt;span class="hx:absolute hx:-mt-20" id="layer-6-presentation-layer"&gt;&lt;/span&gt;
+&lt;a href="#layer-6-presentation-layer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Translates, formats, encrypts, and compresses data so that application-layer entities exchange readable information regardless of internal representations (e.g., character encoding, byte ordering).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Protocol Data Unit (PDU):&lt;/strong&gt; Data&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Protocols &amp;amp; Standards:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Encryption &amp;amp; Security Handshakes:&lt;/strong&gt; TLS / SSL (presentation functions: negotiation of cipher suites, encryption/decryption)
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Data Representation &amp;amp; Serialization:&lt;/strong&gt; ASN.1, XDR (External Data Representation), JSON, Protocol Buffers, MessagePack&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Character Encoding:&lt;/strong&gt; ASCII, UTF-8, UTF-16, EBCDIC&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Media Compression &amp;amp; Encoding:&lt;/strong&gt; JPEG, PNG, GIF, MPEG, H.264, MP3&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="layer-7-application-layer"&gt;Layer 7: Application Layer&lt;span class="hx:absolute hx:-mt-20" id="layer-7-application-layer"&gt;&lt;/span&gt;
+&lt;a href="#layer-7-application-layer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Directly interacts with software applications to provide end-user network services, resource discovery, authentication, and application messaging.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Protocol Data Unit (PDU):&lt;/strong&gt; Data&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Protocols &amp;amp; Standards:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Web:&lt;/strong&gt; HTTP/1.1, HTTP/2, HTTP/3
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;File Transfer:&lt;/strong&gt; FTP, SFTP, TFTP, NFS, SMB/CIFS&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Email &amp;amp; Messaging:&lt;/strong&gt; SMTP, IMAP, POP3, XMPP&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Network Management &amp;amp; Directory:&lt;/strong&gt; DNS, DHCP, SNMP, LDAP, NTP (Network Time Protocol)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Remote Shell &amp;amp; Terminal:&lt;/strong&gt; SSH, Telnet&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="layer-summary-matrix"&gt;Layer Summary Matrix&lt;span class="hx:absolute hx:-mt-20" id="layer-summary-matrix"&gt;&lt;/span&gt;
+&lt;a href="#layer-summary-matrix" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;#&lt;/th&gt;
+&lt;th&gt;Layer&lt;/th&gt;
+&lt;th&gt;Primary Function&lt;/th&gt;
+&lt;th&gt;Addressing / Identifier&lt;/th&gt;
+&lt;th&gt;Key Protocols&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;7&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Application&lt;/td&gt;
+&lt;td&gt;Network services for user applications&lt;/td&gt;
+&lt;td&gt;URLs, URIs, FQDNs&lt;/td&gt;
+&lt;td&gt;HTTP, DNS, SMTP, SSH, DHCP&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;6&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Presentation&lt;/td&gt;
+&lt;td&gt;Formatting, encryption, serialization&lt;/td&gt;
+&lt;td&gt;Data syntax / schemas&lt;/td&gt;
+&lt;td&gt;TLS/SSL, ASN.1, JSON, XDR&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;5&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Session&lt;/td&gt;
+&lt;td&gt;Dialogue control &amp;amp; session lifecycle&lt;/td&gt;
+&lt;td&gt;Session IDs, RPC handles&lt;/td&gt;
+&lt;td&gt;SIP, NetBIOS, RPC, SMPP&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;4&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Transport&lt;/td&gt;
+&lt;td&gt;End-to-end delivery &amp;amp; port multiplexing&lt;/td&gt;
+&lt;td&gt;Port numbers (0–65535)&lt;/td&gt;
+&lt;td&gt;TCP, UDP, QUIC, SCTP&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;3&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Network&lt;/td&gt;
+&lt;td&gt;Routing &amp;amp; logical addressing&lt;/td&gt;
+&lt;td&gt;IP addresses&lt;/td&gt;
+&lt;td&gt;IPv4, IPv6, ICMP, OSPF, BGP&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;2&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Data Link&lt;/td&gt;
+&lt;td&gt;Framing, local MAC addressing &amp;amp; error checks&lt;/td&gt;
+&lt;td&gt;MAC addresses, VLAN tags&lt;/td&gt;
+&lt;td&gt;Ethernet, Wi-Fi, PPP, ARP&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;1&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;Physical&lt;/td&gt;
+&lt;td&gt;Physical transmission of raw bits&lt;/td&gt;
+&lt;td&gt;Voltage, wavelength, pins&lt;/td&gt;
+&lt;td&gt;1000BASE-T, RS-232, 802.11 PHY&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</description></item><item><title>System design fundamentals</title><link>https://nagarajrpoojari.github.io/opennotes/notes/cs/system-design-fundamentals/</link><pubDate>Sat, 31 Oct 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/cs/system-design-fundamentals/</guid><description/></item></channel></rss>

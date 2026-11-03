@@ -1,1 +1,352 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Database on Open Notes</title><link>https://nagarajrpoojari.github.io/opennotes/categories/database/</link><description>Recent content in Database on Open Notes</description><generator>Hugo</generator><language>en</language><lastBuildDate>Sat, 16 Aug 2025 11:11:09 +0530</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/categories/database/index.xml" rel="self" type="application/rss+xml"/><item><title>Consistent Ring Within a Consistent Ring</title><link>https://nagarajrpoojari.github.io/opennotes/posts/coc/</link><pubDate>Sat, 16 Aug 2025 11:11:09 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/posts/coc/</guid><description>Exploring OrangeDB&amp;rsquo;s hybrid replication model combining Cassandra&amp;rsquo;s leaderless design and MongoDB&amp;rsquo;s sharded architecture.</description></item><item><title>Introducing OrangeDB: A Distributed Key-Doc Database</title><link>https://nagarajrpoojari.github.io/opennotes/posts/orange/</link><pubDate>Sat, 16 Aug 2025 11:11:09 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/posts/orange/</guid><description>OrangeDB is a key-document distributed database built on top of Parrot, an LSM-based storage engine. Learn how OrangeDB combines ideas from MongoDB and Cassandra for a powerful new system.</description></item></channel></rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – Database</title><link>https://nagarajrpoojari.github.io/opennotes/categories/database/</link><description>Recent content in Database on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sat, 16 Aug 2025 11:11:09 +0530</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/categories/database/index.xml" rel="self" type="application/rss+xml"/><item><title>Consistent Ring Within a Consistent Ring</title><link>https://nagarajrpoojari.github.io/opennotes/posts/coc/</link><pubDate>Sat, 16 Aug 2025 11:11:09 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/posts/coc/</guid><description>
+&lt;p&gt;Over the past few months, I&amp;rsquo;ve been diving deep into distributed storage internals — and somewhere along the way, &lt;strong&gt;OrangeDB&lt;/strong&gt; was born. If you haven&amp;rsquo;t heard of it yet, check &lt;a href=""&gt;orange&lt;/a&gt;. This journey led me to explore several lesser-known databases that quietly power critical infrastructure in production environments.&lt;/p&gt;
+&lt;p&gt;Some highlights:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Cassandra&lt;/strong&gt; — a fully leaderless, highly available system with tunable consistency.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;MongoDB&lt;/strong&gt; — a semi-consistent document store with sharding and replica sets.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;LevelDB / RocksDB&lt;/strong&gt; — high-performance embedded key-value stores.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Voldemort / Riak&lt;/strong&gt; — early pioneers in distributed key-value stores.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="revisiting-existing-designs"&gt;Revisiting Existing Designs&lt;span class="hx:absolute hx:-mt-20" id="revisiting-existing-designs"&gt;&lt;/span&gt;
+&lt;a href="#revisiting-existing-designs" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;h4 data-hextra-search-id="cassandra"&gt;&lt;strong&gt;Cassandra&lt;/strong&gt;&lt;span class="hx:absolute hx:-mt-20" id="cassandra"&gt;&lt;/span&gt;
+&lt;a href="#cassandra" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;Cassandra is completely &lt;strong&gt;leaderless&lt;/strong&gt; — any node can handle reads or writes. Data is eventually replicated using &lt;strong&gt;gossip&lt;/strong&gt;. To ensure consistency, Cassandra uses &lt;strong&gt;tunable quorum reads and writes&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For a cluster with &lt;code&gt;n&lt;/code&gt; replicas:
+&lt;ul&gt;
+&lt;li&gt;A &lt;strong&gt;write&lt;/strong&gt; must be acknowledged by at least &lt;code&gt;w&lt;/code&gt; nodes.&lt;/li&gt;
+&lt;li&gt;A &lt;strong&gt;read&lt;/strong&gt; must be satisfied by &lt;code&gt;r&lt;/code&gt; nodes.&lt;/li&gt;
+&lt;li&gt;The constraint &lt;code&gt;w + r &amp;gt; n&lt;/code&gt; ensures &lt;strong&gt;strong consistency&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Features like &lt;strong&gt;sloppy quorum&lt;/strong&gt;, &lt;strong&gt;hinted handoff&lt;/strong&gt;, and &lt;strong&gt;read repair&lt;/strong&gt; further enhance availability. However, this design may result in &lt;strong&gt;higher read and write latencies&lt;/strong&gt;, especially under quorum settings.&lt;/p&gt;
+&lt;h4 data-hextra-search-id="mongodb-sharded-deployment"&gt;&lt;strong&gt;MongoDB Sharded Deployment&lt;/strong&gt;&lt;span class="hx:absolute hx:-mt-20" id="mongodb-sharded-deployment"&gt;&lt;/span&gt;
+&lt;a href="#mongodb-sharded-deployment" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;In a MongoDB sharded cluster:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The dataset is partitioned across &lt;strong&gt;shards&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Each shard is a &lt;strong&gt;replica set&lt;/strong&gt; with a single &lt;strong&gt;primary&lt;/strong&gt; and multiple &lt;strong&gt;secondaries&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;All writes go to the &lt;strong&gt;primary&lt;/strong&gt; of the relevant shard.&lt;/li&gt;
+&lt;li&gt;Reads can be routed to the &lt;strong&gt;primary&lt;/strong&gt; or to secondaries depending on the configured read preference.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This design offers &lt;strong&gt;strong consistency by default&lt;/strong&gt; (via the primary) and &lt;strong&gt;lower read latency&lt;/strong&gt; in relaxed consistency modes. However, it relies heavily on &lt;strong&gt;leader election (via Raft)&lt;/strong&gt;, which introduces complexity (e.g., split-brain handling, election delays, leadership failover).&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 data-hextra-search-id="enter-orangedb"&gt;Enter OrangeDB&lt;span class="hx:absolute hx:-mt-20" id="enter-orangedb"&gt;&lt;/span&gt;
+&lt;a href="#enter-orangedb" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;&lt;img src="https://nagarajrpoojari.github.io/opennotes/posts/coc/coc-2.png" alt="Screenshot" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;p&gt;OrangeDB attempts to combine the &lt;strong&gt;best of both worlds&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The &lt;strong&gt;scalability and partitioning&lt;/strong&gt; of MongoDB’s sharded setup.&lt;/li&gt;
+&lt;li&gt;The &lt;strong&gt;leaderless replication&lt;/strong&gt; and tunable consistency of Cassandra.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It introduces:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;h4 data-hextra-search-id="consistent-ring-within-a-consistent-ring"&gt;“Consistent Ring Within a Consistent Ring”&lt;span class="hx:absolute hx:-mt-20" id="consistent-ring-within-a-consistent-ring"&gt;&lt;/span&gt;
+&lt;a href="#consistent-ring-within-a-consistent-ring" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;An &lt;strong&gt;outer ring&lt;/strong&gt; of nodes forms the basis for &lt;strong&gt;shard selection&lt;/strong&gt; via consistent hashing.&lt;/li&gt;
+&lt;li&gt;Each shard contains an &lt;strong&gt;inner ring&lt;/strong&gt; of &lt;strong&gt;replica nodes&lt;/strong&gt;, also organized using consistent hashing.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This two-layer ring structure enables &lt;strong&gt;fine-grained control&lt;/strong&gt; over placement, replication, and load distribution.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 data-hextra-search-id="write-path"&gt;Write Path&lt;span class="hx:absolute hx:-mt-20" id="write-path"&gt;&lt;/span&gt;
+&lt;a href="#write-path" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;For a key like &lt;code&gt;k=120&lt;/code&gt;, OrangeDB hashes the key to determine the target &lt;strong&gt;shard&lt;/strong&gt; via the &lt;strong&gt;outer ring&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Within that shard, the key is again hashed to select a specific &lt;strong&gt;replica&lt;/strong&gt; (let’s say &lt;code&gt;replica-1&lt;/code&gt;) in the &lt;strong&gt;inner ring&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;All writes for that key go to this designated &lt;strong&gt;primary replica&lt;/strong&gt; — without any leader election.&lt;/li&gt;
+&lt;li&gt;That replica then &lt;strong&gt;asynchronously replicates&lt;/strong&gt; the write to its sibling replicas within the shard using &lt;strong&gt;gossip-style replication&lt;/strong&gt; (similar to Cassandra).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;This design achieves:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Write locality&lt;/strong&gt; per key.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Leaderless writes&lt;/strong&gt; without the overhead of leader elections.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Horizontal scalability&lt;/strong&gt; by sharding at both levels.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 data-hextra-search-id="read-path"&gt;Read Path&lt;span class="hx:absolute hx:-mt-20" id="read-path"&gt;&lt;/span&gt;
+&lt;a href="#read-path" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Reads can be performed at &lt;strong&gt;multiple consistency levels&lt;/strong&gt; depending on the use case:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A &lt;strong&gt;read&lt;/strong&gt; first determines the target shard and replica (as with writes).&lt;/li&gt;
+&lt;li&gt;Based on the configured consistency level, the system will:
+&lt;ul&gt;
+&lt;li&gt;Query &lt;strong&gt;only the primary replica&lt;/strong&gt;, or&lt;/li&gt;
+&lt;li&gt;Query &lt;strong&gt;a quorum of replicas&lt;/strong&gt;, or&lt;/li&gt;
+&lt;li&gt;Query &lt;strong&gt;all replicas&lt;/strong&gt; and enforce unanimous agreement.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 data-hextra-search-id="read-consistency-levels"&gt;Read Consistency Levels&lt;span class="hx:absolute hx:-mt-20" id="read-consistency-levels"&gt;&lt;/span&gt;
+&lt;a href="#read-consistency-levels" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;OrangeDB supports three read modes:&lt;/p&gt;
+&lt;h5 data-hextra-search-id="all"&gt;&lt;em&gt;&lt;code&gt;all&lt;/code&gt;&lt;/em&gt;&lt;span class="hx:absolute hx:-mt-20" id="all"&gt;&lt;/span&gt;
+&lt;a href="#all" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h5&gt;&lt;ul&gt;
+&lt;li&gt;Queries &lt;strong&gt;all replicas&lt;/strong&gt; of a shard.&lt;/li&gt;
+&lt;li&gt;Requires &lt;strong&gt;unanimous agreement&lt;/strong&gt; on the value.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Strongest consistency&lt;/strong&gt;, but higher latency.&lt;/li&gt;
+&lt;li&gt;Fails if any replica is out of sync.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 data-hextra-search-id="quorum"&gt;&lt;em&gt;&lt;code&gt;quorum&lt;/code&gt;&lt;/em&gt;&lt;span class="hx:absolute hx:-mt-20" id="quorum"&gt;&lt;/span&gt;
+&lt;a href="#quorum" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h5&gt;&lt;ul&gt;
+&lt;li&gt;Queries all replicas, but only a &lt;strong&gt;majority&lt;/strong&gt; need to agree.&lt;/li&gt;
+&lt;li&gt;Balances &lt;strong&gt;availability and consistency&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Can optionally trigger &lt;strong&gt;read repair&lt;/strong&gt; for divergent replicas.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 data-hextra-search-id="single"&gt;&lt;em&gt;&lt;code&gt;single&lt;/code&gt;&lt;/em&gt;&lt;span class="hx:absolute hx:-mt-20" id="single"&gt;&lt;/span&gt;
+&lt;a href="#single" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h5&gt;&lt;ul&gt;
+&lt;li&gt;Reads from the &lt;strong&gt;designated primary replica&lt;/strong&gt; only.&lt;/li&gt;
+&lt;li&gt;Fastest option, but assumes the primary is &lt;strong&gt;available and up-to-date&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Risks &lt;strong&gt;stale reads&lt;/strong&gt; or &lt;strong&gt;data loss&lt;/strong&gt; if the replica is unavailable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 data-hextra-search-id="what-orangedb-tries-to-solve"&gt;What OrangeDB Tries to Solve&lt;span class="hx:absolute hx:-mt-20" id="what-orangedb-tries-to-solve"&gt;&lt;/span&gt;
+&lt;a href="#what-orangedb-tries-to-solve" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;h6 data-hextra-search-id="orangedb-vs-cassandra-simpler-lower-latency-writes"&gt;OrangeDB vs Cassandra: Simpler, Lower-Latency Writes&lt;span class="hx:absolute hx:-mt-20" id="orangedb-vs-cassandra-simpler-lower-latency-writes"&gt;&lt;/span&gt;
+&lt;a href="#orangedb-vs-cassandra-simpler-lower-latency-writes" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h6&gt;&lt;blockquote&gt;
+&lt;p&gt;OrangeDB avoids quorum-based writes by routing each key to a fixed replica, requiring no coordination during writes.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Why it matters:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Cassandra needs coordination between &lt;code&gt;w&lt;/code&gt; replicas (e.g., 2 of 3) for every write.&lt;/li&gt;
+&lt;li&gt;OrangeDB writes to a single replica and replicates asynchronously — lower latency, less overhead.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Trade-off:&lt;/strong&gt; Potential for data loss if the primary fails before replication. No immediate durability like Cassandra’s quorum model.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h6 data-hextra-search-id="orangedb-vs-mongodb-no-leader-election-always-writable"&gt;OrangeDB vs MongoDB: No Leader Election, Always Writable&lt;span class="hx:absolute hx:-mt-20" id="orangedb-vs-mongodb-no-leader-election-always-writable"&gt;&lt;/span&gt;
+&lt;a href="#orangedb-vs-mongodb-no-leader-election-always-writable" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h6&gt;&lt;blockquote&gt;
+&lt;p&gt;OrangeDB removes the concept of a primary per shard, avoiding Raft-based elections and their downtime.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Why it matters:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MongoDB pauses writes during primary failover and risks split-brain under partitions.&lt;/li&gt;
+&lt;li&gt;OrangeDB uses deterministic key-to-replica mapping — no election, no downtime.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Trade-off:&lt;/strong&gt; Requires smarter client or routing logic to handle failed replicas gracefully.&lt;/p&gt;
+&lt;hr&gt;
+&lt;hr&gt;
+&lt;h3 data-hextra-search-id="final-thoughts"&gt;Final Thoughts&lt;span class="hx:absolute hx:-mt-20" id="final-thoughts"&gt;&lt;/span&gt;
+&lt;a href="#final-thoughts" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;OrangeDB started as a personal exploration—an educational project driven by curiosity about how distributed storage systems work under the hood. It’s a playground to experiment with ideas inspired by Cassandra, MongoDB, and others, but rethinking some of their core trade-offs.&lt;/p&gt;
+&lt;p&gt;This project is far from production-ready. There are still many unanswered questions around durability, failure handling, and consistency guarantees. But that’s part of the fun—learning by building and seeing what challenges arise.&lt;/p&gt;
+&lt;p&gt;If you’ve enjoyed this peek into the inner workings of distributed databases, I hope it sparks your own experiments and deep dives. At the end of the day, OrangeDB is just one step in an ongoing journey to understand and improve how I store and manage data at scale.&lt;/p&gt;
+&lt;p&gt;Thanks for reading and sharing the curiosity! ✌️&lt;/p&gt;</description></item><item><title>Introducing OrangeDB: A Distributed Key-Doc Database</title><link>https://nagarajrpoojari.github.io/opennotes/posts/orange/</link><pubDate>Sat, 16 Aug 2025 11:11:09 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/posts/orange/</guid><description>
+&lt;p&gt;A couple of months ago, I started building a small LSM tree-based storage engine, which I call &lt;strong&gt;Parrot&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;If you&amp;rsquo;re unfamiliar with LSM trees—unlike B-trees, which require frequent reorganizations—LSM (Log-Structured Merge) trees write data as sequential logs. One of the main problems with B/B+ trees is &lt;strong&gt;write amplification&lt;/strong&gt;. Inserting a single row might trigger multiple rearrangements across various index trees, leading to costly &lt;strong&gt;random disk writes&lt;/strong&gt;, especially in persistent systems.&lt;/p&gt;
+&lt;p&gt;LSM trees avoid this by leveraging &lt;strong&gt;sequential writes&lt;/strong&gt;, making write operations extremely fast. But there’s a tradeoff—&lt;strong&gt;read performance&lt;/strong&gt;. Since records are spread across multiple levels, a read operation might need to scan through several files until it finds the desired record.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Read more about LSM &lt;a href="https://en.wikipedia.org/wiki/Log-structured_merge-tree" target="_blank" rel="noopener"&gt;here&lt;/a&gt;&lt;/em&gt;.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="what-makes-parrot-different"&gt;What Makes Parrot Different?&lt;span class="hx:absolute hx:-mt-20" id="what-makes-parrot-different"&gt;&lt;/span&gt;
+&lt;a href="#what-makes-parrot-different" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Parrot isn’t just another LSM tree engine. It includes several optimizations aimed at speeding up I/O and improving concurrency.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Chain of Memtables&lt;/strong&gt;&lt;br&gt;
+What happens to writes while flushing the memtable? Many systems use a double-buffered approach—write to one while flushing the other. But if the second also fills up before flushing completes, things get messy.&lt;br&gt;
+Parrot uses a &lt;strong&gt;chain of memtables&lt;/strong&gt;, where new memtables are continuously added to a queue. The flusher works independently, flushing from the other end of the queue, enabling uninterrupted writes.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Optimistic Concurrency Control&lt;/strong&gt;&lt;br&gt;
+Parrot minimizes locking, using optimistic strategies for concurrent writes and reads.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Zero-Copy Reads&lt;/strong&gt;&lt;br&gt;
+Parrot uses &lt;strong&gt;shared memory mapping (mmap)&lt;/strong&gt; to read files. It avoids copying file data to user-space buffers; threads read directly from the kernel page cache, reducing latency and memory usage.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://nagarajrpoojari.github.io/opennotes/posts/orange/lsm2.png" alt="Screenshot" data-zoomable loading="lazy" /&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="introducing-orangedb"&gt;Introducing &lt;strong&gt;OrangeDB&lt;/strong&gt;&lt;span class="hx:absolute hx:-mt-20" id="introducing-orangedb"&gt;&lt;/span&gt;
+&lt;a href="#introducing-orangedb" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;Orange&lt;/strong&gt; is a distributed key-document database built on top of Parrot. It provides:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SQL-like interface via &lt;strong&gt;OQL&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Native JSON-like document encoding&lt;/li&gt;
+&lt;li&gt;Rich set of data types&lt;/li&gt;
+&lt;li&gt;Sharding and replication out of the box&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="sharding-consistency-and-replication"&gt;Sharding, Consistency, and Replication&lt;span class="hx:absolute hx:-mt-20" id="sharding-consistency-and-replication"&gt;&lt;/span&gt;
+&lt;a href="#sharding-consistency-and-replication" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;OrangeDB combines the architectures of &lt;strong&gt;MongoDB&lt;/strong&gt; and &lt;strong&gt;Cassandra&lt;/strong&gt;, striking a balance between high availability and consistency.&lt;/p&gt;
+&lt;p&gt;An Orange cluster consists of three main components:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Router&lt;/strong&gt;&lt;br&gt;
+Uses &lt;strong&gt;consistent hashing&lt;/strong&gt; to route queries to the appropriate shard. It also supports a concept we call &lt;em&gt;&amp;ldquo;consistent ring within a consistent ring&amp;rdquo;&lt;/em&gt; to map keys precisely to replicas.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Shard&lt;/strong&gt;&lt;br&gt;
+A group of replicas (or &amp;ldquo;siblings&amp;rdquo;) running OrangeDB instances. These replicas use a &lt;strong&gt;leaderless&lt;/strong&gt; model—any replica that receives a write replicates it to others, similar to Cassandra’s gossip-style replication.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Operator&lt;/strong&gt;&lt;br&gt;
+A custom Kubernetes Operator for deploying and managing OrangeDB clusters.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 data-hextra-search-id="read-consistency-levels"&gt;Read Consistency Levels&lt;span class="hx:absolute hx:-mt-20" id="read-consistency-levels"&gt;&lt;/span&gt;
+&lt;a href="#read-consistency-levels" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h4&gt;&lt;p&gt;OrangeDB supports configurable read strategies:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;all&lt;/strong&gt;&lt;br&gt;
+Queries &lt;strong&gt;all siblings&lt;/strong&gt; of a shard and requires &lt;strong&gt;unanimous agreement&lt;/strong&gt; on the value.&lt;br&gt;
+If any replica is out of sync, the read fails.&lt;br&gt;
+This mode provides &lt;strong&gt;strong consistency&lt;/strong&gt;, but may have higher latency.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;quorum&lt;/strong&gt;&lt;br&gt;
+Queries all siblings but only requires a &lt;strong&gt;majority to agree&lt;/strong&gt; on the value.&lt;br&gt;
+Offers a balance between consistency and availability.&lt;br&gt;
+Can optionally trigger &lt;strong&gt;read repair&lt;/strong&gt; to sync outdated replicas.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;single&lt;/strong&gt;&lt;br&gt;
+Queries only the &lt;strong&gt;primary replica&lt;/strong&gt; responsible for the key.&lt;br&gt;
+This is the &lt;strong&gt;fastest&lt;/strong&gt; mode but assumes the primary is &lt;strong&gt;alive and up-to-date&lt;/strong&gt;.&lt;br&gt;
+Suitable when you need &lt;strong&gt;strong consistency&lt;/strong&gt; with &lt;strong&gt;low latency&lt;/strong&gt;, but &lt;em&gt;primary node&lt;/em&gt; is a &lt;em&gt;single point of failure&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 data-hextra-search-id="deployment-options"&gt;Deployment Options&lt;span class="hx:absolute hx:-mt-20" id="deployment-options"&gt;&lt;/span&gt;
+&lt;a href="#deployment-options" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;OrangeDB is available in multiple flavors.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="standalone-mode"&gt;Standalone Mode&lt;span class="hx:absolute hx:-mt-20" id="standalone-mode"&gt;&lt;/span&gt;
+&lt;a href="#standalone-mode" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Run a single OrangeDB instance with gRPC endpoints. Use the Go client to send OQL or gRPC-based queries.&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;app % orange server --port 8000
+___
+/ _ \ _ __ __ _ _ __ __ _ ___
+| | | | &amp;#39;__/ _&amp;#39; | &amp;#39;_ \ / _&amp;#39; |/ _ \
+| |_| | | | (_| | | | | (_| | __/
+\___/|_| \__,_|_| |_|\__, |\___|
+|___/
+Running project: `orange`
+Starting server at 127.0.0.1:8000 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;You can interact with it using the REPL:&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;app % orange repl --port 8000 --address localhost
+# Welcome to orange
+&amp;gt; SELECT * FROM users WHERE _ID = 10&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="sharded-cluster-on-kubernetes"&gt;Sharded Cluster on Kubernetes&lt;span class="hx:absolute hx:-mt-20" id="sharded-cluster-on-kubernetes"&gt;&lt;/span&gt;
+&lt;a href="#sharded-cluster-on-kubernetes" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Step 1: Deploy OrangeDB Operator&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;kubectl apply -f https://raw.githubusercontent.com/nagarajRPoojari/orangectl/main/dist/install.yaml&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Step 2: Define Orange Cluster&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yml" data-lang="yml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# orange.yaml&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;apiVersion&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;ctl.orangectl.orange.db/v1alpha1&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;kind&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;OrangeCtl&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;metadata&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;orangectl-sample&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;labels&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;app.kubernetes.io/name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;orangectl&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;app.kubernetes.io/managed-by&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;kustomize&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;spec&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;namespace&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;default&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;router&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;router&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;labels&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;app&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;orange-router&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;tier&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;control&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;image&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;np137270/gateway:latest&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;8000&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;config&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;ROUTING_MODE&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;hash&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;LOG_LEVEL&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;info&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;shard&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;shard&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;labels&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;app&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;orange-shard&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;tier&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;data&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;image&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;np137270/orange:latest&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;count&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# Number of shards&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;replicas&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;2&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c"&gt;# Replicas per shard&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;port&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="m"&gt;52001&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;config&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;STORAGE_PATH&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;/app/data&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;CACHE_ENABLED&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;true&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;kubectl apply -f orange.yaml
+kubectl port-forward svc/router 8000:8000&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;Step 3: Try Some Queries&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;echo &amp;#34;Creating schema...&amp;#34;
+curl -X POST http://localhost:8000/ \
+-H &amp;#34;Content-Type: application/json&amp;#34; \
+-d &amp;#39;{&amp;#34;query&amp;#34;: &amp;#34;create document test {\&amp;#34;name\&amp;#34;:\&amp;#34;STRING\&amp;#34;}&amp;#34;}&amp;#39;
+echo &amp;#34;Inserting documents from ID 1 to 20...&amp;#34;
+for i in $(seq 1 20); do
+curl -s -X POST http://localhost:8000/ \
+-H &amp;#34;Content-Type: application/json&amp;#34; \
+-d &amp;#34;{\&amp;#34;query\&amp;#34;: \&amp;#34;insert value into test {\\\&amp;#34;_ID\\\&amp;#34;: $i, \\\&amp;#34;name\\\&amp;#34;: \\\&amp;#34;hello-$i\\\&amp;#34;}\&amp;#34;}&amp;#34;
+done
+echo &amp;#34;Searching for document with _ID = 13...&amp;#34;
+curl -X POST http://localhost:8000/ \
+-H &amp;#34;Content-Type: application/json&amp;#34; \
+-d &amp;#39;{&amp;#34;query&amp;#34;: &amp;#34;select * from test where _ID = 13&amp;#34;}&amp;#39;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 data-hextra-search-id="whats-next"&gt;What&amp;rsquo;s Next?&lt;span class="hx:absolute hx:-mt-20" id="whats-next"&gt;&lt;/span&gt;
+&lt;a href="#whats-next" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;OrangeDB is still evolving. We&amp;rsquo;re working on:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Transaction support&lt;/li&gt;
+&lt;li&gt;Better indexing strategies&lt;/li&gt;
+&lt;li&gt;Integration with stream processing engines&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Feedback, contributions, and critiques are welcome.&lt;/p&gt;</description></item></channel></rss>

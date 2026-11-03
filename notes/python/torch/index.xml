@@ -1,0 +1,272 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – PyTorch</title><link>https://nagarajrpoojari.github.io/opennotes/notes/python/torch/</link><description>Recent content in PyTorch on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 28 Oct 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/notes/python/torch/index.xml" rel="self" type="application/rss+xml"/><item><title>API</title><link>https://nagarajrpoojari.github.io/opennotes/notes/python/torch/api/</link><pubDate>Wed, 28 Oct 2026 00:00:00 +0000</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/notes/python/torch/api/</guid><description>
+&lt;p&gt;The PyTorch core reference API is divided into functional domains spanning tensor manipulation, autograd, neural network modules, runtime optimization, compilation, and distributed execution.&lt;/p&gt;
+&lt;h2 data-hextra-search-id="1-core-tensor-engine-torch"&gt;1. Core Tensor Engine (&lt;code&gt;torch&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="1-core-tensor-engine-torch"&gt;&lt;/span&gt;
+&lt;a href="#1-core-tensor-engine-torch" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;The root &lt;code&gt;torch&lt;/code&gt; namespace governs tensor instantiation, memory layout, indexing, and mathematical transformations.&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Category&lt;/th&gt;
+&lt;th&gt;Primary APIs&lt;/th&gt;
+&lt;th&gt;Mechanics &amp;amp; Details&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Creation Ops&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;empty&lt;/code&gt;, &lt;code&gt;zeros&lt;/code&gt;, &lt;code&gt;ones&lt;/code&gt;, &lt;code&gt;full&lt;/code&gt;, &lt;code&gt;arange&lt;/code&gt;, &lt;code&gt;linspace&lt;/code&gt;, &lt;code&gt;eye&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Allocates uninitialized memory (&lt;code&gt;empty&lt;/code&gt;) or initialized buffers directly on host or accelerator.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;From Existing Data&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;tensor&lt;/code&gt;, &lt;code&gt;as_tensor&lt;/code&gt;, &lt;code&gt;from_numpy&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;torch.tensor&lt;/code&gt; performs a defensive copy; &lt;code&gt;as_tensor&lt;/code&gt; and &lt;code&gt;from_numpy&lt;/code&gt; share the underlying data pointer if dtype and device match.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Shape &amp;amp; Topology&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;view&lt;/code&gt;, &lt;code&gt;reshape&lt;/code&gt;, &lt;code&gt;transpose&lt;/code&gt;, &lt;code&gt;permute&lt;/code&gt;, &lt;code&gt;squeeze&lt;/code&gt;, &lt;code&gt;unsqueeze&lt;/code&gt;, &lt;code&gt;flatten&lt;/code&gt;, &lt;code&gt;contiguous&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;view&lt;/code&gt; alters strides over contiguous storage; &lt;code&gt;reshape&lt;/code&gt; falls back to a memory copy if strides are non-contiguous; &lt;code&gt;permute&lt;/code&gt; and &lt;code&gt;transpose&lt;/code&gt; adjust dimension strides without moving bytes.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Slicing &amp;amp; Joining&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;cat&lt;/code&gt;, &lt;code&gt;stack&lt;/code&gt;, &lt;code&gt;split&lt;/code&gt;, &lt;code&gt;chunk&lt;/code&gt;, &lt;code&gt;gather&lt;/code&gt;, &lt;code&gt;scatter_&lt;/code&gt;, &lt;code&gt;index_select&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;cat&lt;/code&gt; concatenates along an existing dimension; &lt;code&gt;stack&lt;/code&gt; creates a new dimension; &lt;code&gt;gather&lt;/code&gt;/&lt;code&gt;scatter_&lt;/code&gt; perform indexed reads/writes using index tensors.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Math &amp;amp; Linear Algebra&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;matmul&lt;/code&gt;, &lt;code&gt;bmm&lt;/code&gt;, &lt;code&gt;einsum&lt;/code&gt;, &lt;code&gt;addmm&lt;/code&gt;, &lt;code&gt;linalg.*&lt;/code&gt; (&lt;code&gt;inv&lt;/code&gt;, &lt;code&gt;svd&lt;/code&gt;, &lt;code&gt;qr&lt;/code&gt;, &lt;code&gt;norm&lt;/code&gt;)&lt;/td&gt;
+&lt;td&gt;High-performance BLAS/LAPACK backends; &lt;code&gt;einsum&lt;/code&gt; processes Einstein summation across arbitrary tensor dimensions.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Reductions &amp;amp; Stats&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;sum&lt;/code&gt;, &lt;code&gt;mean&lt;/code&gt;, &lt;code&gt;prod&lt;/code&gt;, &lt;code&gt;std&lt;/code&gt;, &lt;code&gt;var&lt;/code&gt;, &lt;code&gt;min&lt;/code&gt;, &lt;code&gt;max&lt;/code&gt;, &lt;code&gt;argmax&lt;/code&gt;, &lt;code&gt;argmin&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Supports multi-dim reductions with &lt;code&gt;dim&lt;/code&gt; and &lt;code&gt;keepdim=True&lt;/code&gt; to preserve broadcast compatibility.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 data-hextra-search-id="2-automatic-differentiation-torchautograd"&gt;2. Automatic Differentiation (&lt;code&gt;torch.autograd&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="2-automatic-differentiation-torchautograd"&gt;&lt;/span&gt;
+&lt;a href="#2-automatic-differentiation-torchautograd" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;PyTorch constructs a dynamic Directed Acyclic Graph (DAG) during the forward pass, where leaf nodes are parameters and interior nodes are execution nodes (&lt;code&gt;Node&lt;/code&gt;/&lt;code&gt;grad_fn&lt;/code&gt;).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Core Execution Primitives:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.autograd.backward(tensors, grad_tensors=None, retain_graph=None)&lt;/code&gt;: Computes sum of gradients of given tensors with respect to graph leaves.
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.autograd.grad(outputs, inputs, grad_outputs=None, retain_graph=None, create_graph=False)&lt;/code&gt;: Computes and returns the sum of gradients of outputs with respect to specific inputs. Setting &lt;code&gt;create_graph=True&lt;/code&gt; enables higher-order derivatives (e.g., Hessian computations).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Context Managers:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.no_grad()&lt;/code&gt;: Disables graph construction, reducing memory consumption during inference.
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.enable_grad()&lt;/code&gt;: Re-enables gradient computation inside a &lt;code&gt;no_grad&lt;/code&gt; scope.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;torch.inference_mode()&lt;/code&gt;: More aggressive than &lt;code&gt;no_grad()&lt;/code&gt;; disables both gradient tracking and version counter tracking on tensors.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;torch.autograd.set_detect_anomaly(True)&lt;/code&gt;: Traces forward execution to pinpoint operations that generate &lt;code&gt;NaN&lt;/code&gt; or &lt;code&gt;Inf&lt;/code&gt; gradients during backward passes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Extensibility:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.autograd.Function&lt;/code&gt;: Base class for writing custom differentiable operations implementing &lt;code&gt;@staticmethod&lt;/code&gt; &lt;code&gt;forward(ctx, *args)&lt;/code&gt; and &lt;code&gt;backward(ctx, *grad_outputs)&lt;/code&gt;. Use &lt;code&gt;ctx.save_for_backward()&lt;/code&gt; to cache tensors needed for backward calculations.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 data-hextra-search-id="3-neural-network-abstractions-torchnn--torchnnfunctional"&gt;3. Neural Network Abstractions (&lt;code&gt;torch.nn&lt;/code&gt; &amp;amp; &lt;code&gt;torch.nn.functional&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="3-neural-network-abstractions-torchnn--torchnnfunctional"&gt;&lt;/span&gt;
+&lt;a href="#3-neural-network-abstractions-torchnn--torchnnfunctional" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;&lt;code&gt;torch.nn&lt;/code&gt; provides stateful modules holding parameters and persistent state. &lt;code&gt;torch.nn.functional&lt;/code&gt; provides stateless mathematical operations.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="stateful-containers--layer-classes-torchnn"&gt;Stateful Containers &amp;amp; Layer Classes (&lt;code&gt;torch.nn&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="stateful-containers--layer-classes-torchnn"&gt;&lt;/span&gt;
+&lt;a href="#stateful-containers--layer-classes-torchnn" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Base Primitives:&lt;/strong&gt; &lt;code&gt;nn.Module&lt;/code&gt; (tracks child modules, parameters, and buffers), &lt;code&gt;nn.Parameter&lt;/code&gt; (tensor registered as a trainable weight), &lt;code&gt;nn.Buffer&lt;/code&gt; (persistent state not updated by optimizers, e.g., running mean/variance).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Containers:&lt;/strong&gt; &lt;code&gt;nn.Sequential&lt;/code&gt;, &lt;code&gt;nn.ModuleList&lt;/code&gt;, &lt;code&gt;nn.ModuleDict&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Linear &amp;amp; Recurrent:&lt;/strong&gt; &lt;code&gt;nn.Linear&lt;/code&gt;, &lt;code&gt;nn.Bilinear&lt;/code&gt;, &lt;code&gt;nn.RNN&lt;/code&gt;, &lt;code&gt;nn.LSTM&lt;/code&gt;, &lt;code&gt;nn.GRU&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Spatial &amp;amp; Volumetric:&lt;/strong&gt; &lt;code&gt;nn.Conv1d&lt;/code&gt;, &lt;code&gt;nn.Conv2d&lt;/code&gt;, &lt;code&gt;nn.Conv3d&lt;/code&gt;, &lt;code&gt;nn.ConvTranspose2d&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Normalization:&lt;/strong&gt; &lt;code&gt;nn.BatchNorm1d/2d&lt;/code&gt;, &lt;code&gt;nn.LayerNorm&lt;/code&gt;, &lt;code&gt;nn.GroupNorm&lt;/code&gt;, &lt;code&gt;nn.RMSNorm&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Attention &amp;amp; Transformers:&lt;/strong&gt; &lt;code&gt;nn.MultiheadAttention&lt;/code&gt;, &lt;code&gt;nn.TransformerEncoder&lt;/code&gt;, &lt;code&gt;nn.TransformerDecoder&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Loss Functions:&lt;/strong&gt; &lt;code&gt;nn.MSELoss&lt;/code&gt;, &lt;code&gt;nn.CrossEntropyLoss&lt;/code&gt;, &lt;code&gt;nn.BCEWithLogitsLoss&lt;/code&gt;, &lt;code&gt;nn.KLDivLoss&lt;/code&gt;, &lt;code&gt;nn.CTCLoss&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="stateless-operations-torchnnfunctional-as-f"&gt;Stateless Operations (&lt;code&gt;torch.nn.functional&lt;/code&gt; as &lt;code&gt;F&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="stateless-operations-torchnnfunctional-as-f"&gt;&lt;/span&gt;
+&lt;a href="#stateless-operations-torchnnfunctional-as-f" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Activations:&lt;/strong&gt; &lt;code&gt;F.relu&lt;/code&gt;, &lt;code&gt;F.gelu&lt;/code&gt;, &lt;code&gt;F.silu&lt;/code&gt;, &lt;code&gt;F.softmax&lt;/code&gt;, &lt;code&gt;F.log_softmax&lt;/code&gt;, &lt;code&gt;F.sigmoid&lt;/code&gt;, &lt;code&gt;F.tanh&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Attention Kernels:&lt;/strong&gt; &lt;code&gt;F.scaled_dot_product_attention&lt;/code&gt; (SDPA — selects among FlashAttention, Memory-Efficient Attention, or Math kernels automatically).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Sampling &amp;amp; Interpolation:&lt;/strong&gt; &lt;code&gt;F.interpolate&lt;/code&gt;, &lt;code&gt;F.grid_sample&lt;/code&gt;, &lt;code&gt;F.pad&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 data-hextra-search-id="4-parameter-optimization-torchoptim"&gt;4. Parameter Optimization (&lt;code&gt;torch.optim&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="4-parameter-optimization-torchoptim"&gt;&lt;/span&gt;
+&lt;a href="#4-parameter-optimization-torchoptim" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Manages weight updates based on accumulated &lt;code&gt;.grad&lt;/code&gt; attributes.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Algorithms:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;First-Order: &lt;code&gt;SGD&lt;/code&gt; (with momentum and Nesterov), &lt;code&gt;Adam&lt;/code&gt;, &lt;code&gt;AdamW&lt;/code&gt; (decoupled weight decay), &lt;code&gt;RMSprop&lt;/code&gt;, &lt;code&gt;Adagrad&lt;/code&gt;.
+&lt;ul&gt;
+&lt;li&gt;Second-Order: &lt;code&gt;LBFGS&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Optimizer Interfaces:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;optimizer.step()&lt;/code&gt;: Applies gradient updates.
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;optimizer.zero_grad(set_to_none=True)&lt;/code&gt;: Resets &lt;code&gt;.grad&lt;/code&gt;. &lt;code&gt;set_to_none=True&lt;/code&gt; frees memory buffers rather than filling them with zero tensors, improving memory bandwidth.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Learning Rate Schedulers (&lt;code&gt;torch.optim.lr_scheduler&lt;/code&gt;):&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;Step &amp;amp; Exponential: &lt;code&gt;StepLR&lt;/code&gt;, &lt;code&gt;MultiStepLR&lt;/code&gt;, &lt;code&gt;ExponentialLR&lt;/code&gt;.
+&lt;ul&gt;
+&lt;li&gt;Dynamic: &lt;code&gt;ReduceLROnPlateau&lt;/code&gt; (adjusts LR based on validation metric).&lt;/li&gt;
+&lt;li&gt;Smooth Cycles: &lt;code&gt;CosineAnnealingLR&lt;/code&gt;, &lt;code&gt;CosineAnnealingWarmRestarts&lt;/code&gt;, &lt;code&gt;OneCycleLR&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 data-hextra-search-id="5-data-pipelines-torchutilsdata"&gt;5. Data Pipelines (&lt;code&gt;torch.utils.data&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="5-data-pipelines-torchutilsdata"&gt;&lt;/span&gt;
+&lt;a href="#5-data-pipelines-torchutilsdata" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Decouples storage and item retrieval from batch sampling, worker multiprocessing, and hardware staging.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Datasets:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Dataset&lt;/code&gt;: Map-style dataset implementing &lt;code&gt;__len__&lt;/code&gt; and &lt;code&gt;__getitem__(index)&lt;/code&gt;.
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;IterableDataset&lt;/code&gt;: Stream-oriented dataset implementing &lt;code&gt;__iter__&lt;/code&gt; for unbounded or disk-streamed datasets.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Sampling &amp;amp; Loading:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;DataLoader(dataset, batch_size, shuffle, sampler, batch_sampler, num_workers, collate_fn, pin_memory, drop_last)&lt;/code&gt;:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;num_workers &amp;gt; 0&lt;/code&gt;: Uses &lt;code&gt;multiprocessing&lt;/code&gt; workers to prefetch batches into shared memory (&lt;code&gt;shm&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pin_memory=True&lt;/code&gt;: Allocates page-locked host memory to enable non-blocking asynchronous host-to-device transfers (&lt;code&gt;.to(device, non_blocking=True)&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;collate_fn&lt;/code&gt;: Custom callable converting lists of per-sample dicts/tuples into batch tensors.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Sampler&lt;/code&gt;, &lt;code&gt;BatchSampler&lt;/code&gt;, &lt;code&gt;DistributedSampler&lt;/code&gt;: Controls sequence of sample indices generated across single or distributed ranks.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 data-hextra-search-id="6-hardware-backends--precision-torchcuda-torchamp"&gt;6. Hardware Backends &amp;amp; Precision (&lt;code&gt;torch.cuda&lt;/code&gt;, &lt;code&gt;torch.amp&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="6-hardware-backends--precision-torchcuda-torchamp"&gt;&lt;/span&gt;
+&lt;a href="#6-hardware-backends--precision-torchcuda-torchamp" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Provides low-level execution control over GPUs and mixed-precision arithmetic.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;CUDA Management (&lt;code&gt;torch.cuda&lt;/code&gt;):&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;Stream &amp;amp; Events: &lt;code&gt;torch.cuda.Stream()&lt;/code&gt;, &lt;code&gt;torch.cuda.Event()&lt;/code&gt; for asynchronous execution, cross-stream synchronization, and timing.
+&lt;ul&gt;
+&lt;li&gt;Memory Profiling: &lt;code&gt;torch.cuda.memory_allocated()&lt;/code&gt;, &lt;code&gt;torch.cuda.memory_reserved()&lt;/code&gt;, &lt;code&gt;torch.cuda.empty_cache()&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Automatic Mixed Precision (&lt;code&gt;torch.amp&lt;/code&gt;):&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.amp.autocast(device_type='cuda', dtype=torch.bfloat16)&lt;/code&gt;: Casts matrix multiplications and convolutions to FP16/BF16 while preserving FP32 for reductions and softmax.
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.amp.GradScaler('cuda')&lt;/code&gt;: Dynamically scales loss values to avoid numerical underflow during FP16 backward passes (not required for BF16).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 data-hextra-search-id="7-distributed-computation-torchdistributed"&gt;7. Distributed Computation (&lt;code&gt;torch.distributed&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="7-distributed-computation-torchdistributed"&gt;&lt;/span&gt;
+&lt;a href="#7-distributed-computation-torchdistributed" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Enables scaling across multi-GPU and multi-node clusters via NCCL, GLOO, or MPI backends.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Primitives &amp;amp; Collective Communications:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;Setup: &lt;code&gt;dist.init_process_group(backend, rank, world_size)&lt;/code&gt;, &lt;code&gt;dist.destroy_process_group()&lt;/code&gt;.
+&lt;ul&gt;
+&lt;li&gt;Collectives: &lt;code&gt;dist.all_reduce&lt;/code&gt;, &lt;code&gt;dist.reduce&lt;/code&gt;, &lt;code&gt;dist.all_gather&lt;/code&gt;, &lt;code&gt;dist.broadcast&lt;/code&gt;, &lt;code&gt;dist.scatter&lt;/code&gt;, &lt;code&gt;dist.barrier&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Distributed Paradigms:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.nn.parallel.DistributedDataParallel&lt;/code&gt; (DDP): Multi-process data parallelism; synchronizes gradients across all ranks via ring-allreduce overlapped with the backward pass.
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.distributed.fsdp.FullyShardedDataParallel&lt;/code&gt; (FSDP): Zero-redundancy optimizer sharding (ZeRO-3 equivalent); shards parameters, gradients, and optimizer states across ranks, gathering them on-demand during forward/backward steps.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;torch.distributed.tensor.parallel&lt;/code&gt; (TP): Tensor-parallel layouts across weight matrices for multi-billion parameter architectures.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 data-hextra-search-id="8-compilation-tracing--serialization"&gt;8. Compilation, Tracing &amp;amp; Serialization&lt;span class="hx:absolute hx:-mt-20" id="8-compilation-tracing--serialization"&gt;&lt;/span&gt;
+&lt;a href="#8-compilation-tracing--serialization" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;APIs dedicated to production deployment, intermediate representation (IR) export, and JIT/AOT kernel fusion.&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;pre&gt;&lt;code&gt;&amp;#43;-----------------------------&amp;#43;
+| PyTorch Python Source Code |
+&amp;#43;--------------&amp;#43;--------------&amp;#43;
+|
+[torch.compile / TorchDynamo / FX]
+|
+v
+&amp;#43;-----------------------------&amp;#43;
+| AOTAutograd (Joint Graph) |
+&amp;#43;--------------&amp;#43;--------------&amp;#43;
+|
+[TorchInductor]
+|
+&amp;#43;-----------------&amp;#43;-----------------&amp;#43;
+| |
+v v
+&amp;#43;-----------------&amp;#43; &amp;#43;-----------------&amp;#43;
+| C&amp;#43;&amp;#43; / OpenMP | | Triton Kernels |
+| (CPU Targets) | | (CUDA/ROCm GPUs)|
+&amp;#43;-----------------&amp;#43; &amp;#43;-----------------&amp;#43;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Modern Compiler Stack (&lt;code&gt;torch.compile&lt;/code&gt;):&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;TorchDynamo&lt;/code&gt;: JIT compiler using CPython frame evaluation hooks to intercept Python bytecode and extract clean FX computation graphs.
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;AOTAutograd&lt;/code&gt;: Traces backward graphs ahead-of-time before code generation.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;TorchInductor&lt;/code&gt;: Code generation backend compiling computation graphs into C++ (CPU) or Triton kernels (GPU).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Legacy JIT &amp;amp; Export:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.jit.trace&lt;/code&gt; / &lt;code&gt;torch.jit.script&lt;/code&gt;: Converts code to TorchScript IR for execution in pure C++ runtimes (&lt;code&gt;libtorch&lt;/code&gt;).
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.export&lt;/code&gt;: Produces hermetic, sound computation graphs (&lt;code&gt;ExportedProgram&lt;/code&gt;) targeted at mobile runtimes and external hardware compilers.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;State Serialization:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.save(obj, f)&lt;/code&gt; / &lt;code&gt;torch.load(f, weights_only=True)&lt;/code&gt;: Serializes object graphs using pickle archives or raw state dictionaries (&lt;code&gt;state_dict&lt;/code&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 data-hextra-search-id="9-profiling--execution-inspection-torchprofiler"&gt;9. Profiling &amp;amp; Execution Inspection (&lt;code&gt;torch.profiler&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="9-profiling--execution-inspection-torchprofiler"&gt;&lt;/span&gt;
+&lt;a href="#9-profiling--execution-inspection-torchprofiler" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Monitors device kernels, CPU overhead, memory leaks, and operator runtimes.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Context API:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;torch.profiler.profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True, profile_memory=True)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Analysis &amp;amp; Visualization:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;prof.key_averages().table(sort_by=&amp;quot;cuda_time_total&amp;quot;, row_limit=20)&lt;/code&gt;: Prints summary tables.
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;prof.export_chrome_trace(&amp;quot;trace.json&amp;quot;)&lt;/code&gt;: Exports traces for analysis in Chrome Tracing (&lt;code&gt;chrome://tracing&lt;/code&gt;) or Perfetto.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>
