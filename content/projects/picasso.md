@@ -19,20 +19,22 @@ Picasso eliminates traditional systems programming friction through built-in lig
 
 ```mermaid
 flowchart TD
-    Source[Picasso Source Code .pic] --> Lexer[Lexer & Tokenizer]
-    Lexer --> Parser[AST Parser & Semantic Analyzer]
-    Parser --> TypeCheck[Static Type Checker]
-    TypeCheck --> IR[Intermediate Representation / LLVM IR]
-    IR --> Opt[Optimization Pipeline]
-    Opt --> Native[Native Machine Code Executable]
+    Source["Picasso Source Code (.pic)"] --> Lexer["Lexer & Tokenizer"]
+    Lexer --> Parser["AST Parser & Semantic Analyzer"]
+    Parser --> TypeCheck["Static Type Checker"]
+    TypeCheck --> IR["Intermediate Representation (LLVM IR)"]
+    IR --> Opt["Optimization Pipeline"]
+    Opt --> Native["Native Machine Code Executable"]
     
-    subgraph Runtime [Picasso Runtime Engine]
-        GC[Garbage Collector]
-        Scheduler[M:N Green Thread Scheduler]
-        Sync[WaitGroups & Atomic Primitives]
+    subgraph Runtime["Picasso Runtime Engine"]
+        GC["Garbage Collector"]
+        Scheduler["M:N Green Thread Scheduler"]
+        Sync["WaitGroups & Atomic Primitives"]
     end
     
-    Native -.-> Runtime
+    Native --> Scheduler
+    Scheduler --> GC
+    Scheduler --> Sync
 ```
 
 ### Key Features

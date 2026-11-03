@@ -19,20 +19,20 @@ The project develops hybrid counterparts to premier classical computer vision mo
 
 ```mermaid
 flowchart LR
-    Input[Underwater Image 224x224x3] --> ClassicalCNN[Pre-trained Classical Backbone: ResNet-50 / InceptionV3]
-    ClassicalCNN --> FeatureVec[Latent Feature Vector: 512-d]
-    FeatureVec --> AngleEncoding[Quantum Angle Encoding / Feature Map]
+    Input["Underwater Image (224x224x3)"] --> ClassicalCNN["Pre-trained Backbone (ResNet-50 / InceptionV3)"]
+    ClassicalCNN --> FeatureVec["Latent Feature Vector (512-d)"]
+    FeatureVec --> AngleEncoding["Quantum Angle Encoding"]
     
-    subgraph QPU [Cloud Quantum Processing Unit / IBM Quantum]
-        AngleEncoding --> PQC[Parameterized Quantum Circuit Layer]
-        PQC --> Entanglement[CNOT Entangling Gates & Rotation Gates]
-        Entanglement --> Measurement[Pauli-Z Expectation Measurement]
+    subgraph QPU["Cloud QPU (IBM Quantum)"]
+        AngleEncoding --> PQC["Parameterized Quantum Circuit"]
+        PQC --> Entanglement["CNOT Entangling & Rotation Gates"]
+        Entanglement --> Measurement["Pauli-Z Expectation Measurement"]
     end
     
-    Measurement --> ClassicalHead[Classification Head: Softmax 23 Classes]
-    ClassicalHead --> Loss[Cross-Entropy Loss]
-    Loss -->|Adjoint Differentiation / Backpropagation| Optimizer[Adam Optimizer]
-    Optimizer -->|Update Circuit Angles & Weights| PQC
+    Measurement --> ClassicalHead["Classification Head (23 Classes)"]
+    ClassicalHead --> Loss["Cross-Entropy Loss"]
+    Loss -->|"Adjoint Differentiation"| Optimizer["Adam Optimizer"]
+    Optimizer -->|"Update Circuit Angles"| PQC
 ```
 
 ---

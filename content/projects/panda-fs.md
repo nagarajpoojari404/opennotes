@@ -17,17 +17,17 @@ summary: "PandaFS is a distributed file system inspired by Google File System (G
 
 ```mermaid
 flowchart TD
-    Client[nanoDFS Client SDK] <-->|1. Metadata / Chunk Locations| Master[nanoDFS Master Node]
+    Client["nanoDFS Client SDK"] <-->|"1. Metadata / Chunk Locations"| Master["nanoDFS Master Node"]
     
-    subgraph StorageCluster [Distributed Chunk Servers]
-        Client <-->|2. Encrypted Chunk Stream| Chunk1[Slave Node 1 - Primary]
-        Chunk1 <-->|3. P2P Replication Pipeline| Chunk2[Slave Node 2 - Secondary]
-        Chunk2 <-->|4. P2P Replication Pipeline| Chunk3[Slave Node 3 - Tertiary]
+    subgraph StorageCluster["Distributed Chunk Servers"]
+        Client <-->|"2. Encrypted Chunk Stream"| Chunk1["Slave Node 1 (Primary)"]
+        Chunk1 <-->|"3. P2P Replication Pipeline"| Chunk2["Slave Node 2 (Secondary)"]
+        Chunk2 <-->|"4. P2P Replication Pipeline"| Chunk3["Slave Node 3 (Tertiary)"]
     end
     
-    Master <-->|Heartbeats & Block Reports| Chunk1
-    Master <-->|Heartbeats & Block Reports| Chunk2
-    Master <-->|Heartbeats & Block Reports| Chunk3
+    Master <-->|"Heartbeats & Reports"| Chunk1
+    Master <-->|"Heartbeats & Reports"| Chunk2
+    Master <-->|"Heartbeats & Reports"| Chunk3
 ```
 
 ### Core Architecture Components

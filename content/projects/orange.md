@@ -17,23 +17,23 @@ summary: "OrangeDB is a distributed key-document NoSQL database powered by Parro
 
 ```mermaid
 flowchart TD
-    Client[Application Client] --> Gate[Orangegate: Stateless Proxy & Query Router]
+    Client["Application Client"] --> Gate["Orangegate (Proxy & Query Router)"]
     
-    subgraph K8s [Kubernetes Cluster managed by Orangectl]
-        Gate --> S1[Shard 1 Leader]
-        Gate --> S2[Shard 2 Leader]
-        Gate --> S3[Shard 3 Leader]
+    subgraph K8s["Kubernetes Cluster (Managed by Orangectl)"]
+        Gate --> S1["Shard 1 Leader"]
+        Gate --> S2["Shard 2 Leader"]
+        Gate --> S3["Shard 3 Leader"]
         
-        subgraph Shard1 [Shard 1 Cluster]
-            S1 <-->|Sync/Async Replication| R1[Replica 1]
-            S1 <-->|Sync/Async Replication| R2[Replica 2]
+        subgraph Shard1["Shard 1 Cluster"]
+            S1 <-->|"Replication"| R1["Replica 1"]
+            S1 <-->|"Replication"| R2["Replica 2"]
         end
         
-        subgraph NodeInternal [OrangeDB Node Engine]
-            OQL[OQL Query Parser & Validator] --> Parrot[Parrot LSM Storage Engine]
-            Parrot --> MemQueue[Chain of Memtables]
-            Parrot --> WAL[Write-Ahead Log]
-            Parrot --> SST[SSTable Files with mmap & Bloom Filters]
+        subgraph NodeInternal["OrangeDB Node Engine"]
+            OQL["OQL Query Parser & Validator"] --> Parrot["Parrot LSM Storage Engine"]
+            Parrot --> MemQueue["Chain of Memtables"]
+            Parrot --> WAL["Write-Ahead Log"]
+            Parrot --> SST["SSTables (mmap & Bloom Filters)"]
         end
     end
 ```

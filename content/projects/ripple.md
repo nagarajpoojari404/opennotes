@@ -17,22 +17,22 @@ summary: "Ripple MQ is a high-performance, single-threaded non-blocking distribu
 
 ```mermaid
 flowchart LR
-    Producer[Event Producers / IoT / Apps] -->|Custom TCP Protocol| EventLoop[Non-Blocking I/O Event Loop]
+    Producer["Event Producers / Apps"] -->|"Custom TCP Protocol"| EventLoop["Non-Blocking I/O Event Loop"]
     
-    subgraph RippleCore [Ripple Server Engine]
-        EventLoop --> Demux[Message Demultiplexer]
-        Demux --> TopicA[Topic A Partition 0]
-        Demux --> TopicB[Topic A Partition 1]
-        Demux --> TopicC[Topic B Partition 0]
+    subgraph RippleCore["Ripple Server Engine"]
+        EventLoop --> Demux["Message Demultiplexer"]
+        Demux --> TopicA["Topic A Partition 0"]
+        Demux --> TopicB["Topic A Partition 1"]
+        Demux --> TopicC["Topic B Partition 0"]
         
-        TopicA --> MemRing[In-Memory Ring Buffers]
+        TopicA --> MemRing["In-Memory Ring Buffers"]
         TopicB --> MemRing
         TopicC --> MemRing
     end
     
-    MemRing --> PushStream[Zero-Copy Push Dispatcher]
-    PushStream --> Consumer1[Consumer Group Alpha]
-    PushStream --> Consumer2[Consumer Group Beta]
+    MemRing --> PushStream["Zero-Copy Push Dispatcher"]
+    PushStream --> Consumer1["Consumer Group Alpha"]
+    PushStream --> Consumer2["Consumer Group Beta"]
 ```
 
 ### Core Innovations

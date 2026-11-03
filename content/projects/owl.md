@@ -17,23 +17,24 @@ summary: "Owl is a high-level 3D graphics engine written from scratch in C++ and
 
 ```mermaid
 flowchart TD
-    Scene[Scene Graph / Entity-Component Tree] --> Pipeline[Rendering Pipeline]
+    Scene["Scene Graph (Entities & Components)"] --> Pipeline["Rendering Pipeline"]
     
-    subgraph Graphics [Rendering Core]
-        Pipeline --> Shaders[GLSL Vertex & Fragment Shaders]
-        Pipeline --> RayTracer[Real-Time Ray Tracing Core]
-        RayTracer --> BVH[Bounding Volume Hierarchy / Acceleration]
-        RayTracer --> Light[Phong / Blinn-Phong & Shadow Rays]
+    subgraph Graphics["Rendering Core"]
+        Pipeline --> Shaders["GLSL Vertex & Fragment Shaders"]
+        Pipeline --> RayTracer["Real-Time Ray Tracing Core"]
+        RayTracer --> BVH["Bounding Volume Hierarchy (BVH)"]
+        RayTracer --> Light["Phong Shading & Shadow Rays"]
     end
     
-    subgraph Physics [Physics Simulation Engine]
-        RigidBody[Rigid Body Dynamics]
-        Gravity[Gravity Simulation]
-        Collision[Sphere & Box Collision Detection / Resolution]
+    subgraph Physics["Physics Engine"]
+        RigidBody["Rigid Body Dynamics"]
+        Gravity["Gravity Simulation"]
+        Collision["Collision Detection & Resolution"]
+        RigidBody --> Gravity --> Collision
     end
     
-    Physics --> Scene
-    Graphics --> Framebuffer[OpenGL Framebuffer / Window Display]
+    Collision --> Scene
+    Light --> Framebuffer["OpenGL Framebuffer / Display"]
 ```
 
 ---

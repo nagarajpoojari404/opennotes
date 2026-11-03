@@ -17,15 +17,15 @@ summary: "x-Linux is an end-to-end automated pipeline to compile, assemble, and 
 
 ```mermaid
 flowchart TD
-    Host[Host Linux Machine] --> Phase1[Phase 1: Cross-Toolchain Bootstrapping]
-    Phase1 --> Toolchain[Binutils, GCC, Glibc, Linux API Headers]
-    Toolchain --> Phase2[Phase 2: Chroot Environment Setup]
-    Phase2 --> Phase3[Phase 3: Core System Software Compilation]
-    Phase3 --> CoreLibs[Bash, Coreutils, Systemd/SysVinit, Util-Linux, Sed, Grep]
-    Phase3 --> Phase4[Phase 4: Linux Kernel Configuration & Compilation]
-    Phase4 --> Kernel[Monolithic Custom Kernel: vmlinuz]
-    Phase4 --> Phase5[Phase 5: Initramfs, Bootloader & ISO Packaging]
-    Phase5 --> Bootable[Bootable USB Drive / Live ISO Image]
+    Host["Host Linux Machine"] --> Phase1["Phase 1: Cross-Toolchain Bootstrapping"]
+    Phase1 --> Toolchain["Binutils, GCC, Glibc, Linux Headers"]
+    Toolchain --> Phase2["Phase 2: Chroot Environment Setup"]
+    Phase2 --> Phase3["Phase 3: Core System Software Compilation"]
+    Phase3 --> CoreLibs["Bash, Coreutils, Systemd, Util-Linux, Grep"]
+    CoreLibs --> Phase4["Phase 4: Linux Kernel Compilation"]
+    Phase4 --> Kernel["Monolithic Custom Kernel (vmlinuz)"]
+    Kernel --> Phase5["Phase 5: Initramfs, Bootloader & ISO Packaging"]
+    Phase5 --> Bootable["Bootable Live ISO Image"]
 ```
 
 ---

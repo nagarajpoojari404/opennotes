@@ -17,17 +17,16 @@ summary: "SynapC is a lightweight, zero-dependency neural network library writte
 
 ```mermaid
 flowchart LR
-    PythonApp[Python Application Code] -->|Python C-API / ctypes| Binding[SynapC Extension Layer]
+    PythonApp["Python Application Code"] -->|"Python C-API"| Binding["SynapC Extension Layer"]
     
-    subgraph CEngine [Pure C Core Engine]
-        Binding --> Alloc[Tensor & Layer Allocator]
-        Alloc --> Forward[Forward Pass: Matrix Multiply & Activations]
-        Forward --> Loss[Loss Computation: MSE / Cross-Entropy]
-        Loss --> Backward[Backward Pass: Analytical Gradients]
-        Backward --> Optimizer[SGD Optimizer & Weight Updates]
+    subgraph CEngine["Pure C Core Engine"]
+        Binding --> Alloc["Tensor & Layer Allocator"]
+        Alloc --> Forward["Forward Pass (Matrix Multiply & Activations)"]
+        Forward --> Loss["Loss Computation (MSE / Cross-Entropy)"]
+        Loss --> Backward["Backward Pass (Analytical Gradients)"]
+        Backward --> Optimizer["SGD Optimizer (Weight Updates)"]
+        Optimizer --> Forward
     end
-    
-    Optimizer --> Forward
 ```
 
 ---

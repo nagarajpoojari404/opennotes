@@ -17,27 +17,31 @@ summary: "Mint is a distributed, compute-optimal training and alignment framewor
 
 ```mermaid
 flowchart TD
-    Config[Compute Budget FLOPs / Hardware Specs] --> Planner[Compute-Optimal Auto-Planner]
-    Planner -->|Chinchilla Scaled Hyperparams| Engine[Mint Training Engine]
+    Config["Compute Budget FLOPs / Hardware Specs"] --> Planner["Compute-Optimal Auto-Planner"]
+    Planner -->|"Chinchilla Scaled Hyperparameters"| Engine["Mint Training Engine"]
     
-    subgraph DataEngine [Distributed Streaming Data Engine]
-        StreamDataloader[Streaming Chunk Dataloader]
-        Mixer[Multi-Dataset Blending: SmolTalk / GSM8k / ClimbMix]
+    subgraph DataEngine["Distributed Streaming Data Engine"]
+        StreamDataloader["Streaming Chunk Dataloader"]
+        Mixer["Multi-Dataset Blending (SmolTalk / GSM8K / ClimbMix)"]
+        StreamDataloader --> Mixer
     end
     
-    subgraph CoreEngine [Optimization & Parallelism]
-        ZeRO[ZeRO-2 Optimizer State Sharding]
-        Muon[Distributed MuonAdamW + norMuon Polar Express]
-        Kernels[Hardware Kernels: Apple Metal MPS & FlashAttention-2]
-        KVCache[Optimized Paged KV-Cache & SwiGLU / RoPE Layers]
+    subgraph CoreEngine["Optimization & Parallelism"]
+        ZeRO["ZeRO-2 Optimizer State Sharding"]
+        Muon["Distributed MuonAdamW + norMuon Polar Express"]
+        Kernels["Hardware Kernels (Apple Metal MPS & FlashAttention-2)"]
+        KVCache["Optimized Paged KV-Cache & SwiGLU / RoPE"]
     end
     
-    DataEngine --> CoreEngine
-    CoreEngine --> Modes[Training Regimes]
+    Engine --> StreamDataloader
+    Mixer --> ZeRO
+    ZeRO --> Muon
+    Muon --> Kernels
+    Kernels --> KVCache
     
-    Modes --> Pretrain[Pre-Training: Gemma / TikToken]
-    Modes --> SFT[Supervised Fine-Tuning: SFT v1 / v2]
-    Modes --> DPO[Direct Preference Optimization: DPO v1 / v2]
+    KVCache --> Pretrain["Pre-Training (Gemma / TikToken)"]
+    KVCache --> SFT["Supervised Fine-Tuning (SFT v1 / v2)"]
+    KVCache --> DPO["Direct Preference Optimization (DPO v1 / v2)"]
 ```
 
 ### Module Breakdown

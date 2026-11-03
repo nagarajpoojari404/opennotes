@@ -19,15 +19,15 @@ The goal is to synthesize temporally coherent intermediate frames between consec
 
 ```mermaid
 flowchart TD
-    FramePair[Input Frame Pair: Frame t and Frame t+1] --> ModelSelect{Model Architecture}
+    FramePair["Input Frame Pair (Frame t, Frame t+1)"] --> ModelSelect{"Model Architecture"}
     
-    ModelSelect -->|Traditional / CNN| DVF[Deep Voxel Flow: Optical Flow + CNN Warp]
-    ModelSelect -->|U-Net Optical Flow| SloMo[Super SloMo: Flow Computation & Bi-directional Warping]
-    ModelSelect -->|Transformer SOTA| VIFT[VIFT: Swin Transformer Shifted-Window Attention]
+    ModelSelect -->|"Traditional Optical Flow"| DVF["Deep Voxel Flow (DVF)"]
+    ModelSelect -->|"U-Net Flow Estimation"| SloMo["Super SloMo"]
+    ModelSelect -->|"Swin Attention SOTA"| VIFT["VIFT (Transformer)"]
     
-    DVF --> SynthDVF[Synthesized Intermediate Frame: High Blur / Occlusion Errors]
-    SloMo --> SynthSloMo[Synthesized Frame: Heavy Computation / Quadratic Cost]
-    VIFT --> SynthVIFT[Synthesized Frame: High PSNR / Linear Complexity / Sharp Details]
+    DVF --> SynthDVF["Synthesized Frame (Blur & Occlusion Errors)"]
+    SloMo --> SynthSloMo["Synthesized Frame (Quadratic Compute Cost)"]
+    VIFT --> SynthVIFT["Synthesized Frame (High PSNR & Linear Compute)"]
 ```
 
 ### Why Transformers for Video Interpolation?
