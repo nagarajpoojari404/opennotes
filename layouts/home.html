@@ -1,0 +1,15 @@
+{{- /* The site root has no page of its own: send visitors straight to the notes. */ -}}
+{{- $target := "notes/" | relURL -}}
+<!DOCTYPE html>
+<html lang="{{ site.Language.Lang }}">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ site.Title }}</title>
+    <link rel="canonical" href="{{ $target }}">
+    <meta http-equiv="refresh" content="0; url={{ $target }}">
+    <meta name="robots" content="noindex">
+  </head>
+  <body>
+    <p>Redirecting to <a href="{{ $target }}">{{ $target }}</a>…</p>
+  </body>
+</html>

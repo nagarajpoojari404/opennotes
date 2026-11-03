@@ -1,0 +1,17 @@
+{{- /* On folder pages, list the sub-topics and notes inside as cards. */ -}}
+{{- if and .IsSection (not .IsHome) -}}
+  {{- $sections := .Sections.ByWeight -}}
+  {{- $pages := .RegularPages.ByWeight -}}
+  {{- if or $sections $pages }}
+    <h2 class="hx:mt-10">In this section</h2>
+    <div class="hextra-cards hx:mt-4 hx:gap-4 hx:grid not-prose" style="--hextra-cards-grid-cols: 3;">
+      {{- range $sections }}
+        {{- $n := len .RegularPagesRecursive -}}
+        {{- partial "shortcodes/card" (dict "link" .RelPermalink "title" .LinkTitle "icon" "folder" "subtitle" (printf "%d notes" $n)) -}}
+      {{- end }}
+      {{- range $pages }}
+        {{- partial "shortcodes/card" (dict "link" .RelPermalink "title" .LinkTitle) -}}
+      {{- end }}
+    </div>
+  {{- end }}
+{{- end -}}

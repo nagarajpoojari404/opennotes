@@ -2,6 +2,8 @@
 title: "Notes"
 description: "Study notes on ML, systems and programming."
 cascade:
-  math: true
-  type: notes
+  type: docs
+type: docs
+sidebar:
+  open: true
 ---

@@ -1,49 +1,99 @@
 baseURL = "https://nagarajrpoojari.github.io/opennotes/"
 languageCode = "en"
 title = "Open Notes"
-theme = "shibui"
+theme = "hextra"
 
-[params]
-author = { name = "Nagaraj" }
-description = "Minimal notes"
+enableRobotsTXT = true
 
-[[params.social]]
-name = "github"
-url = "https://github.com/"
+# --- Markdown / math / code -------------------------------------------------
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+    [markup.goldmark.extensions.passthrough]
+      enable = true
+      [markup.goldmark.extensions.passthrough.delimiters]
+        block = [['$$', '$$']]
+        inline = [['$', '$']]
+  [markup.highlight]
+    noClasses = false
 
-[menu]
-
-  [[menu.main]]
-  name = "Home"
-  url = "/"
+# --- Navigation -------------------------------------------------------------
+[[menu.main]]
+  name = "Notes"
+  pageRef = "/notes"
   weight = 1
 
-  [[menu.main]]
-  name = "Projects"
-  url = "/projects/"
-  weight = 2
-
-  [[menu.main]]
+[[menu.main]]
   name = "Posts"
-  url = "/posts/"
+  pageRef = "/posts"
   weight = 2
 
-  [[menu.main]]
-  name = "Notes"
-  url = "/notes/"
-  weight = 2
-
-  [[menu.main]]
-  name = "About"
-  url = "/about/"
+[[menu.main]]
+  name = "Projects"
+  pageRef = "/projects"
   weight = 3
 
-[markup.goldmark.extensions.passthrough]
-  enable = true
+[[menu.main]]
+  name = "About"
+  pageRef = "/about"
+  weight = 4
 
-  [markup.goldmark.extensions.passthrough.delimiters]
-    block = [['$$', '$$']]
-    inline = [['$', '$']]
+[[menu.main]]
+  name = "Search"
+  weight = 5
+  [menu.main.params]
+    type = "search"
 
-[markup.highlight]
-  style = "github"
+[[menu.main]]
+  name = "GitHub"
+  weight = 6
+  url = "https://github.com/nagarajRPoojari"
+  [menu.main.params]
+    icon = "github"
+
+# --- Theme params -----------------------------------------------------------
+[params]
+  description = "Minimal notes"
+  author = { name = "Nagaraj" }
+
+  [params.navbar]
+    displayTitle = true
+    displayLogo = false
+    width = "full"
+
+  [params.theme]
+    default = "system"
+    displayToggle = true
+
+  [params.footer]
+    enable = true
+    displayCopyright = true
+    displayPoweredBy = false
+    width = "full"
+
+  [params.page]
+    # full (100%) | wide (90rem) | normal (80rem)
+    width = "wide"
+
+  [params.search]
+    enable = true
+    type = "flexsearch"
+    [params.search.flexsearch]
+      index = "content"
+      tokenize = "forward"
+
+  [params.toc]
+    displayTags = true
+
+  [params.highlight.copy]
+    enable = true
+    display = "hover"
+
+  [params.blog.list]
+    displayTags = true
+    sortBy = "date"
+    sortOrder = "desc"
+
+  [params.imageZoom]
+    enable = true
