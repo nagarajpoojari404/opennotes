@@ -24,7 +24,7 @@ If $A \in \mathbb{R}^{n \times n}$ is a real symmetric matrix ($A = A^T$):
 	$$
 	where $Q$ is an orthogonal matrix ($Q^T Q = I$) whose columns are orthonormal eigenvectors of $A$, and $\Lambda$ is a diagonal matrix containing the real eigenvalues $\lambda_1, \lambda_2, \dots, \lambda_n$.
 
-#### 2\. Complex Normal Matrices
+#### 2\. Complex Normal Matrices 
 
 If $A \in \mathbb{C}^{n \times n}$, the theorem generalizes to **normal matrices**, defined by $A A^* = A^* A$ (where $A^*$ is the conjugate transpose). This family includes Hermitian ($A = A^*$), skew-Hermitian ($A = -A^*$), and unitary ($A^* A = I$) matrices:
 
