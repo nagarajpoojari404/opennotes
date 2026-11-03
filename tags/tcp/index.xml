@@ -6,19 +6,19 @@
 &lt;a href="#architecture--design" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart LR
-Producer[Event Producers / IoT / Apps] --&amp;gt;|Custom TCP Protocol| EventLoop[Non-Blocking I/O Event Loop]
-subgraph RippleCore [Ripple Server Engine]
-EventLoop --&amp;gt; Demux[Message Demultiplexer]
-Demux --&amp;gt; TopicA[Topic A Partition 0]
-Demux --&amp;gt; TopicB[Topic A Partition 1]
-Demux --&amp;gt; TopicC[Topic B Partition 0]
-TopicA --&amp;gt; MemRing[In-Memory Ring Buffers]
+Producer[&amp;#34;Event Producers / Apps&amp;#34;] --&amp;gt;|&amp;#34;Custom TCP Protocol&amp;#34;| EventLoop[&amp;#34;Non-Blocking I/O Event Loop&amp;#34;]
+subgraph RippleCore[&amp;#34;Ripple Server Engine&amp;#34;]
+EventLoop --&amp;gt; Demux[&amp;#34;Message Demultiplexer&amp;#34;]
+Demux --&amp;gt; TopicA[&amp;#34;Topic A Partition 0&amp;#34;]
+Demux --&amp;gt; TopicB[&amp;#34;Topic A Partition 1&amp;#34;]
+Demux --&amp;gt; TopicC[&amp;#34;Topic B Partition 0&amp;#34;]
+TopicA --&amp;gt; MemRing[&amp;#34;In-Memory Ring Buffers&amp;#34;]
 TopicB --&amp;gt; MemRing
 TopicC --&amp;gt; MemRing
 end
-MemRing --&amp;gt; PushStream[Zero-Copy Push Dispatcher]
-PushStream --&amp;gt; Consumer1[Consumer Group Alpha]
-PushStream --&amp;gt; Consumer2[Consumer Group Beta]
+MemRing --&amp;gt; PushStream[&amp;#34;Zero-Copy Push Dispatcher&amp;#34;]
+PushStream --&amp;gt; Consumer1[&amp;#34;Consumer Group Alpha&amp;#34;]
+PushStream --&amp;gt; Consumer2[&amp;#34;Consumer Group Beta&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="core-innovations"&gt;Core Innovations&lt;span class="hx:absolute hx:-mt-20" id="core-innovations"&gt;&lt;/span&gt;
 &lt;a href="#core-innovations" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;

@@ -6,20 +6,21 @@
 &lt;a href="#architectural-overview" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Scene[Scene Graph / Entity-Component Tree] --&amp;gt; Pipeline[Rendering Pipeline]
-subgraph Graphics [Rendering Core]
-Pipeline --&amp;gt; Shaders[GLSL Vertex &amp;amp; Fragment Shaders]
-Pipeline --&amp;gt; RayTracer[Real-Time Ray Tracing Core]
-RayTracer --&amp;gt; BVH[Bounding Volume Hierarchy / Acceleration]
-RayTracer --&amp;gt; Light[Phong / Blinn-Phong &amp;amp; Shadow Rays]
+Scene[&amp;#34;Scene Graph (Entities &amp;amp; Components)&amp;#34;] --&amp;gt; Pipeline[&amp;#34;Rendering Pipeline&amp;#34;]
+subgraph Graphics[&amp;#34;Rendering Core&amp;#34;]
+Pipeline --&amp;gt; Shaders[&amp;#34;GLSL Vertex &amp;amp; Fragment Shaders&amp;#34;]
+Pipeline --&amp;gt; RayTracer[&amp;#34;Real-Time Ray Tracing Core&amp;#34;]
+RayTracer --&amp;gt; BVH[&amp;#34;Bounding Volume Hierarchy (BVH)&amp;#34;]
+RayTracer --&amp;gt; Light[&amp;#34;Phong Shading &amp;amp; Shadow Rays&amp;#34;]
 end
-subgraph Physics [Physics Simulation Engine]
-RigidBody[Rigid Body Dynamics]
-Gravity[Gravity Simulation]
-Collision[Sphere &amp;amp; Box Collision Detection / Resolution]
+subgraph Physics[&amp;#34;Physics Engine&amp;#34;]
+RigidBody[&amp;#34;Rigid Body Dynamics&amp;#34;]
+Gravity[&amp;#34;Gravity Simulation&amp;#34;]
+Collision[&amp;#34;Collision Detection &amp;amp; Resolution&amp;#34;]
+RigidBody --&amp;gt; Gravity --&amp;gt; Collision
 end
-Physics --&amp;gt; Scene
-Graphics --&amp;gt; Framebuffer[OpenGL Framebuffer / Window Display]
+Collision --&amp;gt; Scene
+Light --&amp;gt; Framebuffer[&amp;#34;OpenGL Framebuffer / Display&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 data-hextra-search-id="key-features"&gt;Key Features&lt;span class="hx:absolute hx:-mt-20" id="key-features"&gt;&lt;/span&gt;

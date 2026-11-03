@@ -6,15 +6,15 @@
 &lt;a href="#the-build-pipeline" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Host[Host Linux Machine] --&amp;gt; Phase1[Phase 1: Cross-Toolchain Bootstrapping]
-Phase1 --&amp;gt; Toolchain[Binutils, GCC, Glibc, Linux API Headers]
-Toolchain --&amp;gt; Phase2[Phase 2: Chroot Environment Setup]
-Phase2 --&amp;gt; Phase3[Phase 3: Core System Software Compilation]
-Phase3 --&amp;gt; CoreLibs[Bash, Coreutils, Systemd/SysVinit, Util-Linux, Sed, Grep]
-Phase3 --&amp;gt; Phase4[Phase 4: Linux Kernel Configuration &amp;amp; Compilation]
-Phase4 --&amp;gt; Kernel[Monolithic Custom Kernel: vmlinuz]
-Phase4 --&amp;gt; Phase5[Phase 5: Initramfs, Bootloader &amp;amp; ISO Packaging]
-Phase5 --&amp;gt; Bootable[Bootable USB Drive / Live ISO Image]
+Host[&amp;#34;Host Linux Machine&amp;#34;] --&amp;gt; Phase1[&amp;#34;Phase 1: Cross-Toolchain Bootstrapping&amp;#34;]
+Phase1 --&amp;gt; Toolchain[&amp;#34;Binutils, GCC, Glibc, Linux Headers&amp;#34;]
+Toolchain --&amp;gt; Phase2[&amp;#34;Phase 2: Chroot Environment Setup&amp;#34;]
+Phase2 --&amp;gt; Phase3[&amp;#34;Phase 3: Core System Software Compilation&amp;#34;]
+Phase3 --&amp;gt; CoreLibs[&amp;#34;Bash, Coreutils, Systemd, Util-Linux, Grep&amp;#34;]
+CoreLibs --&amp;gt; Phase4[&amp;#34;Phase 4: Linux Kernel Compilation&amp;#34;]
+Phase4 --&amp;gt; Kernel[&amp;#34;Monolithic Custom Kernel (vmlinuz)&amp;#34;]
+Kernel --&amp;gt; Phase5[&amp;#34;Phase 5: Initramfs, Bootloader &amp;amp; ISO Packaging&amp;#34;]
+Phase5 --&amp;gt; Bootable[&amp;#34;Bootable Live ISO Image&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 data-hextra-search-id="key-system-components"&gt;Key System Components&lt;span class="hx:absolute hx:-mt-20" id="key-system-components"&gt;&lt;/span&gt;

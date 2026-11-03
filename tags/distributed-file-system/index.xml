@@ -6,15 +6,15 @@
 &lt;a href="#architectural-topology" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Client[nanoDFS Client SDK] &amp;lt;--&amp;gt;|1. Metadata / Chunk Locations| Master[nanoDFS Master Node]
-subgraph StorageCluster [Distributed Chunk Servers]
-Client &amp;lt;--&amp;gt;|2. Encrypted Chunk Stream| Chunk1[Slave Node 1 - Primary]
-Chunk1 &amp;lt;--&amp;gt;|3. P2P Replication Pipeline| Chunk2[Slave Node 2 - Secondary]
-Chunk2 &amp;lt;--&amp;gt;|4. P2P Replication Pipeline| Chunk3[Slave Node 3 - Tertiary]
+Client[&amp;#34;nanoDFS Client SDK&amp;#34;] &amp;lt;--&amp;gt;|&amp;#34;1. Metadata / Chunk Locations&amp;#34;| Master[&amp;#34;nanoDFS Master Node&amp;#34;]
+subgraph StorageCluster[&amp;#34;Distributed Chunk Servers&amp;#34;]
+Client &amp;lt;--&amp;gt;|&amp;#34;2. Encrypted Chunk Stream&amp;#34;| Chunk1[&amp;#34;Slave Node 1 (Primary)&amp;#34;]
+Chunk1 &amp;lt;--&amp;gt;|&amp;#34;3. P2P Replication Pipeline&amp;#34;| Chunk2[&amp;#34;Slave Node 2 (Secondary)&amp;#34;]
+Chunk2 &amp;lt;--&amp;gt;|&amp;#34;4. P2P Replication Pipeline&amp;#34;| Chunk3[&amp;#34;Slave Node 3 (Tertiary)&amp;#34;]
 end
-Master &amp;lt;--&amp;gt;|Heartbeats &amp;amp; Block Reports| Chunk1
-Master &amp;lt;--&amp;gt;|Heartbeats &amp;amp; Block Reports| Chunk2
-Master &amp;lt;--&amp;gt;|Heartbeats &amp;amp; Block Reports| Chunk3
+Master &amp;lt;--&amp;gt;|&amp;#34;Heartbeats &amp;amp; Reports&amp;#34;| Chunk1
+Master &amp;lt;--&amp;gt;|&amp;#34;Heartbeats &amp;amp; Reports&amp;#34;| Chunk2
+Master &amp;lt;--&amp;gt;|&amp;#34;Heartbeats &amp;amp; Reports&amp;#34;| Chunk3
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="core-architecture-components"&gt;Core Architecture Components&lt;span class="hx:absolute hx:-mt-20" id="core-architecture-components"&gt;&lt;/span&gt;
 &lt;a href="#core-architecture-components" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;

@@ -6,23 +6,27 @@
 &lt;a href="#architecture--modules" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Config[Compute Budget FLOPs / Hardware Specs] --&amp;gt; Planner[Compute-Optimal Auto-Planner]
-Planner --&amp;gt;|Chinchilla Scaled Hyperparams| Engine[Mint Training Engine]
-subgraph DataEngine [Distributed Streaming Data Engine]
-StreamDataloader[Streaming Chunk Dataloader]
-Mixer[Multi-Dataset Blending: SmolTalk / GSM8k / ClimbMix]
+Config[&amp;#34;Compute Budget FLOPs / Hardware Specs&amp;#34;] --&amp;gt; Planner[&amp;#34;Compute-Optimal Auto-Planner&amp;#34;]
+Planner --&amp;gt;|&amp;#34;Chinchilla Scaled Hyperparameters&amp;#34;| Engine[&amp;#34;Mint Training Engine&amp;#34;]
+subgraph DataEngine[&amp;#34;Distributed Streaming Data Engine&amp;#34;]
+StreamDataloader[&amp;#34;Streaming Chunk Dataloader&amp;#34;]
+Mixer[&amp;#34;Multi-Dataset Blending (SmolTalk / GSM8K / ClimbMix)&amp;#34;]
+StreamDataloader --&amp;gt; Mixer
 end
-subgraph CoreEngine [Optimization &amp;amp; Parallelism]
-ZeRO[ZeRO-2 Optimizer State Sharding]
-Muon[Distributed MuonAdamW + norMuon Polar Express]
-Kernels[Hardware Kernels: Apple Metal MPS &amp;amp; FlashAttention-2]
-KVCache[Optimized Paged KV-Cache &amp;amp; SwiGLU / RoPE Layers]
+subgraph CoreEngine[&amp;#34;Optimization &amp;amp; Parallelism&amp;#34;]
+ZeRO[&amp;#34;ZeRO-2 Optimizer State Sharding&amp;#34;]
+Muon[&amp;#34;Distributed MuonAdamW + norMuon Polar Express&amp;#34;]
+Kernels[&amp;#34;Hardware Kernels (Apple Metal MPS &amp;amp; FlashAttention-2)&amp;#34;]
+KVCache[&amp;#34;Optimized Paged KV-Cache &amp;amp; SwiGLU / RoPE&amp;#34;]
 end
-DataEngine --&amp;gt; CoreEngine
-CoreEngine --&amp;gt; Modes[Training Regimes]
-Modes --&amp;gt; Pretrain[Pre-Training: Gemma / TikToken]
-Modes --&amp;gt; SFT[Supervised Fine-Tuning: SFT v1 / v2]
-Modes --&amp;gt; DPO[Direct Preference Optimization: DPO v1 / v2]
+Engine --&amp;gt; StreamDataloader
+Mixer --&amp;gt; ZeRO
+ZeRO --&amp;gt; Muon
+Muon --&amp;gt; Kernels
+Kernels --&amp;gt; KVCache
+KVCache --&amp;gt; Pretrain[&amp;#34;Pre-Training (Gemma / TikToken)&amp;#34;]
+KVCache --&amp;gt; SFT[&amp;#34;Supervised Fine-Tuning (SFT v1 / v2)&amp;#34;]
+KVCache --&amp;gt; DPO[&amp;#34;Direct Preference Optimization (DPO v1 / v2)&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="module-breakdown"&gt;Module Breakdown&lt;span class="hx:absolute hx:-mt-20" id="module-breakdown"&gt;&lt;/span&gt;
 &lt;a href="#module-breakdown" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
@@ -178,13 +182,13 @@ data-copied-label="Copied!"
 &lt;a href="#architectural-comparison" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-FramePair[Input Frame Pair: Frame t and Frame t+1] --&amp;gt; ModelSelect{Model Architecture}
-ModelSelect --&amp;gt;|Traditional / CNN| DVF[Deep Voxel Flow: Optical Flow + CNN Warp]
-ModelSelect --&amp;gt;|U-Net Optical Flow| SloMo[Super SloMo: Flow Computation &amp;amp; Bi-directional Warping]
-ModelSelect --&amp;gt;|Transformer SOTA| VIFT[VIFT: Swin Transformer Shifted-Window Attention]
-DVF --&amp;gt; SynthDVF[Synthesized Intermediate Frame: High Blur / Occlusion Errors]
-SloMo --&amp;gt; SynthSloMo[Synthesized Frame: Heavy Computation / Quadratic Cost]
-VIFT --&amp;gt; SynthVIFT[Synthesized Frame: High PSNR / Linear Complexity / Sharp Details]
+FramePair[&amp;#34;Input Frame Pair (Frame t, Frame t+1)&amp;#34;] --&amp;gt; ModelSelect{&amp;#34;Model Architecture&amp;#34;}
+ModelSelect --&amp;gt;|&amp;#34;Traditional Optical Flow&amp;#34;| DVF[&amp;#34;Deep Voxel Flow (DVF)&amp;#34;]
+ModelSelect --&amp;gt;|&amp;#34;U-Net Flow Estimation&amp;#34;| SloMo[&amp;#34;Super SloMo&amp;#34;]
+ModelSelect --&amp;gt;|&amp;#34;Swin Attention SOTA&amp;#34;| VIFT[&amp;#34;VIFT (Transformer)&amp;#34;]
+DVF --&amp;gt; SynthDVF[&amp;#34;Synthesized Frame (Blur &amp;amp; Occlusion Errors)&amp;#34;]
+SloMo --&amp;gt; SynthSloMo[&amp;#34;Synthesized Frame (Quadratic Compute Cost)&amp;#34;]
+VIFT --&amp;gt; SynthVIFT[&amp;#34;Synthesized Frame (High PSNR &amp;amp; Linear Compute)&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="why-transformers-for-video-interpolation"&gt;Why Transformers for Video Interpolation?&lt;span class="hx:absolute hx:-mt-20" id="why-transformers-for-video-interpolation"&gt;&lt;/span&gt;
 &lt;a href="#why-transformers-for-video-interpolation" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;

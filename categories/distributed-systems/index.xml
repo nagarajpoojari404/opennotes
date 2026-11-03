@@ -6,20 +6,20 @@
 &lt;a href="#the-orange-ecosystem" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Client[Application Client] --&amp;gt; Gate[Orangegate: Stateless Proxy &amp;amp; Query Router]
-subgraph K8s [Kubernetes Cluster managed by Orangectl]
-Gate --&amp;gt; S1[Shard 1 Leader]
-Gate --&amp;gt; S2[Shard 2 Leader]
-Gate --&amp;gt; S3[Shard 3 Leader]
-subgraph Shard1 [Shard 1 Cluster]
-S1 &amp;lt;--&amp;gt;|Sync/Async Replication| R1[Replica 1]
-S1 &amp;lt;--&amp;gt;|Sync/Async Replication| R2[Replica 2]
+Client[&amp;#34;Application Client&amp;#34;] --&amp;gt; Gate[&amp;#34;Orangegate (Proxy &amp;amp; Query Router)&amp;#34;]
+subgraph K8s[&amp;#34;Kubernetes Cluster (Managed by Orangectl)&amp;#34;]
+Gate --&amp;gt; S1[&amp;#34;Shard 1 Leader&amp;#34;]
+Gate --&amp;gt; S2[&amp;#34;Shard 2 Leader&amp;#34;]
+Gate --&amp;gt; S3[&amp;#34;Shard 3 Leader&amp;#34;]
+subgraph Shard1[&amp;#34;Shard 1 Cluster&amp;#34;]
+S1 &amp;lt;--&amp;gt;|&amp;#34;Replication&amp;#34;| R1[&amp;#34;Replica 1&amp;#34;]
+S1 &amp;lt;--&amp;gt;|&amp;#34;Replication&amp;#34;| R2[&amp;#34;Replica 2&amp;#34;]
 end
-subgraph NodeInternal [OrangeDB Node Engine]
-OQL[OQL Query Parser &amp;amp; Validator] --&amp;gt; Parrot[Parrot LSM Storage Engine]
-Parrot --&amp;gt; MemQueue[Chain of Memtables]
-Parrot --&amp;gt; WAL[Write-Ahead Log]
-Parrot --&amp;gt; SST[SSTable Files with mmap &amp;amp; Bloom Filters]
+subgraph NodeInternal[&amp;#34;OrangeDB Node Engine&amp;#34;]
+OQL[&amp;#34;OQL Query Parser &amp;amp; Validator&amp;#34;] --&amp;gt; Parrot[&amp;#34;Parrot LSM Storage Engine&amp;#34;]
+Parrot --&amp;gt; MemQueue[&amp;#34;Chain of Memtables&amp;#34;]
+Parrot --&amp;gt; WAL[&amp;#34;Write-Ahead Log&amp;#34;]
+Parrot --&amp;gt; SST[&amp;#34;SSTables (mmap &amp;amp; Bloom Filters)&amp;#34;]
 end
 end
 &lt;/pre&gt;
@@ -114,19 +114,19 @@ data-copied-label="Copied!"
 &lt;a href="#architecture--design" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart LR
-Producer[Event Producers / IoT / Apps] --&amp;gt;|Custom TCP Protocol| EventLoop[Non-Blocking I/O Event Loop]
-subgraph RippleCore [Ripple Server Engine]
-EventLoop --&amp;gt; Demux[Message Demultiplexer]
-Demux --&amp;gt; TopicA[Topic A Partition 0]
-Demux --&amp;gt; TopicB[Topic A Partition 1]
-Demux --&amp;gt; TopicC[Topic B Partition 0]
-TopicA --&amp;gt; MemRing[In-Memory Ring Buffers]
+Producer[&amp;#34;Event Producers / Apps&amp;#34;] --&amp;gt;|&amp;#34;Custom TCP Protocol&amp;#34;| EventLoop[&amp;#34;Non-Blocking I/O Event Loop&amp;#34;]
+subgraph RippleCore[&amp;#34;Ripple Server Engine&amp;#34;]
+EventLoop --&amp;gt; Demux[&amp;#34;Message Demultiplexer&amp;#34;]
+Demux --&amp;gt; TopicA[&amp;#34;Topic A Partition 0&amp;#34;]
+Demux --&amp;gt; TopicB[&amp;#34;Topic A Partition 1&amp;#34;]
+Demux --&amp;gt; TopicC[&amp;#34;Topic B Partition 0&amp;#34;]
+TopicA --&amp;gt; MemRing[&amp;#34;In-Memory Ring Buffers&amp;#34;]
 TopicB --&amp;gt; MemRing
 TopicC --&amp;gt; MemRing
 end
-MemRing --&amp;gt; PushStream[Zero-Copy Push Dispatcher]
-PushStream --&amp;gt; Consumer1[Consumer Group Alpha]
-PushStream --&amp;gt; Consumer2[Consumer Group Beta]
+MemRing --&amp;gt; PushStream[&amp;#34;Zero-Copy Push Dispatcher&amp;#34;]
+PushStream --&amp;gt; Consumer1[&amp;#34;Consumer Group Alpha&amp;#34;]
+PushStream --&amp;gt; Consumer2[&amp;#34;Consumer Group Beta&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="core-innovations"&gt;Core Innovations&lt;span class="hx:absolute hx:-mt-20" id="core-innovations"&gt;&lt;/span&gt;
 &lt;a href="#core-innovations" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
@@ -229,15 +229,15 @@ data-copied-label="Copied!"
 &lt;a href="#architectural-topology" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Client[nanoDFS Client SDK] &amp;lt;--&amp;gt;|1. Metadata / Chunk Locations| Master[nanoDFS Master Node]
-subgraph StorageCluster [Distributed Chunk Servers]
-Client &amp;lt;--&amp;gt;|2. Encrypted Chunk Stream| Chunk1[Slave Node 1 - Primary]
-Chunk1 &amp;lt;--&amp;gt;|3. P2P Replication Pipeline| Chunk2[Slave Node 2 - Secondary]
-Chunk2 &amp;lt;--&amp;gt;|4. P2P Replication Pipeline| Chunk3[Slave Node 3 - Tertiary]
+Client[&amp;#34;nanoDFS Client SDK&amp;#34;] &amp;lt;--&amp;gt;|&amp;#34;1. Metadata / Chunk Locations&amp;#34;| Master[&amp;#34;nanoDFS Master Node&amp;#34;]
+subgraph StorageCluster[&amp;#34;Distributed Chunk Servers&amp;#34;]
+Client &amp;lt;--&amp;gt;|&amp;#34;2. Encrypted Chunk Stream&amp;#34;| Chunk1[&amp;#34;Slave Node 1 (Primary)&amp;#34;]
+Chunk1 &amp;lt;--&amp;gt;|&amp;#34;3. P2P Replication Pipeline&amp;#34;| Chunk2[&amp;#34;Slave Node 2 (Secondary)&amp;#34;]
+Chunk2 &amp;lt;--&amp;gt;|&amp;#34;4. P2P Replication Pipeline&amp;#34;| Chunk3[&amp;#34;Slave Node 3 (Tertiary)&amp;#34;]
 end
-Master &amp;lt;--&amp;gt;|Heartbeats &amp;amp; Block Reports| Chunk1
-Master &amp;lt;--&amp;gt;|Heartbeats &amp;amp; Block Reports| Chunk2
-Master &amp;lt;--&amp;gt;|Heartbeats &amp;amp; Block Reports| Chunk3
+Master &amp;lt;--&amp;gt;|&amp;#34;Heartbeats &amp;amp; Reports&amp;#34;| Chunk1
+Master &amp;lt;--&amp;gt;|&amp;#34;Heartbeats &amp;amp; Reports&amp;#34;| Chunk2
+Master &amp;lt;--&amp;gt;|&amp;#34;Heartbeats &amp;amp; Reports&amp;#34;| Chunk3
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="core-architecture-components"&gt;Core Architecture Components&lt;span class="hx:absolute hx:-mt-20" id="core-architecture-components"&gt;&lt;/span&gt;
 &lt;a href="#core-architecture-components" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;

@@ -230,20 +230,20 @@ data-copied-label="Copied!"
 &lt;a href="#the-orange-ecosystem" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Client[Application Client] --&amp;gt; Gate[Orangegate: Stateless Proxy &amp;amp; Query Router]
-subgraph K8s [Kubernetes Cluster managed by Orangectl]
-Gate --&amp;gt; S1[Shard 1 Leader]
-Gate --&amp;gt; S2[Shard 2 Leader]
-Gate --&amp;gt; S3[Shard 3 Leader]
-subgraph Shard1 [Shard 1 Cluster]
-S1 &amp;lt;--&amp;gt;|Sync/Async Replication| R1[Replica 1]
-S1 &amp;lt;--&amp;gt;|Sync/Async Replication| R2[Replica 2]
+Client[&amp;#34;Application Client&amp;#34;] --&amp;gt; Gate[&amp;#34;Orangegate (Proxy &amp;amp; Query Router)&amp;#34;]
+subgraph K8s[&amp;#34;Kubernetes Cluster (Managed by Orangectl)&amp;#34;]
+Gate --&amp;gt; S1[&amp;#34;Shard 1 Leader&amp;#34;]
+Gate --&amp;gt; S2[&amp;#34;Shard 2 Leader&amp;#34;]
+Gate --&amp;gt; S3[&amp;#34;Shard 3 Leader&amp;#34;]
+subgraph Shard1[&amp;#34;Shard 1 Cluster&amp;#34;]
+S1 &amp;lt;--&amp;gt;|&amp;#34;Replication&amp;#34;| R1[&amp;#34;Replica 1&amp;#34;]
+S1 &amp;lt;--&amp;gt;|&amp;#34;Replication&amp;#34;| R2[&amp;#34;Replica 2&amp;#34;]
 end
-subgraph NodeInternal [OrangeDB Node Engine]
-OQL[OQL Query Parser &amp;amp; Validator] --&amp;gt; Parrot[Parrot LSM Storage Engine]
-Parrot --&amp;gt; MemQueue[Chain of Memtables]
-Parrot --&amp;gt; WAL[Write-Ahead Log]
-Parrot --&amp;gt; SST[SSTable Files with mmap &amp;amp; Bloom Filters]
+subgraph NodeInternal[&amp;#34;OrangeDB Node Engine&amp;#34;]
+OQL[&amp;#34;OQL Query Parser &amp;amp; Validator&amp;#34;] --&amp;gt; Parrot[&amp;#34;Parrot LSM Storage Engine&amp;#34;]
+Parrot --&amp;gt; MemQueue[&amp;#34;Chain of Memtables&amp;#34;]
+Parrot --&amp;gt; WAL[&amp;#34;Write-Ahead Log&amp;#34;]
+Parrot --&amp;gt; SST[&amp;#34;SSTables (mmap &amp;amp; Bloom Filters)&amp;#34;]
 end
 end
 &lt;/pre&gt;

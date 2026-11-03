@@ -7,18 +7,20 @@
 &lt;a href="#architectural-highlights" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Source[Picasso Source Code .pic] --&amp;gt; Lexer[Lexer &amp;amp; Tokenizer]
-Lexer --&amp;gt; Parser[AST Parser &amp;amp; Semantic Analyzer]
-Parser --&amp;gt; TypeCheck[Static Type Checker]
-TypeCheck --&amp;gt; IR[Intermediate Representation / LLVM IR]
-IR --&amp;gt; Opt[Optimization Pipeline]
-Opt --&amp;gt; Native[Native Machine Code Executable]
-subgraph Runtime [Picasso Runtime Engine]
-GC[Garbage Collector]
-Scheduler[M:N Green Thread Scheduler]
-Sync[WaitGroups &amp;amp; Atomic Primitives]
+Source[&amp;#34;Picasso Source Code (.pic)&amp;#34;] --&amp;gt; Lexer[&amp;#34;Lexer &amp;amp; Tokenizer&amp;#34;]
+Lexer --&amp;gt; Parser[&amp;#34;AST Parser &amp;amp; Semantic Analyzer&amp;#34;]
+Parser --&amp;gt; TypeCheck[&amp;#34;Static Type Checker&amp;#34;]
+TypeCheck --&amp;gt; IR[&amp;#34;Intermediate Representation (LLVM IR)&amp;#34;]
+IR --&amp;gt; Opt[&amp;#34;Optimization Pipeline&amp;#34;]
+Opt --&amp;gt; Native[&amp;#34;Native Machine Code Executable&amp;#34;]
+subgraph Runtime[&amp;#34;Picasso Runtime Engine&amp;#34;]
+GC[&amp;#34;Garbage Collector&amp;#34;]
+Scheduler[&amp;#34;M:N Green Thread Scheduler&amp;#34;]
+Sync[&amp;#34;WaitGroups &amp;amp; Atomic Primitives&amp;#34;]
 end
-Native -.-&amp;gt; Runtime
+Native --&amp;gt; Scheduler
+Scheduler --&amp;gt; GC
+Scheduler --&amp;gt; Sync
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="key-features"&gt;Key Features&lt;span class="hx:absolute hx:-mt-20" id="key-features"&gt;&lt;/span&gt;
 &lt;a href="#key-features" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
@@ -200,15 +202,15 @@ data-copied-label="Copied!"
 &lt;a href="#the-build-pipeline" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Host[Host Linux Machine] --&amp;gt; Phase1[Phase 1: Cross-Toolchain Bootstrapping]
-Phase1 --&amp;gt; Toolchain[Binutils, GCC, Glibc, Linux API Headers]
-Toolchain --&amp;gt; Phase2[Phase 2: Chroot Environment Setup]
-Phase2 --&amp;gt; Phase3[Phase 3: Core System Software Compilation]
-Phase3 --&amp;gt; CoreLibs[Bash, Coreutils, Systemd/SysVinit, Util-Linux, Sed, Grep]
-Phase3 --&amp;gt; Phase4[Phase 4: Linux Kernel Configuration &amp;amp; Compilation]
-Phase4 --&amp;gt; Kernel[Monolithic Custom Kernel: vmlinuz]
-Phase4 --&amp;gt; Phase5[Phase 5: Initramfs, Bootloader &amp;amp; ISO Packaging]
-Phase5 --&amp;gt; Bootable[Bootable USB Drive / Live ISO Image]
+Host[&amp;#34;Host Linux Machine&amp;#34;] --&amp;gt; Phase1[&amp;#34;Phase 1: Cross-Toolchain Bootstrapping&amp;#34;]
+Phase1 --&amp;gt; Toolchain[&amp;#34;Binutils, GCC, Glibc, Linux Headers&amp;#34;]
+Toolchain --&amp;gt; Phase2[&amp;#34;Phase 2: Chroot Environment Setup&amp;#34;]
+Phase2 --&amp;gt; Phase3[&amp;#34;Phase 3: Core System Software Compilation&amp;#34;]
+Phase3 --&amp;gt; CoreLibs[&amp;#34;Bash, Coreutils, Systemd, Util-Linux, Grep&amp;#34;]
+CoreLibs --&amp;gt; Phase4[&amp;#34;Phase 4: Linux Kernel Compilation&amp;#34;]
+Phase4 --&amp;gt; Kernel[&amp;#34;Monolithic Custom Kernel (vmlinuz)&amp;#34;]
+Kernel --&amp;gt; Phase5[&amp;#34;Phase 5: Initramfs, Bootloader &amp;amp; ISO Packaging&amp;#34;]
+Phase5 --&amp;gt; Bootable[&amp;#34;Bootable Live ISO Image&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 data-hextra-search-id="key-system-components"&gt;Key System Components&lt;span class="hx:absolute hx:-mt-20" id="key-system-components"&gt;&lt;/span&gt;

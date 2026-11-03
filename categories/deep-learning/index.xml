@@ -6,15 +6,15 @@
 &lt;a href="#architectural-workflow" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart LR
-PythonApp[Python Application Code] --&amp;gt;|Python C-API / ctypes| Binding[SynapC Extension Layer]
-subgraph CEngine [Pure C Core Engine]
-Binding --&amp;gt; Alloc[Tensor &amp;amp; Layer Allocator]
-Alloc --&amp;gt; Forward[Forward Pass: Matrix Multiply &amp;amp; Activations]
-Forward --&amp;gt; Loss[Loss Computation: MSE / Cross-Entropy]
-Loss --&amp;gt; Backward[Backward Pass: Analytical Gradients]
-Backward --&amp;gt; Optimizer[SGD Optimizer &amp;amp; Weight Updates]
-end
+PythonApp[&amp;#34;Python Application Code&amp;#34;] --&amp;gt;|&amp;#34;Python C-API&amp;#34;| Binding[&amp;#34;SynapC Extension Layer&amp;#34;]
+subgraph CEngine[&amp;#34;Pure C Core Engine&amp;#34;]
+Binding --&amp;gt; Alloc[&amp;#34;Tensor &amp;amp; Layer Allocator&amp;#34;]
+Alloc --&amp;gt; Forward[&amp;#34;Forward Pass (Matrix Multiply &amp;amp; Activations)&amp;#34;]
+Forward --&amp;gt; Loss[&amp;#34;Loss Computation (MSE / Cross-Entropy)&amp;#34;]
+Loss --&amp;gt; Backward[&amp;#34;Backward Pass (Analytical Gradients)&amp;#34;]
+Backward --&amp;gt; Optimizer[&amp;#34;SGD Optimizer (Weight Updates)&amp;#34;]
 Optimizer --&amp;gt; Forward
+end
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 data-hextra-search-id="key-features"&gt;Key Features&lt;span class="hx:absolute hx:-mt-20" id="key-features"&gt;&lt;/span&gt;

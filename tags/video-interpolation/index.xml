@@ -7,13 +7,13 @@
 &lt;a href="#architectural-comparison" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-FramePair[Input Frame Pair: Frame t and Frame t+1] --&amp;gt; ModelSelect{Model Architecture}
-ModelSelect --&amp;gt;|Traditional / CNN| DVF[Deep Voxel Flow: Optical Flow + CNN Warp]
-ModelSelect --&amp;gt;|U-Net Optical Flow| SloMo[Super SloMo: Flow Computation &amp;amp; Bi-directional Warping]
-ModelSelect --&amp;gt;|Transformer SOTA| VIFT[VIFT: Swin Transformer Shifted-Window Attention]
-DVF --&amp;gt; SynthDVF[Synthesized Intermediate Frame: High Blur / Occlusion Errors]
-SloMo --&amp;gt; SynthSloMo[Synthesized Frame: Heavy Computation / Quadratic Cost]
-VIFT --&amp;gt; SynthVIFT[Synthesized Frame: High PSNR / Linear Complexity / Sharp Details]
+FramePair[&amp;#34;Input Frame Pair (Frame t, Frame t+1)&amp;#34;] --&amp;gt; ModelSelect{&amp;#34;Model Architecture&amp;#34;}
+ModelSelect --&amp;gt;|&amp;#34;Traditional Optical Flow&amp;#34;| DVF[&amp;#34;Deep Voxel Flow (DVF)&amp;#34;]
+ModelSelect --&amp;gt;|&amp;#34;U-Net Flow Estimation&amp;#34;| SloMo[&amp;#34;Super SloMo&amp;#34;]
+ModelSelect --&amp;gt;|&amp;#34;Swin Attention SOTA&amp;#34;| VIFT[&amp;#34;VIFT (Transformer)&amp;#34;]
+DVF --&amp;gt; SynthDVF[&amp;#34;Synthesized Frame (Blur &amp;amp; Occlusion Errors)&amp;#34;]
+SloMo --&amp;gt; SynthSloMo[&amp;#34;Synthesized Frame (Quadratic Compute Cost)&amp;#34;]
+VIFT --&amp;gt; SynthVIFT[&amp;#34;Synthesized Frame (High PSNR &amp;amp; Linear Compute)&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="why-transformers-for-video-interpolation"&gt;Why Transformers for Video Interpolation?&lt;span class="hx:absolute hx:-mt-20" id="why-transformers-for-video-interpolation"&gt;&lt;/span&gt;
 &lt;a href="#why-transformers-for-video-interpolation" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;

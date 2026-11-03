@@ -7,18 +7,18 @@
 &lt;a href="#hybrid-quantum-classical-pipeline" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart LR
-Input[Underwater Image 224x224x3] --&amp;gt; ClassicalCNN[Pre-trained Classical Backbone: ResNet-50 / InceptionV3]
-ClassicalCNN --&amp;gt; FeatureVec[Latent Feature Vector: 512-d]
-FeatureVec --&amp;gt; AngleEncoding[Quantum Angle Encoding / Feature Map]
-subgraph QPU [Cloud Quantum Processing Unit / IBM Quantum]
-AngleEncoding --&amp;gt; PQC[Parameterized Quantum Circuit Layer]
-PQC --&amp;gt; Entanglement[CNOT Entangling Gates &amp;amp; Rotation Gates]
-Entanglement --&amp;gt; Measurement[Pauli-Z Expectation Measurement]
+Input[&amp;#34;Underwater Image (224x224x3)&amp;#34;] --&amp;gt; ClassicalCNN[&amp;#34;Pre-trained Backbone (ResNet-50 / InceptionV3)&amp;#34;]
+ClassicalCNN --&amp;gt; FeatureVec[&amp;#34;Latent Feature Vector (512-d)&amp;#34;]
+FeatureVec --&amp;gt; AngleEncoding[&amp;#34;Quantum Angle Encoding&amp;#34;]
+subgraph QPU[&amp;#34;Cloud QPU (IBM Quantum)&amp;#34;]
+AngleEncoding --&amp;gt; PQC[&amp;#34;Parameterized Quantum Circuit&amp;#34;]
+PQC --&amp;gt; Entanglement[&amp;#34;CNOT Entangling &amp;amp; Rotation Gates&amp;#34;]
+Entanglement --&amp;gt; Measurement[&amp;#34;Pauli-Z Expectation Measurement&amp;#34;]
 end
-Measurement --&amp;gt; ClassicalHead[Classification Head: Softmax 23 Classes]
-ClassicalHead --&amp;gt; Loss[Cross-Entropy Loss]
-Loss --&amp;gt;|Adjoint Differentiation / Backpropagation| Optimizer[Adam Optimizer]
-Optimizer --&amp;gt;|Update Circuit Angles &amp;amp; Weights| PQC
+Measurement --&amp;gt; ClassicalHead[&amp;#34;Classification Head (23 Classes)&amp;#34;]
+ClassicalHead --&amp;gt; Loss[&amp;#34;Cross-Entropy Loss&amp;#34;]
+Loss --&amp;gt;|&amp;#34;Adjoint Differentiation&amp;#34;| Optimizer[&amp;#34;Adam Optimizer&amp;#34;]
+Optimizer --&amp;gt;|&amp;#34;Update Circuit Angles&amp;#34;| PQC
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 data-hextra-search-id="what-makes-it-innovative"&gt;What Makes It Innovative?&lt;span class="hx:absolute hx:-mt-20" id="what-makes-it-innovative"&gt;&lt;/span&gt;
