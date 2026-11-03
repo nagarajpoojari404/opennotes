@@ -17,12 +17,12 @@ summary: "Gluon AI is a Visual Studio Code extension that generates comprehensiv
 
 ```mermaid
 flowchart LR
-    Editor[Developer Selects Code in VS Code Editor] --> Command[Trigger Gluon AI: Shortcut / Right-Click]
-    Command --> Parser[AST & Language Context Extractor]
-    Parser --> PromptGen[Structured Prompt Generator with Surrounding Context]
-    PromptGen --> LLM[OpenAI / LLM API Endpoint]
-    LLM --> Streamer[Response Streaming Handler]
-    Streamer --> InlineDoc[Insert Formatted Docstrings & Explanations]
+    Editor["Developer Selects Code in Editor"] --> Command["Trigger Gluon AI Command"]
+    Command --> Parser["AST & Context Extractor"]
+    Parser --> PromptGen["Prompt Generator"]
+    PromptGen --> LLM["LLM API Endpoint"]
+    LLM --> Streamer["Response Streaming Handler"]
+    Streamer --> InlineDoc["Insert Formatted Docstrings"]
 ```
 
 ---

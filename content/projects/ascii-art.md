@@ -17,11 +17,11 @@ summary: "ASCII Art is a client-side real-time webcam video stream converter tha
 
 ```mermaid
 flowchart LR
-    Webcam[Webcam Video Capture Feed] --> Capture[p5.js Video Frame Grabber]
-    Capture --> Grid[Downsample & Subdivide into Grid Cells]
-    Grid --> Luminance[Compute Average Luminance: 0.299R + 0.587G + 0.114B]
-    Luminance --> DensityMap[Map Luminance 0-255 to Character Ramp: ` .:-=+*#%@`]
-    DensityMap --> Canvas[Render Text Characters to Canvas / DOM]
+    Webcam["Webcam Video Feed"] --> Capture["p5.js Frame Grabber"]
+    Capture --> Grid["Downsample into Grid Cells"]
+    Grid --> Luminance["Compute Luminance (BT.601)"]
+    Luminance --> DensityMap["Map to ASCII Density Ramp"]
+    DensityMap --> Canvas["Render Glyphs to Canvas"]
 ```
 
 ### Transformation Algorithm

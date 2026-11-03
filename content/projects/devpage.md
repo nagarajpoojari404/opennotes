@@ -17,19 +17,19 @@ summary: "DevPage is a full-stack developer social media platform enabling engin
 
 ```mermaid
 flowchart TD
-    Client[Browser / DevPage Frontend] --> Gateway[Express.js Web Server]
+    Client["Browser / DevPage Frontend"] --> Gateway["Express.js Web Server"]
     
-    subgraph Auth [Authentication & Identity]
-        Gateway <--> Cognito[AWS Cognito User Pools]
-        Gateway <--> GitHubAuth[GitHub OAuth 2.0 via Passport.js]
+    subgraph Auth["Authentication & Identity"]
+        Gateway <--> Cognito["AWS Cognito User Pools"]
+        Gateway <--> GitHubAuth["GitHub OAuth 2.0 (Passport.js)"]
     end
     
-    subgraph DataLayer [Storage & Media]
-        Gateway <--> Mongo[(MongoDB Atlas / Mongoose Models)]
-        Gateway <--> S3[(AWS S3: Developer Assets & Code Snippets)]
+    subgraph DataLayer["Storage & Media"]
+        Gateway <--> Mongo[("MongoDB Atlas")]
+        Gateway <--> S3[("AWS S3 Assets")]
     end
     
-    Gateway --> Renderer[EJS-Mate SSR Engine / Interactive Views]
+    Gateway --> Renderer["EJS-Mate SSR Engine"]
     Renderer --> Client
 ```
 

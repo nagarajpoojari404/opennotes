@@ -17,20 +17,20 @@ A modern full-stack real-time multiplayer chess platform enabling players worldw
 
 ```mermaid
 flowchart TD
-    PlayerA[Player 1: White] <-->|WebRTC P2P Video / Audio Stream via PeerJS| PlayerB[Player 2: Black]
+    PlayerA["Player 1 (White)"] <-->|"WebRTC P2P (PeerJS)"| PlayerB["Player 2 (Black)"]
     
-    PlayerA <-->|Socket.io WebSocket: Moves, Clocks & Chat| Server[Node.js / Express Server]
-    PlayerB <-->|Socket.io WebSocket: Moves, Clocks & Chat| Server
+    PlayerA <-->|"Socket.io (Moves & Chat)"| Server["Node.js Server"]
+    PlayerB <-->|"Socket.io (Moves & Chat)"| Server
     
-    Server <--> Mongo[(MongoDB: User Profiles, ELO & Game History)]
+    Server <--> Mongo[("MongoDB Game Store")]
     
-    subgraph Coach [AI Chess Coach Engine - chess.py]
-        BoardState[FEN / PGN Board State] --> Engine[Stockfish / Python Chess Analysis]
-        Engine --> Evaluation[Win Probability & Best Moves]
-        Evaluation --> Explanation[LLM Natural Language Advice]
+    subgraph Coach["AI Chess Coach (chess.py)"]
+        BoardState["FEN Board State"] --> Stockfish["Stockfish Analysis"]
+        Stockfish --> Evaluation["Win Probability & Moves"]
+        Evaluation --> Explanation["LLM Strategic Advice"]
     end
     
-    Server -.-> Coach
+    Server --> BoardState
 ```
 
 ---
