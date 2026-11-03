@@ -1,9 +1,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – Sft</title><link>https://nagarajrpoojari.github.io/opennotes/tags/sft/</link><description>Recent content in Sft on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 01 Jun 2025 00:00:00 +0530</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/tags/sft/index.xml" rel="self" type="application/rss+xml"/><item><title>Mint: Distributed Compute-Optimal LLM Training Framework</title><link>https://nagarajrpoojari.github.io/opennotes/projects/mint/</link><pubDate>Sun, 01 Jun 2025 00:00:00 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/projects/mint/</guid><description>
-&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/mint" target="_blank" rel="noopener"&gt;&lt;strong&gt;View on GitHub&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#quickstart--cli-commands"&gt;&lt;strong&gt;Quickstart&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#what-makes-mint-special"&gt;&lt;strong&gt;Optimization Features&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Mint&lt;/strong&gt; is a modern, lightweight distributed training, fine-tuning, and alignment framework engineered for Large Language Models. Designed to achieve maximum parameter throughput at lowest hardware cost, Mint runs seamlessly across both Apple Silicon (MPS / Metal) and high-density NVIDIA CUDA GPU clusters.&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/mint" target="_blank" rel="noopener"&gt;&lt;strong&gt;View on GitHub&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#architecture--modules"&gt;&lt;strong&gt;Architecture&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#quickstart--cli-commands"&gt;&lt;strong&gt;Quickstart&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#what-makes-mint-special"&gt;&lt;strong&gt;Key Innovations&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Mint&lt;/strong&gt; is a high-performance, compute-optimal distributed training, fine-tuning, and alignment framework engineered for Large Language Models. Designed to achieve maximum parameter throughput at lowest hardware cost, Mint runs seamlessly across both Apple Silicon (MPS / Metal) and high-density NVIDIA CUDA GPU clusters.&lt;/p&gt;
 &lt;hr&gt;
-&lt;h2 data-hextra-search-id="architecture--pipeline"&gt;Architecture &amp;amp; Pipeline&lt;span class="hx:absolute hx:-mt-20" id="architecture--pipeline"&gt;&lt;/span&gt;
-&lt;a href="#architecture--pipeline" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
+&lt;h2 data-hextra-search-id="architecture--modules"&gt;Architecture &amp;amp; Modules&lt;span class="hx:absolute hx:-mt-20" id="architecture--modules"&gt;&lt;/span&gt;
+&lt;a href="#architecture--modules" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
 Config[Compute Budget FLOPs / Hardware Specs] --&amp;gt; Planner[Compute-Optimal Auto-Planner]
@@ -16,6 +16,7 @@ subgraph CoreEngine [Optimization &amp;amp; Parallelism]
 ZeRO[ZeRO-2 Optimizer State Sharding]
 Muon[Distributed MuonAdamW + norMuon Polar Express]
 Kernels[Hardware Kernels: Apple Metal MPS &amp;amp; FlashAttention-2]
+KVCache[Optimized Paged KV-Cache &amp;amp; SwiGLU / RoPE Layers]
 end
 DataEngine --&amp;gt; CoreEngine
 CoreEngine --&amp;gt; Modes[Training Regimes]
@@ -23,12 +24,51 @@ Modes --&amp;gt; Pretrain[Pre-Training: Gemma / TikToken]
 Modes --&amp;gt; SFT[Supervised Fine-Tuning: SFT v1 / v2]
 Modes --&amp;gt; DPO[Direct Preference Optimization: DPO v1 / v2]
 &lt;/pre&gt;
-&lt;/div&gt;&lt;hr&gt;
+&lt;/div&gt;&lt;h3 data-hextra-search-id="module-breakdown"&gt;Module Breakdown&lt;span class="hx:absolute hx:-mt-20" id="module-breakdown"&gt;&lt;/span&gt;
+&lt;a href="#module-breakdown" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;Package Module&lt;/th&gt;
+&lt;th style="text-align: left"&gt;Purpose&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;&lt;code&gt;mint.nn&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;Transformer architectures, RoPE (Rotary Position Embeddings), RMSNorm, SwiGLU MLP layers&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;&lt;code&gt;mint.optim&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;Distributed &lt;strong&gt;MuonAdamW&lt;/strong&gt; optimizer with &lt;code&gt;norMuon&lt;/code&gt; normalization and Polar Express coefficients, alongside ZeRO-2 sharding&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;&lt;code&gt;mint.data&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;Zero-memory-bloat streaming chunk dataloaders for pre-training and preference datasets&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;&lt;code&gt;mint.trainer&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;Distributed multi-GPU / multi-device training orchestrator supporting PyTorch DDP and Apple Metal (MPS)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;&lt;code&gt;mint.sft&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;Supervised fine-tuning pipeline for custom models and HuggingFace backbones (e.g. Qwen2, Llama)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;&lt;code&gt;mint.eval&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;Distributed evaluation suite covering conversational benchmarks, GSM8K reasoning, and MCQ tasks&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;&lt;code&gt;mint.kvcache&lt;/code&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;Low-overhead Key-Value cache implementation for high-throughput inference and validation&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
 &lt;h2 data-hextra-search-id="what-makes-mint-special"&gt;What Makes Mint Special?&lt;span class="hx:absolute hx:-mt-20" id="what-makes-mint-special"&gt;&lt;/span&gt;
 &lt;a href="#what-makes-mint-special" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3 data-hextra-search-id="1-automated-compute-optimality"&gt;1. Automated Compute Optimality&lt;span class="hx:absolute hx:-mt-20" id="1-automated-compute-optimality"&gt;&lt;/span&gt;
 &lt;a href="#1-automated-compute-optimality" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Mint automatically calculates scaling-law optimal parameters (dataset token count, layer depth, hidden dimension, and learning rate schedules) based on the user&amp;rsquo;s available FLOP budget and cluster memory constraints.&lt;/p&gt;
 &lt;h3 data-hextra-search-id="2-distributed-muonadamw-optimizer"&gt;2. Distributed MuonAdamW Optimizer&lt;span class="hx:absolute hx:-mt-20" id="2-distributed-muonadamw-optimizer"&gt;&lt;/span&gt;
-&lt;a href="#2-distributed-muonadamw-optimizer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Integrates the state-of-the-art &lt;strong&gt;Muon&lt;/strong&gt; matrix optimizer alongside AdamW, utilizing &lt;code&gt;norMuon&lt;/code&gt; normalization with Polar Express coefficients for faster convergence on modern transformer architectures.&lt;/p&gt;
+&lt;a href="#2-distributed-muonadamw-optimizer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Integrates the state-of-the-art &lt;strong&gt;Muon&lt;/strong&gt; matrix optimizer alongside AdamW, utilizing &lt;code&gt;norMuon&lt;/code&gt; normalization with Polar Express coefficients for faster convergence and lower loss variance on modern transformer architectures.&lt;/p&gt;
 &lt;h3 data-hextra-search-id="3-zero-2-sharding--distributed-dataloaders"&gt;3. ZeRO-2 Sharding &amp;amp; Distributed Dataloaders&lt;span class="hx:absolute hx:-mt-20" id="3-zero-2-sharding--distributed-dataloaders"&gt;&lt;/span&gt;
 &lt;a href="#3-zero-2-sharding--distributed-dataloaders" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;ZeRO-2 Sharding&lt;/strong&gt;: Partitions optimizer states and gradients across available ranks to enable training larger models on memory-constrained GPUs.&lt;/li&gt;
@@ -36,7 +76,7 @@ Modes --&amp;gt; DPO[Direct Preference Optimization: DPO v1 / v2]
 &lt;/ul&gt;
 &lt;h3 data-hextra-search-id="4-cross-platform-acceleration"&gt;4. Cross-Platform Acceleration&lt;span class="hx:absolute hx:-mt-20" id="4-cross-platform-acceleration"&gt;&lt;/span&gt;
 &lt;a href="#4-cross-platform-acceleration" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Apple Silicon (MPS)&lt;/strong&gt;: Native Metal Performance Shaders integration for local M-series Mac fine-tuning.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Apple Silicon (MPS)&lt;/strong&gt;: Native Metal Performance Shaders integration for local M-series Mac training and fine-tuning.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;NVIDIA CUDA&lt;/strong&gt;: Supports PyTorch Distributed Data Parallel (DDP), FlashAttention-2, and &lt;code&gt;bfloat16&lt;/code&gt; mixed precision.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr&gt;
@@ -128,4 +168,5 @@ data-copied-label="Copied!"
 &lt;a href="#dataset-utilities-included" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
 &lt;li&gt;&lt;code&gt;mint prepare-dpo&lt;/code&gt;: Prepares preference pairs (chosen vs. rejected responses).&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;mint download-climbmix&lt;/code&gt;: Downloads and tokenizes curated reasoning and code pre-training datasets.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mint --help&lt;/code&gt;: Lists all CLI commands and configuration options.&lt;/li&gt;
 &lt;/ul&gt;</description></item></channel></rss>
