@@ -35,7 +35,7 @@ If $A \in \mathbb{C}^{n \times n}$, the theorem generalizes to **normal matrices
 	where $U$ is a unitary matrix ($U^* U = I$) and $\Lambda$ is diagonal.
 - If $A$ is specifically **Hermitian** ($A = A^*$), all its eigenvalues are strictly real, mirroring the real symmetric case.
 
-### Spectral Decomposition (Projection Form)
+### Spectral Decomposition (Projection Form) 
 
 Instead of matrix products, the spectral theorem can be written as a sum of one-dimensional orthogonal projections:
 
