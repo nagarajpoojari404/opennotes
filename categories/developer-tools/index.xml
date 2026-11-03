@@ -1,0 +1,94 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – Developer-Tools</title><link>https://nagarajrpoojari.github.io/opennotes/categories/developer-tools/</link><description>Recent content in Developer-Tools on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 10 Jan 2024 00:00:00 +0530</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/categories/developer-tools/index.xml" rel="self" type="application/rss+xml"/><item><title>Gluon AI: Intelligent VS Code Documentation Assistant</title><link>https://nagarajrpoojari.github.io/opennotes/projects/gluon-ai/</link><pubDate>Wed, 10 Jan 2024 00:00:00 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/projects/gluon-ai/</guid><description>
+&lt;h1 data-hextra-search-id="gluon-ai-intelligent-vs-code-extension"&gt;Gluon AI: Intelligent VS Code Extension&lt;/h1&gt;&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/Gluon-AI" target="_blank" rel="noopener"&gt;&lt;strong&gt;View on GitHub&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#key-capabilities"&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#how-it-works"&gt;&lt;strong&gt;Architecture&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Gluon AI&lt;/strong&gt; is a developer productivity extension for Visual Studio Code designed to eliminate the friction of writing code documentation and reverse-engineering unfamiliar codebases. Powered by GPT models, Gluon AI analyzes selected code snippets, function definitions, or entire modules to generate accurate, formatted docstrings, type annotations, and technical summaries directly inside the IDE.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="how-it-works"&gt;How It Works&lt;span class="hx:absolute hx:-mt-20" id="how-it-works"&gt;&lt;/span&gt;
+&lt;a href="#how-it-works" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
+&lt;pre class="mermaid hx:mt-6"&gt;
+flowchart LR
+Editor[Developer Selects Code in VS Code Editor] --&amp;gt; Command[Trigger Gluon AI: Shortcut / Right-Click]
+Command --&amp;gt; Parser[AST &amp;amp; Language Context Extractor]
+Parser --&amp;gt; PromptGen[Structured Prompt Generator with Surrounding Context]
+PromptGen --&amp;gt; LLM[OpenAI / LLM API Endpoint]
+LLM --&amp;gt; Streamer[Response Streaming Handler]
+Streamer --&amp;gt; InlineDoc[Insert Formatted Docstrings &amp;amp; Explanations]
+&lt;/pre&gt;
+&lt;/div&gt;&lt;hr&gt;
+&lt;h2 data-hextra-search-id="key-capabilities"&gt;Key Capabilities&lt;span class="hx:absolute hx:-mt-20" id="key-capabilities"&gt;&lt;/span&gt;
+&lt;a href="#key-capabilities" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;One-Click Docstring Generation&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Inspects function signatures, parameter types, return values, and thrown exceptions.&lt;/li&gt;
+&lt;li&gt;Generates standard docstring formats tailored to the active language (JSDoc, Google/NumPy Docstrings in Python, GoDoc, RustDoc).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Context-Aware Code Explanation&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Explains complex algorithms, regular expressions, and convoluted legacy logic in clean, human-readable language.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Refactoring Suggestions &amp;amp; Complexity Analysis&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Identifies time/space complexity bottlenecks, edge-case vulnerabilities, and opportunities for cleaner functional abstractions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Multi-Language Support&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;First-class support for Python, JavaScript/TypeScript, Go, C/C++, Rust, and Java.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="installation--setup"&gt;Installation &amp;amp; Setup&lt;span class="hx:absolute hx:-mt-20" id="installation--setup"&gt;&lt;/span&gt;
+&lt;a href="#installation--setup" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3 data-hextra-search-id="from-source"&gt;From Source&lt;span class="hx:absolute hx:-mt-20" id="from-source"&gt;&lt;/span&gt;
+&lt;a href="#from-source" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Clone the repository&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clone https://github.com/nagarajpoojari404/Gluon-AI.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; Gluon-AI
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Install dependencies&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;npm install
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Compile TypeScript&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;npm run compile
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Press F5 in VS Code to launch the Extension Development Host&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="configuration"&gt;Configuration&lt;span class="hx:absolute hx:-mt-20" id="configuration"&gt;&lt;/span&gt;
+&lt;a href="#configuration" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Set your OpenAI API key in VS Code Settings:&lt;/p&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;gluonAI.apiKey&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;sk-...&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;gluonAI.model&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;gpt-3.5-turbo&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;gluonAI.docstringStyle&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;auto&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="usage-shortcuts"&gt;Usage Shortcuts&lt;span class="hx:absolute hx:-mt-20" id="usage-shortcuts"&gt;&lt;/span&gt;
+&lt;a href="#usage-shortcuts" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Explain Code&lt;/strong&gt;: Select code &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\to&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.3669em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; &lt;code&gt;Ctrl + Shift + P&lt;/code&gt; &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\to&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.3669em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; &lt;code&gt;Gluon AI: Explain Selected Code&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Generate Docstrings&lt;/strong&gt;: Place cursor above function &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\to&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.3669em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; &lt;code&gt;Ctrl + Shift + P&lt;/code&gt; &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\to&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.3669em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; &lt;code&gt;Gluon AI: Generate Docstring&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

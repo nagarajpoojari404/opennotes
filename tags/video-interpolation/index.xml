@@ -1,0 +1,107 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – Video-Interpolation</title><link>https://nagarajrpoojari.github.io/opennotes/tags/video-interpolation/</link><description>Recent content in Video-Interpolation on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Thu, 01 Feb 2024 00:00:00 +0530</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/tags/video-interpolation/index.xml" rel="self" type="application/rss+xml"/><item><title>Video Interpolation AI: Vision Transformers for Frame Synthesis</title><link>https://nagarajrpoojari.github.io/opennotes/projects/video-interpolation-ai/</link><pubDate>Thu, 01 Feb 2024 00:00:00 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/projects/video-interpolation-ai/</guid><description>
+&lt;h1 data-hextra-search-id="video-interpolation-with-vision-transformers"&gt;Video Interpolation with Vision Transformers&lt;/h1&gt;&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/video-interpolation-AI" target="_blank" rel="noopener"&gt;&lt;strong&gt;View on GitHub&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#architectural-comparison"&gt;&lt;strong&gt;Model Architecture&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#benchmark-results"&gt;&lt;strong&gt;Empirical Results&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Video Interpolation AI&lt;/strong&gt; is an applied deep learning project implementing state-of-the-art &lt;strong&gt;Video Frame Interpolation Transformers (VIFT)&lt;/strong&gt; and comparing their performance against classical and CNN-based approaches such as &lt;strong&gt;Deep Voxel Flow (DVF)&lt;/strong&gt; and &lt;strong&gt;Super SloMo&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;The goal is to synthesize temporally coherent intermediate frames between consecutive video inputs (&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;msub&gt;&lt;mi&gt;I&lt;/mi&gt;&lt;mn&gt;0&lt;/mn&gt;&lt;/msub&gt;&lt;mo separator="true"&gt;,&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;I&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;→&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;I&lt;/mi&gt;&lt;mn&gt;0.5&lt;/mn&gt;&lt;/msub&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;I_0, I_1 \to I_{0.5}&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.8778em;vertical-align:-0.1944em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;&lt;span class="mord mathnormal" style="margin-right:0.0785em;"&gt;I&lt;/span&gt;&lt;span class="msupsub"&gt;&lt;span class="vlist-t vlist-t2"&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.3011em;"&gt;&lt;span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"&gt;&lt;span class="pstrut" style="height:2.7em;"&gt;&lt;/span&gt;&lt;span class="katex-sizing reset-size6 size3 mtight"&gt;&lt;span class="mord mtight"&gt;0&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-s"&gt;​&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.15em;"&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="mpunct"&gt;,&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.1667em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;&lt;span class="mord mathnormal" style="margin-right:0.0785em;"&gt;I&lt;/span&gt;&lt;span class="msupsub"&gt;&lt;span class="vlist-t vlist-t2"&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.3011em;"&gt;&lt;span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"&gt;&lt;span class="pstrut" style="height:2.7em;"&gt;&lt;/span&gt;&lt;span class="katex-sizing reset-size6 size3 mtight"&gt;&lt;span class="mord mtight"&gt;1&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-s"&gt;​&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.15em;"&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;→&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.8333em;vertical-align:-0.15em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;&lt;span class="mord mathnormal" style="margin-right:0.0785em;"&gt;I&lt;/span&gt;&lt;span class="msupsub"&gt;&lt;span class="vlist-t vlist-t2"&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.3011em;"&gt;&lt;span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"&gt;&lt;span class="pstrut" style="height:2.7em;"&gt;&lt;/span&gt;&lt;span class="katex-sizing reset-size6 size3 mtight"&gt;&lt;span class="mord mtight"&gt;&lt;span class="mord mtight"&gt;0.5&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-s"&gt;​&lt;/span&gt;&lt;/span&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.15em;"&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;), transforming low-framerate footage (e.g. 15 or 24 FPS) into buttery-smooth 60+ FPS video without motion blur or warping artifacts.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="architectural-comparison"&gt;Architectural Comparison&lt;span class="hx:absolute hx:-mt-20" id="architectural-comparison"&gt;&lt;/span&gt;
+&lt;a href="#architectural-comparison" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
+&lt;pre class="mermaid hx:mt-6"&gt;
+flowchart TD
+FramePair[Input Frame Pair: Frame t and Frame t+1] --&amp;gt; ModelSelect{Model Architecture}
+ModelSelect --&amp;gt;|Traditional / CNN| DVF[Deep Voxel Flow: Optical Flow + CNN Warp]
+ModelSelect --&amp;gt;|U-Net Optical Flow| SloMo[Super SloMo: Flow Computation &amp;amp; Bi-directional Warping]
+ModelSelect --&amp;gt;|Transformer SOTA| VIFT[VIFT: Swin Transformer Shifted-Window Attention]
+DVF --&amp;gt; SynthDVF[Synthesized Intermediate Frame: High Blur / Occlusion Errors]
+SloMo --&amp;gt; SynthSloMo[Synthesized Frame: Heavy Computation / Quadratic Cost]
+VIFT --&amp;gt; SynthVIFT[Synthesized Frame: High PSNR / Linear Complexity / Sharp Details]
+&lt;/pre&gt;
+&lt;/div&gt;&lt;h3 data-hextra-search-id="why-transformers-for-video-interpolation"&gt;Why Transformers for Video Interpolation?&lt;span class="hx:absolute hx:-mt-20" id="why-transformers-for-video-interpolation"&gt;&lt;/span&gt;
+&lt;a href="#why-transformers-for-video-interpolation" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Deep Voxel Flow (DVF)&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Relies strictly on optical flow vectors and bilinear warping.&lt;/li&gt;
+&lt;li&gt;Fails on non-rigid motion, rapid object acceleration, and specular reflections.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Super SloMo&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Replaces traditional optical flow with bi-directional flow estimation and U-Net refinement.&lt;/li&gt;
+&lt;li&gt;Requires substantial computational resources (&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;&amp;gt;&lt;/mo&gt;&lt;mn&gt;39&lt;/mn&gt;&lt;mtext&gt;M&lt;/mtext&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;&amp;gt;39\text{M}&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.5782em;vertical-align:-0.0391em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;&amp;gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6833em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;39&lt;/span&gt;&lt;span class="mord text"&gt;&lt;span class="mord"&gt;M&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; parameters) and experiences quadratic scaling issues with resolution.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Video Frame Interpolation Transformer (VIFT)&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Leverages &lt;strong&gt;Swin Transformer&lt;/strong&gt; (Shifted Window) attention blocks to compute self-attention within local windows while cross-attending across window boundaries.&lt;/li&gt;
+&lt;li&gt;Reduces computational complexity from quadratic &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mi&gt;O&lt;/mi&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;msup&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msup&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;O(N^2)&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1.0641em;vertical-align:-0.25em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0278em;"&gt;O&lt;/span&gt;&lt;span class="mopen"&gt;(&lt;/span&gt;&lt;span class="mord"&gt;&lt;span class="mord mathnormal" style="margin-right:0.109em;"&gt;N&lt;/span&gt;&lt;span class="msupsub"&gt;&lt;span class="vlist-t"&gt;&lt;span class="vlist-r"&gt;&lt;span class="vlist" style="height:0.8141em;"&gt;&lt;span style="top:-3.063em;margin-right:0.05em;"&gt;&lt;span class="pstrut" style="height:2.7em;"&gt;&lt;/span&gt;&lt;span class="katex-sizing reset-size6 size3 mtight"&gt;&lt;span class="mord mtight"&gt;2&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="mclose"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; to linear &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mi&gt;O&lt;/mi&gt;&lt;mo stretchy="false"&gt;(&lt;/mo&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mo stretchy="false"&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;O(N)&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:1em;vertical-align:-0.25em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0278em;"&gt;O&lt;/span&gt;&lt;span class="mopen"&gt;(&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.109em;"&gt;N&lt;/span&gt;&lt;span class="mclose"&gt;)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; with respect to image resolution.&lt;/li&gt;
+&lt;li&gt;Captures both micro-textures and long-range motion trajectories accurately.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="benchmark-results"&gt;Benchmark Results&lt;span class="hx:absolute hx:-mt-20" id="benchmark-results"&gt;&lt;/span&gt;
+&lt;a href="#benchmark-results" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Evaluated across standard Vimeo-90K and UCF101 interpolation benchmark datasets:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="text-align: left"&gt;Model Architecture&lt;/th&gt;
+&lt;th style="text-align: left"&gt;Parameter Count (M)&lt;/th&gt;
+&lt;th style="text-align: left"&gt;PSNR (dB) &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;↑&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\uparrow&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.8889em;vertical-align:-0.1944em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;↑&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/th&gt;
+&lt;th style="text-align: left"&gt;SSIM &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mo&gt;↑&lt;/mo&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\uparrow&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.8889em;vertical-align:-0.1944em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;↑&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/th&gt;
+&lt;th style="text-align: left"&gt;Inference Speed (FPS)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;Deep Voxel Flow (DVF)&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;12.8 M&lt;/td&gt;
+&lt;td style="text-align: left"&gt;29.42&lt;/td&gt;
+&lt;td style="text-align: left"&gt;0.892&lt;/td&gt;
+&lt;td style="text-align: left"&gt;42&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;Super SloMo&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;39.6 M&lt;/td&gt;
+&lt;td style="text-align: left"&gt;33.15&lt;/td&gt;
+&lt;td style="text-align: left"&gt;0.941&lt;/td&gt;
+&lt;td style="text-align: left"&gt;18&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;VIFT (Ours / Transformer)&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;14.2 M&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;35.84&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;0.968&lt;/strong&gt;&lt;/td&gt;
+&lt;td style="text-align: left"&gt;&lt;strong&gt;38&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;em&gt;PSNR (Peak Signal-to-Noise Ratio) and SSIM (Structural Similarity Index Measure) demonstrate superior frame reconstruction quality.&lt;/em&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="quickstart--inference"&gt;Quickstart &amp;amp; Inference&lt;span class="hx:absolute hx:-mt-20" id="quickstart--inference"&gt;&lt;/span&gt;
+&lt;a href="#quickstart--inference" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Clone the repository&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clone https://github.com/nagarajpoojari404/video-interpolation-AI.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; video-interpolation-AI
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Install dependencies (PyTorch, Torchvision, OpenCV)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;pip install -r requirements.txt
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Run video interpolation pipeline (2x or 4x FPS upscaling)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;python interpolate.py &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --input ./data/sample_low_fps.mp4 &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --output ./output_60fps.mp4 &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --scale &lt;span class="m"&gt;2&lt;/span&gt; &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --checkpoint ./weights/vift_best.pth&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item></channel></rss>

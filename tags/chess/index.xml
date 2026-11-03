@@ -1,0 +1,81 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – Chess</title><link>https://nagarajrpoojari.github.io/opennotes/tags/chess/</link><description>Recent content in Chess on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Wed, 01 May 2024 00:00:00 +0530</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/tags/chess/index.xml" rel="self" type="application/rss+xml"/><item><title>Chess Platform &amp; AI Coach: Real-Time WebRTC Chess Game</title><link>https://nagarajrpoojari.github.io/opennotes/projects/chess/</link><pubDate>Wed, 01 May 2024 00:00:00 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/projects/chess/</guid><description>
+&lt;h1 data-hextra-search-id="real-time-chess-platform--ai-coach"&gt;Real-Time Chess Platform &amp;amp; AI Coach&lt;/h1&gt;&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/chessProject" target="_blank" rel="noopener"&gt;&lt;strong&gt;GitHub (Chess Platform)&lt;/strong&gt;&lt;/a&gt; · &lt;a href="https://github.com/nagarajpoojari404/chess.py" target="_blank" rel="noopener"&gt;&lt;strong&gt;GitHub (AI Coach)&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;A modern full-stack real-time multiplayer chess platform enabling players worldwide to compete live while streaming video and audio directly in the browser over peer-to-peer connections. The platform also integrates an interactive AI chess coaching companion (&lt;code&gt;chess.py&lt;/code&gt;) for move analysis, blunder detection, and positional evaluation.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="real-time-architecture"&gt;Real-Time Architecture&lt;span class="hx:absolute hx:-mt-20" id="real-time-architecture"&gt;&lt;/span&gt;
+&lt;a href="#real-time-architecture" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
+&lt;pre class="mermaid hx:mt-6"&gt;
+flowchart TD
+PlayerA[Player 1: White] &amp;lt;--&amp;gt;|WebRTC P2P Video / Audio Stream via PeerJS| PlayerB[Player 2: Black]
+PlayerA &amp;lt;--&amp;gt;|Socket.io WebSocket: Moves, Clocks &amp;amp; Chat| Server[Node.js / Express Server]
+PlayerB &amp;lt;--&amp;gt;|Socket.io WebSocket: Moves, Clocks &amp;amp; Chat| Server
+Server &amp;lt;--&amp;gt; Mongo[(MongoDB: User Profiles, ELO &amp;amp; Game History)]
+subgraph Coach [AI Chess Coach Engine - chess.py]
+BoardState[FEN / PGN Board State] --&amp;gt; Engine[Stockfish / Python Chess Analysis]
+Engine --&amp;gt; Evaluation[Win Probability &amp;amp; Best Moves]
+Evaluation --&amp;gt; Explanation[LLM Natural Language Advice]
+end
+Server -.-&amp;gt; Coach
+&lt;/pre&gt;
+&lt;/div&gt;&lt;hr&gt;
+&lt;h2 data-hextra-search-id="key-features"&gt;Key Features&lt;span class="hx:absolute hx:-mt-20" id="key-features"&gt;&lt;/span&gt;
+&lt;a href="#key-features" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Low-Latency Move Synchronization&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;WebSocket bidirectionality using &lt;strong&gt;Socket.io&lt;/strong&gt; guarantees sub-50ms move propagation, clock updates, and spectator broadcasting.&lt;/li&gt;
+&lt;li&gt;Comprehensive move validation, check/checkmate detection, and threefold repetition enforcement.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Integrated Peer-to-Peer Video &amp;amp; Audio&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Direct WebRTC media tracks established via &lt;strong&gt;PeerJS&lt;/strong&gt; allow players to see and speak to opponents live without routing high-bandwidth video streams through central servers.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;In-Game Chat &amp;amp; Chess Community&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In-game real-time messaging, player ELO rankings, interactive chess puzzles, and community article publishing.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;AI Chess Coach (&lt;code&gt;chess.py&lt;/code&gt;)&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Analyzes game positions in real time to explain tactical motifs (pins, forks, skewers, discovered checks) in plain English.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="tech-stack"&gt;Tech Stack&lt;span class="hx:absolute hx:-mt-20" id="tech-stack"&gt;&lt;/span&gt;
+&lt;a href="#tech-stack" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Frontend&lt;/strong&gt;: HTML5, Modern CSS / Bootstrap, Chessboard.js, PeerJS Client&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Backend&lt;/strong&gt;: Node.js, Express.js, Socket.io&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Real-Time Media&lt;/strong&gt;: WebRTC, PeerJS Server&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Database&lt;/strong&gt;: MongoDB &amp;amp; Mongoose&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;AI Coach&lt;/strong&gt;: Python, python-chess, Stockfish Engine, LLM evaluations&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="running-the-platform-locally"&gt;Running the Platform Locally&lt;span class="hx:absolute hx:-mt-20" id="running-the-platform-locally"&gt;&lt;/span&gt;
+&lt;a href="#running-the-platform-locally" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Clone the web platform repository&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clone https://github.com/nagarajpoojari404/chessProject.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; chessProject
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Install dependencies&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;npm install
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Start the Node.js / Socket.io server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;npm start
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Server listens on http://localhost:8000&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item></channel></rss>

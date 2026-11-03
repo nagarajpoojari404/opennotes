@@ -76,4 +76,84 @@ data-copied-label="Copied!"
 &lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
 &lt;/button&gt;
 &lt;/div&gt;
+&lt;/div&gt;</description></item><item><title>ASCII Art: Real-Time Live Video-to-ASCII Stream Converter</title><link>https://nagarajrpoojari.github.io/opennotes/projects/ascii-art/</link><pubDate>Mon, 01 Jan 2024 00:00:00 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/projects/ascii-art/</guid><description>
+&lt;h1 data-hextra-search-id="real-time-video-to-ascii-art-converter"&gt;Real-Time Video to ASCII Art Converter&lt;/h1&gt;&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/ASCII-Art" target="_blank" rel="noopener"&gt;&lt;strong&gt;View on GitHub&lt;/strong&gt;&lt;/a&gt; · &lt;a href="https://nagarajrpoojari.github.io/ASCII-Art/" target="_blank" rel="noopener"&gt;&lt;strong&gt;Live Demo&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#how-it-works"&gt;&lt;strong&gt;Processing Pipeline&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ASCII Art&lt;/strong&gt; is an interactive, browser-based creative coding application that converts live video from a webcam or video stream into dynamically rendered ASCII character graphics in real time at 30+ FPS.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="how-it-works"&gt;How It Works&lt;span class="hx:absolute hx:-mt-20" id="how-it-works"&gt;&lt;/span&gt;
+&lt;a href="#how-it-works" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
+&lt;pre class="mermaid hx:mt-6"&gt;
+flowchart LR
+Webcam[Webcam Video Capture Feed] --&amp;gt; Capture[p5.js Video Frame Grabber]
+Capture --&amp;gt; Grid[Downsample &amp;amp; Subdivide into Grid Cells]
+Grid --&amp;gt; Luminance[Compute Average Luminance: 0.299R + 0.587G + 0.114B]
+Luminance --&amp;gt; DensityMap[Map Luminance 0-255 to Character Ramp: ` .:-=+*#%@`]
+DensityMap --&amp;gt; Canvas[Render Text Characters to Canvas / DOM]
+&lt;/pre&gt;
+&lt;/div&gt;&lt;h3 data-hextra-search-id="transformation-algorithm"&gt;Transformation Algorithm&lt;span class="hx:absolute hx:-mt-20" id="transformation-algorithm"&gt;&lt;/span&gt;
+&lt;a href="#transformation-algorithm" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Frame Capture &amp;amp; Downsampling&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Captures frames from the browser&amp;rsquo;s &lt;code&gt;navigator.mediaDevices.getUserMedia&lt;/code&gt; video stream.&lt;/li&gt;
+&lt;li&gt;Downsamples the frame into discrete spatial grid cells (e.g. &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mn&gt;8&lt;/mn&gt;&lt;mo&gt;×&lt;/mo&gt;&lt;mn&gt;8&lt;/mn&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;8 \times 8&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.7278em;vertical-align:-0.0833em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;8&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;span class="mbin"&gt;×&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6444em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;8&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; or &lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mn&gt;12&lt;/mn&gt;&lt;mo&gt;×&lt;/mo&gt;&lt;mn&gt;12&lt;/mn&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;12 \times 12&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.7278em;vertical-align:-0.0833em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;12&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;span class="mbin"&gt;×&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6444em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;12&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; pixels per character).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Perceptual Luminance Calculation&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Calculates the perceived brightness for each cell using the standard ITU-R BT.601 standard:
+&lt;span class="katex-display"&gt;&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML" display="block"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mtext&gt;Brightness&lt;/mtext&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mn&gt;0.299&lt;/mn&gt;&lt;mo&gt;⋅&lt;/mo&gt;&lt;mi&gt;R&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mn&gt;0.587&lt;/mn&gt;&lt;mo&gt;⋅&lt;/mo&gt;&lt;mi&gt;G&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mn&gt;0.114&lt;/mn&gt;&lt;mo&gt;⋅&lt;/mo&gt;&lt;mi&gt;B&lt;/mi&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;\text{Brightness} = 0.299 \cdot R + 0.587 \cdot G + 0.114 \cdot B&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.8889em;vertical-align:-0.1944em;"&gt;&lt;/span&gt;&lt;span class="mord text"&gt;&lt;span class="mord"&gt;Brightness&lt;/span&gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;=&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6444em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;0.299&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;span class="mbin"&gt;⋅&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.7667em;vertical-align:-0.0833em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0077em;"&gt;R&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;span class="mbin"&gt;+&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6444em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;0.587&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;span class="mbin"&gt;⋅&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.7667em;vertical-align:-0.0833em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal"&gt;G&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;span class="mbin"&gt;+&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6444em;"&gt;&lt;/span&gt;&lt;span class="mord"&gt;0.114&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;span class="mbin"&gt;⋅&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6833em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0502em;"&gt;B&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Glyph Mapping&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Quantizes the calculated brightness value into index bins corresponding to a typography density ramp:
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&amp;#34; .&amp;#39;`^&amp;#34;,:;Il!i&amp;gt;&amp;lt;~+_-?][}{1)(|\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&amp;amp;8%B@$&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Dynamic Canvas Rendering&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Draws ASCII glyphs with customizable font scaling, background inversion, contrast multipliers, and color tinting.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="live-demo--usage"&gt;Live Demo &amp;amp; Usage&lt;span class="hx:absolute hx:-mt-20" id="live-demo--usage"&gt;&lt;/span&gt;
+&lt;a href="#live-demo--usage" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Live Application&lt;/strong&gt;: &lt;a href="https://nagarajrpoojari.github.io/ASCII-Art/" target="_blank" rel="noopener"&gt;https://nagarajrpoojari.github.io/ASCII-Art/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="running-locally"&gt;Running Locally&lt;span class="hx:absolute hx:-mt-20" id="running-locally"&gt;&lt;/span&gt;
+&lt;a href="#running-locally" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Clone the repository&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clone https://github.com/nagarajpoojari404/ASCII-Art.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; ASCII-Art
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Open index.html in any modern web browser or serve locally&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;python3 -m http.server &lt;span class="m"&gt;8000&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
 &lt;/div&gt;</description></item></channel></rss>
