@@ -349,4 +349,112 @@ data-copied-label="Copied!"
 &lt;li&gt;Better indexing strategies&lt;/li&gt;
 &lt;li&gt;Integration with stream processing engines&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;Feedback, contributions, and critiques are welcome.&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;Feedback, contributions, and critiques are welcome.&lt;/p&gt;</description></item><item><title>OrangeDB: Distributed NoSQL Key-Document Database</title><link>https://nagarajrpoojari.github.io/opennotes/projects/orange/</link><pubDate>Sat, 16 Aug 2025 11:11:09 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/projects/orange/</guid><description>
+&lt;h1 data-hextra-search-id="orangedb-distributed-nosql-database"&gt;OrangeDB: Distributed NoSQL Database&lt;/h1&gt;&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/orange" target="_blank" rel="noopener"&gt;&lt;strong&gt;GitHub (Orange)&lt;/strong&gt;&lt;/a&gt; · &lt;a href="https://github.com/nagarajpoojari404/parrot" target="_blank" rel="noopener"&gt;&lt;strong&gt;GitHub (Parrot)&lt;/strong&gt;&lt;/a&gt; · &lt;a href="https://github.com/nagarajpoojari404/orangectl" target="_blank" rel="noopener"&gt;&lt;strong&gt;GitHub (Orangectl)&lt;/strong&gt;&lt;/a&gt; · &lt;a href="https://nagarajrpoojari.github.io/opennotes/posts/orange/"&gt;&lt;strong&gt;Architecture Post&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;OrangeDB&lt;/strong&gt; is a lightweight, distributed, cloud-native NoSQL key-document database written in Go. It blends architectural concepts from systems like Cassandra, MongoDB, RocksDB, LevelDB, and CockroachDB to achieve high write throughput, predictable low-latency reads, and horizontal scalability across Kubernetes clusters.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="the-orange-ecosystem"&gt;The Orange Ecosystem&lt;span class="hx:absolute hx:-mt-20" id="the-orange-ecosystem"&gt;&lt;/span&gt;
+&lt;a href="#the-orange-ecosystem" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
+&lt;pre class="mermaid hx:mt-6"&gt;
+flowchart TD
+Client[Application Client] --&amp;gt; Gate[Orangegate: Stateless Proxy &amp;amp; Query Router]
+subgraph K8s [Kubernetes Cluster managed by Orangectl]
+Gate --&amp;gt; S1[Shard 1 Leader]
+Gate --&amp;gt; S2[Shard 2 Leader]
+Gate --&amp;gt; S3[Shard 3 Leader]
+subgraph Shard1 [Shard 1 Cluster]
+S1 &amp;lt;--&amp;gt;|Sync/Async Replication| R1[Replica 1]
+S1 &amp;lt;--&amp;gt;|Sync/Async Replication| R2[Replica 2]
+end
+subgraph NodeInternal [OrangeDB Node Engine]
+OQL[OQL Query Parser &amp;amp; Validator] --&amp;gt; Parrot[Parrot LSM Storage Engine]
+Parrot --&amp;gt; MemQueue[Chain of Memtables]
+Parrot --&amp;gt; WAL[Write-Ahead Log]
+Parrot --&amp;gt; SST[SSTable Files with mmap &amp;amp; Bloom Filters]
+end
+end
+&lt;/pre&gt;
+&lt;/div&gt;&lt;h3 data-hextra-search-id="components"&gt;Components&lt;span class="hx:absolute hx:-mt-20" id="components"&gt;&lt;/span&gt;
+&lt;a href="#components" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;OrangeDB Core&lt;/strong&gt;: The database server handling primary-key indexing, native binary document serialization, schema validation, and SQL-like querying via &lt;strong&gt;OQL&lt;/strong&gt; (Orange Query Language).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Parrot Storage Engine&lt;/strong&gt;: An embedded Log-Structured Merge (LSM) tree engine built for maximum I/O concurrency and write performance.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Orangegate&lt;/strong&gt;: A high-performance stateless proxy placed in front of the cluster to route read/write queries to the correct partition owners and perform quorum aggregation.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Orangectl&lt;/strong&gt;: A custom Kubernetes Operator providing CRDs to automate cluster provisioning, autoscaling, master failover, and data rebalancing.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="parrot-lsm-storage-engine-innovations"&gt;Parrot LSM Storage Engine Innovations&lt;span class="hx:absolute hx:-mt-20" id="parrot-lsm-storage-engine-innovations"&gt;&lt;/span&gt;
+&lt;a href="#parrot-lsm-storage-engine-innovations" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Traditional B-Trees suffer from write amplification because updating records incurs random disk writes across multiple tree levels. LSM trees write sequentially to an append-only log, dramatically accelerating write operations.&lt;/p&gt;
+&lt;p&gt;Parrot introduces key architectural enhancements over conventional LSM engines:&lt;/p&gt;
+&lt;h3 data-hextra-search-id="1-chain-of-memtables-uninterrupted-writes"&gt;1. Chain of Memtables (Uninterrupted Writes)&lt;span class="hx:absolute hx:-mt-20" id="1-chain-of-memtables-uninterrupted-writes"&gt;&lt;/span&gt;
+&lt;a href="#1-chain-of-memtables-uninterrupted-writes" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Standard double-buffered LSM trees pause incoming writes when both active and flushing memtables become full. Parrot employs a &lt;strong&gt;queue/chain of memtables&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ingestion continuously appends new immutable memtables to the queue.&lt;/li&gt;
+&lt;li&gt;Background flush workers consume independently from the tail, eliminating write stalls under bursty workloads.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="2-zero-copy-mmap-reads"&gt;2. Zero-Copy &lt;code&gt;mmap&lt;/code&gt; Reads&lt;span class="hx:absolute hx:-mt-20" id="2-zero-copy-mmap-reads"&gt;&lt;/span&gt;
+&lt;a href="#2-zero-copy-mmap-reads" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Parrot reads on-disk SSTable blocks via shared memory mapping (&lt;code&gt;mmap&lt;/code&gt;). Operating system page caches are accessed directly without copying block payloads into user-space buffers, minimizing CPU cache misses and memory churn.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="3-optimistic-concurrency-control-occ"&gt;3. Optimistic Concurrency Control (OCC)&lt;span class="hx:absolute hx:-mt-20" id="3-optimistic-concurrency-control-occ"&gt;&lt;/span&gt;
+&lt;a href="#3-optimistic-concurrency-control-occ" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Minimizes lock contention across concurrent read/write transactions by leveraging lock-free atomic pointers for memtable switching and versioned SSTable manifest tracking.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="feature-matrix"&gt;Feature Matrix&lt;span class="hx:absolute hx:-mt-20" id="feature-matrix"&gt;&lt;/span&gt;
+&lt;a href="#feature-matrix" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Document Model&lt;/strong&gt;: JSON-like schema-free or strict schema-validated document storage.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Native Binary Encoding&lt;/strong&gt;: Efficient serialization reducing network payloads and disk space.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Crash Recovery&lt;/strong&gt;: Append-only Write-Ahead Logging (WAL) ensures ACID durability.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Compaction&lt;/strong&gt;: Multi-level background compaction removes stale tombstones and deduplicates updated records.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;High Availability&lt;/strong&gt;: Configurable Quorum reads (&lt;span class="katex"&gt;&lt;span class="katex-mathml"&gt;&lt;math xmlns="http://www.w3.org/1998/Math/MathML"&gt;&lt;semantics&gt;&lt;mrow&gt;&lt;mi&gt;R&lt;/mi&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;mi&gt;W&lt;/mi&gt;&lt;mo&gt;&amp;gt;&lt;/mo&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;/mrow&gt;&lt;annotation encoding="application/x-tex"&gt;R + W &amp;gt; N&lt;/annotation&gt;&lt;/semantics&gt;&lt;/math&gt;&lt;/span&gt;&lt;span class="katex-html" aria-hidden="true"&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.7667em;vertical-align:-0.0833em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.0077em;"&gt;R&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;span class="mbin"&gt;+&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2222em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.7224em;vertical-align:-0.0391em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.1389em;"&gt;W&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;span class="mrel"&gt;&amp;gt;&lt;/span&gt;&lt;span class="mspace" style="margin-right:0.2778em;"&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="katex-base"&gt;&lt;span class="katex-strut" style="height:0.6833em;"&gt;&lt;/span&gt;&lt;span class="mord mathnormal" style="margin-right:0.109em;"&gt;N&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;) and synchronous/asynchronous replica synchronization.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Kubernetes Native&lt;/strong&gt;: Automated deployment and lifecycle management via CRDs and Helm charts.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="quickstart--installation"&gt;Quickstart &amp;amp; Installation&lt;span class="hx:absolute hx:-mt-20" id="quickstart--installation"&gt;&lt;/span&gt;
+&lt;a href="#quickstart--installation" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3 data-hextra-search-id="standalone-installation"&gt;Standalone Installation&lt;span class="hx:absolute hx:-mt-20" id="standalone-installation"&gt;&lt;/span&gt;
+&lt;a href="#standalone-installation" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Install Orange CLI / server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go install github.com/nagarajpoojari404/orange@latest
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Start OrangeDB standalone server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;orange start --port &lt;span class="m"&gt;8080&lt;/span&gt; --data-dir ./orange-data&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="cluster-deployment-via-kubernetes-orangectl"&gt;Cluster Deployment via Kubernetes (&lt;code&gt;orangectl&lt;/code&gt;)&lt;span class="hx:absolute hx:-mt-20" id="cluster-deployment-via-kubernetes-orangectl"&gt;&lt;/span&gt;
+&lt;a href="#cluster-deployment-via-kubernetes-orangectl" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Install Orangectl Custom Resource Definitions (CRDs)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl apply -f https://raw.githubusercontent.com/nagarajpoojari404/orangectl/main/dist/install.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Deploy an OrangeDB 3-node sharded cluster&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl apply -f https://raw.githubusercontent.com/nagarajpoojari404/orangectl/main/config/samples/cluster_v1_orange.yaml&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="load-testing-with-k6"&gt;Load Testing with k6&lt;span class="hx:absolute hx:-mt-20" id="load-testing-with-k6"&gt;&lt;/span&gt;
+&lt;a href="#load-testing-with-k6" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;k6 run k6/stress_test.js
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;k6 run k6/load_test.js&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item></channel></rss>
