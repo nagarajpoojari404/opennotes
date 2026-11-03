@@ -3,17 +3,17 @@ title: "Mint: Distributed Compute-Optimal LLM Training Framework"
 description: "A distributed LLM pre-training, SFT, and DPO framework compute-optimized for Apple Silicon (Metal) and NVIDIA GPUs using ZeRO-2 and MuonAdamW."
 date: "2025-06-01T00:00:00+05:30"
 categories: ["aiml", "distributed-training"]
-tags: ["llm", "distributed-ml", "pytorch", "metal", "dpo", "sft", "zero-2"]
+tags: ["llm", "distributed-ml", "pytorch", "metal", "dpo", "sft", "zero-2", "muon"]
 summary: "Mint is a distributed, compute-optimal training and alignment framework for Large Language Models. Supports pre-training, SFT, and DPO across Apple Metal and CUDA GPUs with ZeRO-2 sharding."
 ---
 
-[**View on GitHub**](https://github.com/nagarajpoojari404/mint) · [**Quickstart**](#quickstart--cli-commands) · [**Optimization Features**](#what-makes-mint-special)
+[**View on GitHub**](https://github.com/nagarajpoojari404/mint) · [**Architecture**](#architecture--modules) · [**Quickstart**](#quickstart--cli-commands) · [**Key Innovations**](#what-makes-mint-special)
 
-**Mint** is a modern, lightweight distributed training, fine-tuning, and alignment framework engineered for Large Language Models. Designed to achieve maximum parameter throughput at lowest hardware cost, Mint runs seamlessly across both Apple Silicon (MPS / Metal) and high-density NVIDIA CUDA GPU clusters.
+**Mint** is a high-performance, compute-optimal distributed training, fine-tuning, and alignment framework engineered for Large Language Models. Designed to achieve maximum parameter throughput at lowest hardware cost, Mint runs seamlessly across both Apple Silicon (MPS / Metal) and high-density NVIDIA CUDA GPU clusters.
 
 ---
 
-## Architecture & Pipeline
+## Architecture & Modules
 
 ```mermaid
 flowchart TD
@@ -29,6 +29,7 @@ flowchart TD
         ZeRO[ZeRO-2 Optimizer State Sharding]
         Muon[Distributed MuonAdamW + norMuon Polar Express]
         Kernels[Hardware Kernels: Apple Metal MPS & FlashAttention-2]
+        KVCache[Optimized Paged KV-Cache & SwiGLU / RoPE Layers]
     end
     
     DataEngine --> CoreEngine
@@ -39,6 +40,18 @@ flowchart TD
     Modes --> DPO[Direct Preference Optimization: DPO v1 / v2]
 ```
 
+### Module Breakdown
+
+| Package Module | Purpose |
+| :--- | :--- |
+| **`mint.nn`** | Transformer architectures, RoPE (Rotary Position Embeddings), RMSNorm, SwiGLU MLP layers |
+| **`mint.optim`** | Distributed **MuonAdamW** optimizer with `norMuon` normalization and Polar Express coefficients, alongside ZeRO-2 sharding |
+| **`mint.data`** | Zero-memory-bloat streaming chunk dataloaders for pre-training and preference datasets |
+| **`mint.trainer`** | Distributed multi-GPU / multi-device training orchestrator supporting PyTorch DDP and Apple Metal (MPS) |
+| **`mint.sft`** | Supervised fine-tuning pipeline for custom models and HuggingFace backbones (e.g. Qwen2, Llama) |
+| **`mint.eval`** | Distributed evaluation suite covering conversational benchmarks, GSM8K reasoning, and MCQ tasks |
+| **`mint.kvcache`** | Low-overhead Key-Value cache implementation for high-throughput inference and validation |
+
 ---
 
 ## What Makes Mint Special?
@@ -47,14 +60,14 @@ flowchart TD
 Mint automatically calculates scaling-law optimal parameters (dataset token count, layer depth, hidden dimension, and learning rate schedules) based on the user's available FLOP budget and cluster memory constraints.
 
 ### 2. Distributed MuonAdamW Optimizer
-Integrates the state-of-the-art **Muon** matrix optimizer alongside AdamW, utilizing `norMuon` normalization with Polar Express coefficients for faster convergence on modern transformer architectures.
+Integrates the state-of-the-art **Muon** matrix optimizer alongside AdamW, utilizing `norMuon` normalization with Polar Express coefficients for faster convergence and lower loss variance on modern transformer architectures.
 
 ### 3. ZeRO-2 Sharding & Distributed Dataloaders
 - **ZeRO-2 Sharding**: Partitions optimizer states and gradients across available ranks to enable training larger models on memory-constrained GPUs.
 - **Custom Streaming Dataloaders**: Streams pre-tokenized shards directly from disk or cloud buckets without memory bloat.
 
 ### 4. Cross-Platform Acceleration
-- **Apple Silicon (MPS)**: Native Metal Performance Shaders integration for local M-series Mac fine-tuning.
+- **Apple Silicon (MPS)**: Native Metal Performance Shaders integration for local M-series Mac training and fine-tuning.
 - **NVIDIA CUDA**: Supports PyTorch Distributed Data Parallel (DDP), FlashAttention-2, and `bfloat16` mixed precision.
 
 ---
@@ -117,3 +130,4 @@ uv run mint v2-dpo \
 
 - `mint prepare-dpo`: Prepares preference pairs (chosen vs. rejected responses).
 - `mint download-climbmix`: Downloads and tokenizes curated reasoning and code pre-training datasets.
+- `mint --help`: Lists all CLI commands and configuration options.
