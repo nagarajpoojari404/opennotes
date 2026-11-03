@@ -7,8 +7,6 @@ tags: ["quantum-ml", "qiskit", "pennylane", "pqc", "deep-learning", "resnet"]
 summary: "Quantum Threads is a research framework for underwater animal classification combining Parameterized Quantum Circuits (PQC) as quantum kernels with ResNet and Inception architectures, evaluated on real IBM Quantum QPUs."
 ---
 
-# Quantum Threads: Hybrid Quantum-Classical ML
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/Quantum-Threads) · [**Architecture**](#hybrid-quantum-classical-pipeline) · [**Key Innovations**](#what-makes-it-innovative)
 
 **Quantum Threads** is an applied quantum machine learning research and engineering project that benchmarks hybrid quantum-classical neural network architectures for fine-grained underwater animal classification across 23 marine species (>13,000 images in the UAD-2023 dataset).

@@ -7,8 +7,6 @@ tags: ["lsm-tree", "distributed-database", "replication", "sharding", "go", "kub
 summary: "OrangeDB is a distributed key-document NoSQL database powered by Parrot, an LSM-tree storage engine with memtable queues and zero-copy mmap reads. Includes Orangectl Kubernetes operator and Orangegate proxy."
 ---
 
-# OrangeDB: Distributed NoSQL Database
-
 [**GitHub (Orange)**](https://github.com/nagarajpoojari404/orange) · [**GitHub (Parrot)**](https://github.com/nagarajpoojari404/parrot) · [**GitHub (Orangectl)**](https://github.com/nagarajpoojari404/orangectl) · [**Architecture Post**](/posts/orange/)
 
 **OrangeDB** is a lightweight, distributed, cloud-native NoSQL key-document database written in Go. It blends architectural concepts from systems like Cassandra, MongoDB, RocksDB, LevelDB, and CockroachDB to achieve high write throughput, predictable low-latency reads, and horizontal scalability across Kubernetes clusters.

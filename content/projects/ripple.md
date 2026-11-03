@@ -7,8 +7,6 @@ tags: ["go", "event-streaming", "tcp", "message-queue", "concurrency", "distribu
 summary: "Ripple MQ is a high-performance, single-threaded non-blocking distributed in-memory event streaming system written in Go, featuring a custom TCP protocol and official Go SDK."
 ---
 
-# Ripple MQ: Distributed Event Streaming System
-
 [**GitHub (Server)**](https://github.com/ripple-mq/ripple-server) · [**GitHub (Go Client)**](https://github.com/ripple-mq/go-client) · [**GitHub (Benchmark)**](https://github.com/ripple-mq/benchmark)
 
 **Ripple MQ** is a high-throughput, ultra-low latency distributed in-memory event streaming engine written in Go. Designed for large-scale telemetry ingestion, real-time message broadcasting, and event-driven microservice architectures, Ripple combines a single-threaded non-blocking I/O event loop with lock-free memory buffers to achieve high message rates while keeping CPU overhead minimal.

@@ -7,8 +7,6 @@ tags: ["opengl", "ray-tracing", "c++", "glsl", "physics-engine", "shaders"]
 summary: "Owl is a high-level 3D graphics engine written from scratch in C++ and OpenGL, featuring real-time ray tracing, GLSL shaders, camera controllers, and a custom physics engine."
 ---
 
-# Owl: 3D Graphics & Real-Time Ray Tracing Engine
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/owl) · [**Features**](#key-features) · [**Building & Running**](#building--running)
 
 **Owl** is a high-level 3D graphics and real-time rendering engine written from scratch using C++, modern OpenGL, and GLSL shaders. Built to explore low-level rendering pipelines, ray-object intersection mathematics, lighting models, and physics simulations, Owl delivers real-time ray tracing alongside interactive 3D scene manipulation.

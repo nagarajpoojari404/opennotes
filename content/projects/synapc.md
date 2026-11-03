@@ -7,8 +7,6 @@ tags: ["c", "neural-network", "machine-learning", "python-c-api", "pypi"]
 summary: "SynapC is a lightweight, zero-dependency neural network library written in pure C with high-level Python bindings, implementing feedforward networks, backpropagation, and dense layers."
 ---
 
-# SynapC: Minimalist Neural Network Engine in C
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/SynapC) · [**PyPI Package**](https://pypi.org/project/synapc/) · [**Python Quickstart**](#python-quickstart)
 
 **SynapC** is a minimalist, dependency-free neural network library implemented entirely in pure C from scratch, featuring native Python C-extension bindings. It provides a transparent, low-overhead way to understand and execute feedforward neural networks (FFNN) and gradient-based backpropagation without relying on massive framework runtimes.

@@ -7,8 +7,6 @@ tags: ["linux", "kernel", "operating-system", "bash", "lfs", "systems-programmin
 summary: "x-Linux is an end-to-end automated pipeline to compile, assemble, and package a fully functional, bootable Linux operating system from source code."
 ---
 
-# x-Linux: Custom Linux Distribution Pipeline
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/x-Linux) · [**Build Pipeline**](#the-build-pipeline) · [**Quickstart**](#building-and-booting)
 
 **x-Linux** is an independent, custom Linux distribution and automated build orchestration pipeline designed following the **Linux From Scratch (LFS)** methodology. It demonstrates how to bootstrap a minimal, self-contained, POSIX-compliant operating system directly from upstream source packages without relying on third-party precompiled binaries.

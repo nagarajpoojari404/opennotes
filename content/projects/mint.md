@@ -7,8 +7,6 @@ tags: ["llm", "distributed-ml", "pytorch", "metal", "dpo", "sft", "zero-2"]
 summary: "Mint is a distributed, compute-optimal training and alignment framework for Large Language Models. Supports pre-training, SFT, and DPO across Apple Metal and CUDA GPUs with ZeRO-2 sharding."
 ---
 
-# Mint: Distributed Compute-Optimal LLM Training
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/mint) · [**Quickstart**](#quickstart--cli-commands) · [**Optimization Features**](#what-makes-mint-special)
 
 **Mint** is a modern, lightweight distributed training, fine-tuning, and alignment framework engineered for Large Language Models. Designed to achieve maximum parameter throughput at lowest hardware cost, Mint runs seamlessly across both Apple Silicon (MPS / Metal) and high-density NVIDIA CUDA GPU clusters.

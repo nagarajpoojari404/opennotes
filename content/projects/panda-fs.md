@@ -7,8 +7,6 @@ tags: ["distributed-file-system", "gfs", "go", "grpc", "cryptography", "p2p"]
 summary: "PandaFS is a distributed file system inspired by Google File System (GFS), featuring Master metadata coordination, Slave chunk servers, client-side AES encryption, and high-throughput streaming."
 ---
 
-# PandaFS (nanoDFS): Distributed File System
-
 [**GitHub Organization (nanoDFS)**](https://github.com/nanoDFS) · [**Master Node**](https://github.com/nanoDFS/Master) · [**Slave (Chunk Server)**](https://github.com/nanoDFS/Slave) · [**Go Client SDK**](https://github.com/nanoDFS/client-sdk) · [**P2P Library**](https://github.com/nanoDFS/p2p)
 
 **PandaFS** (developed under the `nanoDFS` organization) is a fault-tolerant, scalable, distributed file system modeled after the Google File System (GFS) architecture. Written in Go, it is engineered for high-bandwidth streaming reads and writes over large datasets across clusters of commodity hardware.

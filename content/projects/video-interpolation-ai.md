@@ -7,8 +7,6 @@ tags: ["transformers", "vision-transformer", "pytorch", "video-interpolation", "
 summary: "Video Interpolation AI implements Vision Transformers (VIFT) using Swin attention blocks to synthesize intermediate frames for smooth 60+ FPS video playback, outperforming Super SloMo and Deep Voxel Flow."
 ---
 
-# Video Interpolation with Vision Transformers
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/video-interpolation-AI) · [**Model Architecture**](#architectural-comparison) · [**Empirical Results**](#benchmark-results)
 
 **Video Interpolation AI** is an applied deep learning project implementing state-of-the-art **Video Frame Interpolation Transformers (VIFT)** and comparing their performance against classical and CNN-based approaches such as **Deep Voxel Flow (DVF)** and **Super SloMo**.

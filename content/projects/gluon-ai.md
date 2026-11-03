@@ -7,8 +7,6 @@ tags: ["vscode-extension", "typescript", "openai", "documentation", "developer-t
 summary: "Gluon AI is a Visual Studio Code extension that generates comprehensive docstrings, architectural summaries, and inline code explanations using LLMs in a single click."
 ---
 
-# Gluon AI: Intelligent VS Code Extension
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/Gluon-AI) · [**Features**](#key-capabilities) · [**Architecture**](#how-it-works)
 
 **Gluon AI** is a developer productivity extension for Visual Studio Code designed to eliminate the friction of writing code documentation and reverse-engineering unfamiliar codebases. Powered by GPT models, Gluon AI analyzes selected code snippets, function definitions, or entire modules to generate accurate, formatted docstrings, type annotations, and technical summaries directly inside the IDE.

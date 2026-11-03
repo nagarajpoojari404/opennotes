@@ -7,8 +7,6 @@ tags: ["compiler", "c", "concurrency", "garbage-collection", "green-threads"]
 summary: "Picasso is a modern compiled systems programming language combining native speed with high-level developer ergonomics, lightweight green threads, and automatic memory management."
 ---
 
-# Picasso Programming Language
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/picasso-lang) · [**Quickstart**](#installation--usage) · [**Syntax Guide**](#language-syntax--features)
 
 **Picasso** is a modern, statically typed compiled systems programming language designed from first principles. It combines the raw performance and predictable resource utilization of native compiled code with the developer ergonomics, safety, and conciseness of modern high-level languages.
