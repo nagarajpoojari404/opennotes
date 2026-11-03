@@ -1,0 +1,79 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – C++</title><link>https://nagarajrpoojari.github.io/opennotes/tags/c++/</link><description>Recent content in C++ on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sat, 15 Mar 2025 00:00:00 +0530</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/tags/c++/index.xml" rel="self" type="application/rss+xml"/><item><title>Owl: 3D Graphics Engine &amp; Real-Time Ray Tracer</title><link>https://nagarajrpoojari.github.io/opennotes/projects/owl/</link><pubDate>Sat, 15 Mar 2025 00:00:00 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/projects/owl/</guid><description>
+&lt;h1 data-hextra-search-id="owl-3d-graphics--real-time-ray-tracing-engine"&gt;Owl: 3D Graphics &amp;amp; Real-Time Ray Tracing Engine&lt;/h1&gt;&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/owl" target="_blank" rel="noopener"&gt;&lt;strong&gt;View on GitHub&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#key-features"&gt;&lt;strong&gt;Features&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#building--running"&gt;&lt;strong&gt;Building &amp;amp; Running&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Owl&lt;/strong&gt; is a high-level 3D graphics and real-time rendering engine written from scratch using C++, modern OpenGL, and GLSL shaders. Built to explore low-level rendering pipelines, ray-object intersection mathematics, lighting models, and physics simulations, Owl delivers real-time ray tracing alongside interactive 3D scene manipulation.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="architectural-overview"&gt;Architectural Overview&lt;span class="hx:absolute hx:-mt-20" id="architectural-overview"&gt;&lt;/span&gt;
+&lt;a href="#architectural-overview" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
+&lt;pre class="mermaid hx:mt-6"&gt;
+flowchart TD
+Scene[Scene Graph / Entity-Component Tree] --&amp;gt; Pipeline[Rendering Pipeline]
+subgraph Graphics [Rendering Core]
+Pipeline --&amp;gt; Shaders[GLSL Vertex &amp;amp; Fragment Shaders]
+Pipeline --&amp;gt; RayTracer[Real-Time Ray Tracing Core]
+RayTracer --&amp;gt; BVH[Bounding Volume Hierarchy / Acceleration]
+RayTracer --&amp;gt; Light[Phong / Blinn-Phong &amp;amp; Shadow Rays]
+end
+subgraph Physics [Physics Simulation Engine]
+RigidBody[Rigid Body Dynamics]
+Gravity[Gravity Simulation]
+Collision[Sphere &amp;amp; Box Collision Detection / Resolution]
+end
+Physics --&amp;gt; Scene
+Graphics --&amp;gt; Framebuffer[OpenGL Framebuffer / Window Display]
+&lt;/pre&gt;
+&lt;/div&gt;&lt;hr&gt;
+&lt;h2 data-hextra-search-id="key-features"&gt;Key Features&lt;span class="hx:absolute hx:-mt-20" id="key-features"&gt;&lt;/span&gt;
+&lt;a href="#key-features" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3 data-hextra-search-id="1-real-time-ray-tracing"&gt;1. Real-Time Ray Tracing&lt;span class="hx:absolute hx:-mt-20" id="1-real-time-ray-tracing"&gt;&lt;/span&gt;
+&lt;a href="#1-real-time-ray-tracing" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Implements ray generation from virtual camera perspective through screen pixels.&lt;/li&gt;
+&lt;li&gt;Exact analytical ray-primitive intersection tests for spheres, planes, triangles, and bounding boxes.&lt;/li&gt;
+&lt;li&gt;Recursive reflection and refraction calculations for dielectric and metallic surfaces.&lt;/li&gt;
+&lt;li&gt;Soft shadow generation and ambient occlusion approximations.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="2-physics-simulation-engine"&gt;2. Physics Simulation Engine&lt;span class="hx:absolute hx:-mt-20" id="2-physics-simulation-engine"&gt;&lt;/span&gt;
+&lt;a href="#2-physics-simulation-engine" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Integrated rigid-body kinematics with constant gravitational acceleration.&lt;/li&gt;
+&lt;li&gt;Elastic and inelastic impulse-based collision response between dynamic objects.&lt;/li&gt;
+&lt;li&gt;Continuous spatial partitioning to accelerate multi-body collision queries.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="3-shader-pipeline--materials"&gt;3. Shader Pipeline &amp;amp; Materials&lt;span class="hx:absolute hx:-mt-20" id="3-shader-pipeline--materials"&gt;&lt;/span&gt;
+&lt;a href="#3-shader-pipeline--materials" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;Custom GLSL vertex, fragment, and compute shaders.&lt;/li&gt;
+&lt;li&gt;Support for diffuse, specular, normal mapping, and reflection maps.&lt;/li&gt;
+&lt;li&gt;Configurable point lights, directional lights, and ambient illumination.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="4-interactive-camera--controls"&gt;4. Interactive Camera &amp;amp; Controls&lt;span class="hx:absolute hx:-mt-20" id="4-interactive-camera--controls"&gt;&lt;/span&gt;
+&lt;a href="#4-interactive-camera--controls" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;First-person 6-DOF (degree-of-freedom) Euler angle camera controller.&lt;/li&gt;
+&lt;li&gt;Smooth mouse look and keyboard navigation across 3D scenes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="building--running"&gt;Building &amp;amp; Running&lt;span class="hx:absolute hx:-mt-20" id="building--running"&gt;&lt;/span&gt;
+&lt;a href="#building--running" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3 data-hextra-search-id="prerequisites"&gt;Prerequisites&lt;span class="hx:absolute hx:-mt-20" id="prerequisites"&gt;&lt;/span&gt;
+&lt;a href="#prerequisites" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;C++17 or higher&lt;/li&gt;
+&lt;li&gt;CMake / Make&lt;/li&gt;
+&lt;li&gt;OpenGL 3.3+ Core Profile&lt;/li&gt;
+&lt;li&gt;GLFW / GLEW / GLM&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Clone the repository&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clone https://github.com/nagarajpoojari404/owl.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; owl
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Compile the engine&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;make build
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Run the 3D engine demo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;./bin/owl_engine&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description></item></channel></rss>

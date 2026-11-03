@@ -1,0 +1,131 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Open Notes – Sft</title><link>https://nagarajrpoojari.github.io/opennotes/tags/sft/</link><description>Recent content in Sft on Open Notes</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Sun, 01 Jun 2025 00:00:00 +0530</lastBuildDate><atom:link href="https://nagarajrpoojari.github.io/opennotes/tags/sft/index.xml" rel="self" type="application/rss+xml"/><item><title>Mint: Distributed Compute-Optimal LLM Training Framework</title><link>https://nagarajrpoojari.github.io/opennotes/projects/mint/</link><pubDate>Sun, 01 Jun 2025 00:00:00 +0530</pubDate><guid>https://nagarajrpoojari.github.io/opennotes/projects/mint/</guid><description>
+&lt;h1 data-hextra-search-id="mint-distributed-compute-optimal-llm-training"&gt;Mint: Distributed Compute-Optimal LLM Training&lt;/h1&gt;&lt;p&gt;&lt;a href="https://github.com/nagarajpoojari404/mint" target="_blank" rel="noopener"&gt;&lt;strong&gt;View on GitHub&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#quickstart--cli-commands"&gt;&lt;strong&gt;Quickstart&lt;/strong&gt;&lt;/a&gt; · &lt;a href="#what-makes-mint-special"&gt;&lt;strong&gt;Optimization Features&lt;/strong&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Mint&lt;/strong&gt; is a modern, lightweight distributed training, fine-tuning, and alignment framework engineered for Large Language Models. Designed to achieve maximum parameter throughput at lowest hardware cost, Mint runs seamlessly across both Apple Silicon (MPS / Metal) and high-density NVIDIA CUDA GPU clusters.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="architecture--pipeline"&gt;Architecture &amp;amp; Pipeline&lt;span class="hx:absolute hx:-mt-20" id="architecture--pipeline"&gt;&lt;/span&gt;
+&lt;a href="#architecture--pipeline" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
+&lt;pre class="mermaid hx:mt-6"&gt;
+flowchart TD
+Config[Compute Budget FLOPs / Hardware Specs] --&amp;gt; Planner[Compute-Optimal Auto-Planner]
+Planner --&amp;gt;|Chinchilla Scaled Hyperparams| Engine[Mint Training Engine]
+subgraph DataEngine [Distributed Streaming Data Engine]
+StreamDataloader[Streaming Chunk Dataloader]
+Mixer[Multi-Dataset Blending: SmolTalk / GSM8k / ClimbMix]
+end
+subgraph CoreEngine [Optimization &amp;amp; Parallelism]
+ZeRO[ZeRO-2 Optimizer State Sharding]
+Muon[Distributed MuonAdamW + norMuon Polar Express]
+Kernels[Hardware Kernels: Apple Metal MPS &amp;amp; FlashAttention-2]
+end
+DataEngine --&amp;gt; CoreEngine
+CoreEngine --&amp;gt; Modes[Training Regimes]
+Modes --&amp;gt; Pretrain[Pre-Training: Gemma / TikToken]
+Modes --&amp;gt; SFT[Supervised Fine-Tuning: SFT v1 / v2]
+Modes --&amp;gt; DPO[Direct Preference Optimization: DPO v1 / v2]
+&lt;/pre&gt;
+&lt;/div&gt;&lt;hr&gt;
+&lt;h2 data-hextra-search-id="what-makes-mint-special"&gt;What Makes Mint Special?&lt;span class="hx:absolute hx:-mt-20" id="what-makes-mint-special"&gt;&lt;/span&gt;
+&lt;a href="#what-makes-mint-special" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3 data-hextra-search-id="1-automated-compute-optimality"&gt;1. Automated Compute Optimality&lt;span class="hx:absolute hx:-mt-20" id="1-automated-compute-optimality"&gt;&lt;/span&gt;
+&lt;a href="#1-automated-compute-optimality" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Mint automatically calculates scaling-law optimal parameters (dataset token count, layer depth, hidden dimension, and learning rate schedules) based on the user&amp;rsquo;s available FLOP budget and cluster memory constraints.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="2-distributed-muonadamw-optimizer"&gt;2. Distributed MuonAdamW Optimizer&lt;span class="hx:absolute hx:-mt-20" id="2-distributed-muonadamw-optimizer"&gt;&lt;/span&gt;
+&lt;a href="#2-distributed-muonadamw-optimizer" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;Integrates the state-of-the-art &lt;strong&gt;Muon&lt;/strong&gt; matrix optimizer alongside AdamW, utilizing &lt;code&gt;norMuon&lt;/code&gt; normalization with Polar Express coefficients for faster convergence on modern transformer architectures.&lt;/p&gt;
+&lt;h3 data-hextra-search-id="3-zero-2-sharding--distributed-dataloaders"&gt;3. ZeRO-2 Sharding &amp;amp; Distributed Dataloaders&lt;span class="hx:absolute hx:-mt-20" id="3-zero-2-sharding--distributed-dataloaders"&gt;&lt;/span&gt;
+&lt;a href="#3-zero-2-sharding--distributed-dataloaders" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ZeRO-2 Sharding&lt;/strong&gt;: Partitions optimizer states and gradients across available ranks to enable training larger models on memory-constrained GPUs.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Custom Streaming Dataloaders&lt;/strong&gt;: Streams pre-tokenized shards directly from disk or cloud buckets without memory bloat.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 data-hextra-search-id="4-cross-platform-acceleration"&gt;4. Cross-Platform Acceleration&lt;span class="hx:absolute hx:-mt-20" id="4-cross-platform-acceleration"&gt;&lt;/span&gt;
+&lt;a href="#4-cross-platform-acceleration" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Apple Silicon (MPS)&lt;/strong&gt;: Native Metal Performance Shaders integration for local M-series Mac fine-tuning.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;NVIDIA CUDA&lt;/strong&gt;: Supports PyTorch Distributed Data Parallel (DDP), FlashAttention-2, and &lt;code&gt;bfloat16&lt;/code&gt; mixed precision.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="quickstart--cli-commands"&gt;Quickstart &amp;amp; CLI Commands&lt;span class="hx:absolute hx:-mt-20" id="quickstart--cli-commands"&gt;&lt;/span&gt;
+&lt;a href="#quickstart--cli-commands" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;h3 data-hextra-search-id="installation"&gt;Installation&lt;span class="hx:absolute hx:-mt-20" id="installation"&gt;&lt;/span&gt;
+&lt;a href="#installation" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Clone and install Mint&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;git clone https://github.com/nagarajpoojari404/mint.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; mint
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv pip install -e .&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="pre-training"&gt;Pre-Training&lt;span class="hx:absolute hx:-mt-20" id="pre-training"&gt;&lt;/span&gt;
+&lt;a href="#pre-training" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Pre-train a custom transformer model&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv run mint pretrain --config configs/config_d12_pretrain.toml
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# Stream training across sharded datasets&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv run mint stream-train &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --num-train-shards &lt;span class="m"&gt;4&lt;/span&gt; &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --min-shards &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --train-script scripts/pretrain.py &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --train-args &lt;span class="s2"&gt;&amp;#34;--config configs/config_d12_pretrain.toml&amp;#34;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="supervised-fine-tuning-sft"&gt;Supervised Fine-Tuning (SFT)&lt;span class="hx:absolute hx:-mt-20" id="supervised-fine-tuning-sft"&gt;&lt;/span&gt;
+&lt;a href="#supervised-fine-tuning-sft" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# SFT on custom architectures&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv run mint sft --config configs/config_d12_sft.toml
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# SFT on HuggingFace models (e.g. Qwen2, Llama) with curated datasets&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv run mint v2-sft &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --config configs/config_hf_sft.toml &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --model-name Qwen/Qwen2-0.5B &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --datasets gsm8k smoltalk&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 data-hextra-search-id="direct-preference-optimization-dpo"&gt;Direct Preference Optimization (DPO)&lt;span class="hx:absolute hx:-mt-20" id="direct-preference-optimization-dpo"&gt;&lt;/span&gt;
+&lt;a href="#direct-preference-optimization-dpo" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;div class="hextra-code-block hx:relative hx:mt-6 hx:first:mt-0 hx:group/code"&gt;
+&lt;div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# DPO alignment against a reference model&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv run mint dpo &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --config configs/config_d12_dpo.toml &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --ref-model checkpoints/checkpoint_step_10.pt
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# HuggingFace DPO&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;uv run mint v2-dpo &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --model-name Qwen/Qwen2-0.5B &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --config configs/config_hf_dpo.toml&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="hextra-code-copy-btn-container hx:opacity-0 hx:transition hx:group-hover/code:opacity-100 hx:flex hx:gap-1 hx:absolute hx:m-[11px] hx:right-0 hx:top-0"&gt;
+&lt;button
+class="hextra-code-copy-btn hx:group/copybtn hx:cursor-pointer hx:transition-all hx:active:opacity-50 hx:bg-primary-700/5 hx:border hx:border-black/5 hx:text-gray-600 hx:hover:text-gray-900 hx:rounded-md hx:p-1.5 hx:dark:bg-primary-300/10 hx:dark:border-white/10 hx:dark:text-gray-400 hx:dark:hover:text-gray-50"
+title="Copy code"
+aria-label="Copy code"
+data-copied-label="Copied!"
+&gt;
+&lt;div class="hextra-copy-icon hx:group-[.copied]/copybtn:hidden hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;div class="hextra-success-icon hx:hidden hx:group-[.copied]/copybtn:block hx:pointer-events-none hx:h-4 hx:w-4"&gt;&lt;/div&gt;
+&lt;/button&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;hr&gt;
+&lt;h2 data-hextra-search-id="dataset-utilities-included"&gt;Dataset Utilities Included&lt;span class="hx:absolute hx:-mt-20" id="dataset-utilities-included"&gt;&lt;/span&gt;
+&lt;a href="#dataset-utilities-included" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mint prepare-dpo&lt;/code&gt;: Prepares preference pairs (chosen vs. rejected responses).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mint download-climbmix&lt;/code&gt;: Downloads and tokenizes curated reasoning and code pre-training datasets.&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>
