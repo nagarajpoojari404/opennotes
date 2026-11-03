@@ -7,8 +7,6 @@ tags: ["socket-io", "webrtc", "peerjs", "nodejs", "chess", "python"]
 summary: "A full-stack real-time multiplayer chess platform featuring peer-to-peer WebRTC video/audio streams, low-latency move broadcasting via Socket.io, live chat, and an AI chess coach."
 ---
 
-# Real-Time Chess Platform & AI Coach
-
 [**GitHub (Chess Platform)**](https://github.com/nagarajpoojari404/chessProject) · [**GitHub (AI Coach)**](https://github.com/nagarajpoojari404/chess.py)
 
 A modern full-stack real-time multiplayer chess platform enabling players worldwide to compete live while streaming video and audio directly in the browser over peer-to-peer connections. The platform also integrates an interactive AI chess coaching companion (`chess.py`) for move analysis, blunder detection, and positional evaluation.

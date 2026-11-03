@@ -7,8 +7,6 @@ tags: ["nodejs", "express", "mongodb", "aws-cognito", "github-oauth", "ejs"]
 summary: "DevPage is a full-stack developer social media platform enabling engineers to showcase technical projects, share syntax-highlighted code snippets, and collaborate with GitHub OAuth and AWS Cognito authentication."
 ---
 
-# DevPage: Developer Social Platform
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/DevPage) · [**Architecture**](#full-stack-architecture) · [**Tech Stack**](#tech-stack)
 
 **DevPage** is a dedicated social collaboration and portfolio showcase platform built specifically for software engineers—conceptualized as "Instagram for Developers". Rather than generic images and status updates, DevPage centers around syntax-highlighted code snippets, engineering problem breakdowns, architectural post feeds, and developer showcase profiles.

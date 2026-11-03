@@ -7,8 +7,6 @@ tags: ["p5js", "javascript", "ascii-art", "creative-coding", "computer-vision"]
 summary: "ASCII Art is a client-side real-time webcam video stream converter that dynamically transforms raw video frames into interactive ASCII typography art using p5.js."
 ---
 
-# Real-Time Video to ASCII Art Converter
-
 [**View on GitHub**](https://github.com/nagarajpoojari404/ASCII-Art) · [**Live Demo**](https://nagarajrpoojari.github.io/ASCII-Art/) · [**Processing Pipeline**](#how-it-works)
 
 **ASCII Art** is an interactive, browser-based creative coding application that converts live video from a webcam or video stream into dynamically rendered ASCII character graphics in real time at 30+ FPS.
