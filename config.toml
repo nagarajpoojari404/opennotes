@@ -29,6 +29,21 @@ url = "https://github.com/"
   weight = 2
 
   [[menu.main]]
+  name = "Notes"
+  url = "/notes/"
+  weight = 2
+
+  [[menu.main]]
   name = "About"
   url = "/about/"
   weight = 3
+
+[markup.goldmark.extensions.passthrough]
+  enable = true
+
+  [markup.goldmark.extensions.passthrough.delimiters]
+    block = [['$$', '$$']]
+    inline = [['$', '$']]
+
+[markup.highlight]
+  style = "github"
