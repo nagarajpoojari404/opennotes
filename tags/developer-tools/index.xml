@@ -6,12 +6,12 @@
 &lt;a href="#how-it-works" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart LR
-Editor[Developer Selects Code in VS Code Editor] --&amp;gt; Command[Trigger Gluon AI: Shortcut / Right-Click]
-Command --&amp;gt; Parser[AST &amp;amp; Language Context Extractor]
-Parser --&amp;gt; PromptGen[Structured Prompt Generator with Surrounding Context]
-PromptGen --&amp;gt; LLM[OpenAI / LLM API Endpoint]
-LLM --&amp;gt; Streamer[Response Streaming Handler]
-Streamer --&amp;gt; InlineDoc[Insert Formatted Docstrings &amp;amp; Explanations]
+Editor[&amp;#34;Developer Selects Code in Editor&amp;#34;] --&amp;gt; Command[&amp;#34;Trigger Gluon AI Command&amp;#34;]
+Command --&amp;gt; Parser[&amp;#34;AST &amp;amp; Context Extractor&amp;#34;]
+Parser --&amp;gt; PromptGen[&amp;#34;Prompt Generator&amp;#34;]
+PromptGen --&amp;gt; LLM[&amp;#34;LLM API Endpoint&amp;#34;]
+LLM --&amp;gt; Streamer[&amp;#34;Response Streaming Handler&amp;#34;]
+Streamer --&amp;gt; InlineDoc[&amp;#34;Insert Formatted Docstrings&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 data-hextra-search-id="key-capabilities"&gt;Key Capabilities&lt;span class="hx:absolute hx:-mt-20" id="key-capabilities"&gt;&lt;/span&gt;

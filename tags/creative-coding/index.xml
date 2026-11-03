@@ -6,11 +6,11 @@
 &lt;a href="#how-it-works" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart LR
-Webcam[Webcam Video Capture Feed] --&amp;gt; Capture[p5.js Video Frame Grabber]
-Capture --&amp;gt; Grid[Downsample &amp;amp; Subdivide into Grid Cells]
-Grid --&amp;gt; Luminance[Compute Average Luminance: 0.299R + 0.587G + 0.114B]
-Luminance --&amp;gt; DensityMap[Map Luminance 0-255 to Character Ramp: ` .:-=+*#%@`]
-DensityMap --&amp;gt; Canvas[Render Text Characters to Canvas / DOM]
+Webcam[&amp;#34;Webcam Video Feed&amp;#34;] --&amp;gt; Capture[&amp;#34;p5.js Frame Grabber&amp;#34;]
+Capture --&amp;gt; Grid[&amp;#34;Downsample into Grid Cells&amp;#34;]
+Grid --&amp;gt; Luminance[&amp;#34;Compute Luminance (BT.601)&amp;#34;]
+Luminance --&amp;gt; DensityMap[&amp;#34;Map to ASCII Density Ramp&amp;#34;]
+DensityMap --&amp;gt; Canvas[&amp;#34;Render Glyphs to Canvas&amp;#34;]
 &lt;/pre&gt;
 &lt;/div&gt;&lt;h3 data-hextra-search-id="transformation-algorithm"&gt;Transformation Algorithm&lt;span class="hx:absolute hx:-mt-20" id="transformation-algorithm"&gt;&lt;/span&gt;
 &lt;a href="#transformation-algorithm" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ol&gt;

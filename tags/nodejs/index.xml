@@ -6,16 +6,16 @@
 &lt;a href="#real-time-architecture" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-PlayerA[Player 1: White] &amp;lt;--&amp;gt;|WebRTC P2P Video / Audio Stream via PeerJS| PlayerB[Player 2: Black]
-PlayerA &amp;lt;--&amp;gt;|Socket.io WebSocket: Moves, Clocks &amp;amp; Chat| Server[Node.js / Express Server]
-PlayerB &amp;lt;--&amp;gt;|Socket.io WebSocket: Moves, Clocks &amp;amp; Chat| Server
-Server &amp;lt;--&amp;gt; Mongo[(MongoDB: User Profiles, ELO &amp;amp; Game History)]
-subgraph Coach [AI Chess Coach Engine - chess.py]
-BoardState[FEN / PGN Board State] --&amp;gt; Engine[Stockfish / Python Chess Analysis]
-Engine --&amp;gt; Evaluation[Win Probability &amp;amp; Best Moves]
-Evaluation --&amp;gt; Explanation[LLM Natural Language Advice]
+PlayerA[&amp;#34;Player 1 (White)&amp;#34;] &amp;lt;--&amp;gt;|&amp;#34;WebRTC P2P (PeerJS)&amp;#34;| PlayerB[&amp;#34;Player 2 (Black)&amp;#34;]
+PlayerA &amp;lt;--&amp;gt;|&amp;#34;Socket.io (Moves &amp;amp; Chat)&amp;#34;| Server[&amp;#34;Node.js Server&amp;#34;]
+PlayerB &amp;lt;--&amp;gt;|&amp;#34;Socket.io (Moves &amp;amp; Chat)&amp;#34;| Server
+Server &amp;lt;--&amp;gt; Mongo[(&amp;#34;MongoDB Game Store&amp;#34;)]
+subgraph Coach[&amp;#34;AI Chess Coach (chess.py)&amp;#34;]
+BoardState[&amp;#34;FEN Board State&amp;#34;] --&amp;gt; Stockfish[&amp;#34;Stockfish Analysis&amp;#34;]
+Stockfish --&amp;gt; Evaluation[&amp;#34;Win Probability &amp;amp; Moves&amp;#34;]
+Evaluation --&amp;gt; Explanation[&amp;#34;LLM Strategic Advice&amp;#34;]
 end
-Server -.-&amp;gt; Coach
+Server --&amp;gt; BoardState
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;
 &lt;h2 data-hextra-search-id="key-features"&gt;Key Features&lt;span class="hx:absolute hx:-mt-20" id="key-features"&gt;&lt;/span&gt;
@@ -86,16 +86,16 @@ data-copied-label="Copied!"
 &lt;a href="#full-stack-architecture" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Client[Browser / DevPage Frontend] --&amp;gt; Gateway[Express.js Web Server]
-subgraph Auth [Authentication &amp;amp; Identity]
-Gateway &amp;lt;--&amp;gt; Cognito[AWS Cognito User Pools]
-Gateway &amp;lt;--&amp;gt; GitHubAuth[GitHub OAuth 2.0 via Passport.js]
+Client[&amp;#34;Browser / DevPage Frontend&amp;#34;] --&amp;gt; Gateway[&amp;#34;Express.js Web Server&amp;#34;]
+subgraph Auth[&amp;#34;Authentication &amp;amp; Identity&amp;#34;]
+Gateway &amp;lt;--&amp;gt; Cognito[&amp;#34;AWS Cognito User Pools&amp;#34;]
+Gateway &amp;lt;--&amp;gt; GitHubAuth[&amp;#34;GitHub OAuth 2.0 (Passport.js)&amp;#34;]
 end
-subgraph DataLayer [Storage &amp;amp; Media]
-Gateway &amp;lt;--&amp;gt; Mongo[(MongoDB Atlas / Mongoose Models)]
-Gateway &amp;lt;--&amp;gt; S3[(AWS S3: Developer Assets &amp;amp; Code Snippets)]
+subgraph DataLayer[&amp;#34;Storage &amp;amp; Media&amp;#34;]
+Gateway &amp;lt;--&amp;gt; Mongo[(&amp;#34;MongoDB Atlas&amp;#34;)]
+Gateway &amp;lt;--&amp;gt; S3[(&amp;#34;AWS S3 Assets&amp;#34;)]
 end
-Gateway --&amp;gt; Renderer[EJS-Mate SSR Engine / Interactive Views]
+Gateway --&amp;gt; Renderer[&amp;#34;EJS-Mate SSR Engine&amp;#34;]
 Renderer --&amp;gt; Client
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;

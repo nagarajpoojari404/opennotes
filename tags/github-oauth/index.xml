@@ -6,16 +6,16 @@
 &lt;a href="#full-stack-architecture" class="subheading-anchor" aria-label="Permalink for this section"&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div role="img" aria-label="Diagram"&gt;
 &lt;pre class="mermaid hx:mt-6"&gt;
 flowchart TD
-Client[Browser / DevPage Frontend] --&amp;gt; Gateway[Express.js Web Server]
-subgraph Auth [Authentication &amp;amp; Identity]
-Gateway &amp;lt;--&amp;gt; Cognito[AWS Cognito User Pools]
-Gateway &amp;lt;--&amp;gt; GitHubAuth[GitHub OAuth 2.0 via Passport.js]
+Client[&amp;#34;Browser / DevPage Frontend&amp;#34;] --&amp;gt; Gateway[&amp;#34;Express.js Web Server&amp;#34;]
+subgraph Auth[&amp;#34;Authentication &amp;amp; Identity&amp;#34;]
+Gateway &amp;lt;--&amp;gt; Cognito[&amp;#34;AWS Cognito User Pools&amp;#34;]
+Gateway &amp;lt;--&amp;gt; GitHubAuth[&amp;#34;GitHub OAuth 2.0 (Passport.js)&amp;#34;]
 end
-subgraph DataLayer [Storage &amp;amp; Media]
-Gateway &amp;lt;--&amp;gt; Mongo[(MongoDB Atlas / Mongoose Models)]
-Gateway &amp;lt;--&amp;gt; S3[(AWS S3: Developer Assets &amp;amp; Code Snippets)]
+subgraph DataLayer[&amp;#34;Storage &amp;amp; Media&amp;#34;]
+Gateway &amp;lt;--&amp;gt; Mongo[(&amp;#34;MongoDB Atlas&amp;#34;)]
+Gateway &amp;lt;--&amp;gt; S3[(&amp;#34;AWS S3 Assets&amp;#34;)]
 end
-Gateway --&amp;gt; Renderer[EJS-Mate SSR Engine / Interactive Views]
+Gateway --&amp;gt; Renderer[&amp;#34;EJS-Mate SSR Engine&amp;#34;]
 Renderer --&amp;gt; Client
 &lt;/pre&gt;
 &lt;/div&gt;&lt;hr&gt;
