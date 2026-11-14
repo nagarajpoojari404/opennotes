@@ -1,48 +1,31 @@
 ---
 title: "Mint: Distributed Compute-Optimal LLM Training Framework"
-description: "A distributed LLM pre-training, SFT, and DPO framework compute-optimized for Apple Silicon (Metal) and NVIDIA GPUs using ZeRO-2 and MuonAdamW."
+description: "A distributed LLM pre-training, SFT, and DPO framework compute-optimized for Apple Silicon (Metal) and NVIDIA GPUs using ZeRO-2/3, tensor and sequence parallelism, and MuonAdamW."
 date: "2025-06-01T00:00:00+05:30"
 categories: ["aiml", "distributed-training"]
-tags: ["llm", "distributed-ml", "pytorch", "metal", "dpo", "sft", "zero-2", "muon"]
-summary: "Mint is a distributed, compute-optimal training and alignment framework for Large Language Models. Supports pre-training, SFT, and DPO across Apple Metal and CUDA GPUs with ZeRO-2 sharding."
+tags: ["llm", "distributed-ml", "pytorch", "metal", "dpo", "sft", "zero-2", "zero-3", "tensor-parallel", "muon"]
+summary: "Mint is a distributed, compute-optimal training and alignment framework for Large Language Models. Supports pre-training, SFT, and DPO across Apple Metal and CUDA GPUs with ZeRO-2/3 sharding and tensor parallelism."
 ---
 
-[**View on GitHub**](https://github.com/nagarajpoojari404/mint) · [**Architecture**](#architecture--modules) · [**Quickstart**](#quickstart--cli-commands) · [**Key Innovations**](#what-makes-mint-special)
+[**View on GitHub**](https://github.com/nagarajpoojari404/mint) · [**Benchmarks**](#benchmarks) · [**Architecture**](#architecture--modules) · [**Quickstart**](#quickstart--cli-commands) · [**Key Innovations**](#what-makes-mint-special)
 
 **Mint** is a high-performance, compute-optimal distributed training, fine-tuning, and alignment framework engineered for Large Language Models. Designed to achieve maximum parameter throughput at lowest hardware cost, Mint runs seamlessly across both Apple Silicon (MPS / Metal) and high-density NVIDIA CUDA GPU clusters.
 
 ---
 
-## Architecture & Modules
+## Benchmarks
 
-```mermaid
-flowchart TD
-    Config["Compute Budget FLOPs / Hardware Specs"] --> Planner["Compute-Optimal Auto-Planner"]
-    Planner -->|"Chinchilla Scaled Hyperparameters"| Engine["Mint Training Engine"]
-    
-    subgraph DataEngine["Distributed Streaming Data Engine"]
-        StreamDataloader["Streaming Chunk Dataloader"]
-        Mixer["Multi-Dataset Blending (SmolTalk / GSM8K / ClimbMix)"]
-        StreamDataloader --> Mixer
-    end
-    
-    subgraph CoreEngine["Optimization & Parallelism"]
-        ZeRO["ZeRO-2 Optimizer State Sharding"]
-        Muon["Distributed MuonAdamW + norMuon Polar Express"]
-        Kernels["Hardware Kernels (Apple Metal MPS & FlashAttention-2)"]
-        KVCache["Optimized Paged KV-Cache & SwiGLU / RoPE"]
-    end
-    
-    Engine --> StreamDataloader
-    Mixer --> ZeRO
-    ZeRO --> Muon
-    Muon --> Kernels
-    Kernels --> KVCache
-    
-    KVCache --> Pretrain["Pre-Training (Gemma / TikToken)"]
-    KVCache --> SFT["Supervised Fine-Tuning (SFT v1 / v2)"]
-    KVCache --> DPO["Direct Preference Optimization (DPO v1 / v2)"]
-```
+Parallelism benchmark on **2 x Tesla T4** (15 GB each, PCIe, FP16 autocast, sequence length 128), comparing a single GPU, DDP with ZeRO-0/1/2/3, tensor parallelism (TP) and TP with sequence parallelism (SP) across six model shapes (8M to 142M params).
+
+- **DDP (ZeRO-0)** was the fastest multi-GPU mode in 12/12 cells, reaching **1.70x to 1.87x** speedup over one GPU, up to **255k tok/s** and **20.6% MFU**.
+- **ZeRO-1 / ZeRO-2** cut peak memory by about **3%** versus DDP-0, while **ZeRO-3** used about **30% more** at this small scale.
+- Best data-parallel mode averaged **1.52x** the throughput of the best tensor-parallel mode; adding SP changed TP throughput by **0.70x** on average.
+
+{{< iframe src="benchmarks/mint/dashboard.html" title="Mint parallelism benchmark" height="900px" >}}
+
+---
+
+## Architecture & Modules
 
 ### Module Breakdown
 
@@ -66,8 +49,10 @@ Mint automatically calculates scaling-law optimal parameters (dataset token coun
 ### 2. Distributed MuonAdamW Optimizer
 Integrates the state-of-the-art **Muon** matrix optimizer alongside AdamW, utilizing `norMuon` normalization with Polar Express coefficients for faster convergence and lower loss variance on modern transformer architectures.
 
-### 3. ZeRO-2 Sharding & Distributed Dataloaders
-- **ZeRO-2 Sharding**: Partitions optimizer states and gradients across available ranks to enable training larger models on memory-constrained GPUs.
+### 3. ZeRO-2/3 Sharding, Tensor & Sequence Parallelism
+- **ZeRO-2 / ZeRO-3 Sharding**: Partitions optimizer states, gradients (and, with ZeRO-3, parameters) across ranks to train larger models on memory-constrained GPUs.
+- **Tensor / Sequence Parallelism**: Column/row-parallel linear layers on a 2-D `dp` x `tp` device mesh, with optional sequence parallelism.
+- **Compute-Optimal Configs**: `mint gen-config` derives model size, token budget, batch size and LR from a FLOPs budget.
 - **Custom Streaming Dataloaders**: Streams pre-tokenized shards directly from disk or cloud buckets without memory bloat.
 
 ### 4. Cross-Platform Acceleration
