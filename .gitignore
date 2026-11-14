@@ -4,3 +4,5 @@ public
 
 # Obsidian vault config (local only)
 .obsidian/
+# Playwright CLI output (may contain credentials)
+.playwright-cli/

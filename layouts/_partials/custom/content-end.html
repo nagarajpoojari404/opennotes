@@ -1,17 +1,32 @@
-{{- /* On folder pages, list the sub-topics and notes inside as cards. */ -}}
-{{- if and .IsSection (not .IsHome) -}}
-  {{- $sections := .Sections.ByWeight -}}
-  {{- $pages := .RegularPages.ByWeight -}}
-  {{- if or $sections $pages }}
-    <h2 class="hx:mt-10">In this section</h2>
-    <div class="hextra-cards hx:mt-4 hx:gap-4 hx:grid not-prose" style="--hextra-cards-grid-cols: 3;">
-      {{- range $sections }}
-        {{- $n := len .RegularPagesRecursive -}}
-        {{- partial "shortcodes/card" (dict "link" .RelPermalink "title" .LinkTitle "icon" "folder" "subtitle" (printf "%d notes" $n)) -}}
-      {{- end }}
-      {{- range $pages }}
-        {{- partial "shortcodes/card" (dict "link" .RelPermalink "title" .LinkTitle) -}}
-      {{- end }}
+{{- /* On non-leaf pages in notes, show a plain flat list of all content with clickable titles and 1-2 line descriptions. */ -}}
+{{- if and .IsSection (not .IsHome) (eq .Section "notes") -}}
+  {{- $pages := .RegularPagesRecursive -}}
+  {{- if $pages -}}
+    <div class="notes-index-container hx:mt-8 not-prose">
+      <ul class="hx:list-none hx:pl-0 hx:m-0">
+        {{- range $pages -}}
+          {{- $desc := "" -}}
+          {{- with .Description -}}
+            {{- $desc = . -}}
+          {{- else -}}
+            {{- with .Summary -}}
+              {{- $desc = . | plainify | htmlUnescape | chomp -}}
+            {{- end -}}
+          {{- end -}}
+          <li class="hx:group hx:relative hx:mb-4 last:hx:mb-0">
+            <div>
+              <a href="{{ .RelPermalink }}" class="hx:font-semibold hx:text-base hx:text-primary-600 dark:hx:text-primary-400 hover:hx:underline hx:inline-block">
+                {{- .LinkTitle -}}
+              </a>
+              {{- with $desc -}}
+                <p class="hx:text-sm hx:text-gray-600 dark:hx:text-neutral-400 hx:mt-0.5 hx:line-clamp-2 hx:leading-relaxed">
+                  {{- . | truncate 240 -}}
+                </p>
+              {{- end -}}
+            </div>
+          </li>
+        {{- end -}}
+      </ul>
     </div>
-  {{- end }}
+  {{- end -}}
 {{- end -}}

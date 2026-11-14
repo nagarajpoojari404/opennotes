@@ -59,3 +59,23 @@ When adapting pre-trained models rather than pretraining from scratch:
 | **LoRA / QLoRA** | Injects low-rank decomposition matrices ($W_0+BA$) into attention/MLP layers; QLoRA quantizes the base model to 4-bit NormalFloat (NF4). | $\ll 1\%$ trainable params |
 | **DoRA** | Decomposes weight matrices into magnitude and directional components, applying LoRA solely to the direction vector. | $\ll 1\%$ trainable params |
 | **Prefix Tuning / Prompt Tuning** | Prepends trainable continuous virtual tokens to key/value or input embeddings. | $<0.1\%$ trainable params |
+
+
+1. batch size affects both model convergence and throughput. but it can be adjusted around its optimal batch size for higher throughput. model convergence is less sensitive around its optimal batch size
+2. batch is usual mentioned in tokens. context size is only a matter of mem capacity. keep it as high as possible.
+3. mixed precision training uses two copies of model weights; one master weight and one is low precision for compute. so it does add more memory overall compare to FP32 training, but the advantage is 1) low precision computes are faster 2) saves activation memory
+4. long context ? will increase activation memory nearly quadratically; better solution is to use context parallelism; 
+5. does it make sense to train tiny model with very long context size ? from a model performance perspective might not as smaller model lack such capability to capture long range dependencies; whatever, from infra perspective it needs CP to scale, but it there compute < communication , this causes CP overhead
+6. Activation recomputation == gradient checkpointing == rematerialization != gradient accumulation
+7. MFU (model flop utilization) != HFU (hardware flop utilization)
+8. DDP optimizations:
+	1. for L1 <- L2 <- L3; while calculating grad for L2 one can launch all-reduce for L3
+	2. that is too many all-reduce calls; bucket it.
+	3. in grad accumulation all-reduce is needed only at the end, not for every back pass
+	4. NOTE: batch size can be increased by either more gpus or more grad accumulation steps; but former is inherently parallel unlike later.
+	5. ZeRO can only partition the parameters, gradients, and optimizer states, not the activation memory
+	6. DP only works if a layer of the model fits in a single GPU
+	7. scaling with DP alone will introduce communication overhead.
+9. TP and SP
+	1. Since LayerNorm layers in the SP region operate on different portions of the sequence, their gradients will differ across TP ranks. To ensure the weights stay synchronized, we need to all-reduce their gradients during the backward pass, similar to how DP ensures weights stay in sync. This is, however, a small communication overhead since LayerNorm has relatively few parameters.
+	2. 
